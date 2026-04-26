@@ -2,6 +2,8 @@
 
 A standalone, composable set of Claude Code skills for the full software development lifecycle. Built on the VCMF (Vibe Coding Maturity Framework) and the DIVE (Design-Implement-Verify-Evolve) cycle.
 
+[GitHub Repository](https://github.com/lzj2819/SDLC-skill) | [License: MIT](LICENSE)
+
 The original monolithic Chinese design document is preserved at `软件开发全流程智能体技能(SDLC-Skill).md` for reference.
 
 ## Skills
@@ -107,84 +109,16 @@ Key state sections:
 | Iteration Plan | `skill/artifacts/ITERATION_PLAN.md` | `sdlc-iteration-planning` |
 | Scaffolding | `skill/artifacts/PROJECT_SCAFFOLD/` | `sdlc-project-scaffolding` |
 
-## Directory Structure
-
-```
-skill/
-├── README.md
-├── sdlc-design.md
-├── sdlc-state.md
-├── sdlc-plan.md
-├── 软件开发全流程智能体技能(SDLC-Skill).md
-├── references/
-│   ├── architecture-patterns.md      # 10-pattern library with evaluation dimensions
-│   └── xml-schemas.md                # Three-layer XML schema definitions
-├── scripts/
-│   ├── architecture-ci.sh            # CI health check script
-│   └── xml-sync.py                   # XML sync and validation script
-├── artifacts/                        # Generated artifacts (or docs/architecture/ in iteration mode)
-│   ├── STATE.md
-│   ├── PRD.md
-│   ├── DECISION_LOG.md
-│   ├── INTERFACE_CONTRACT.md
-│   ├── ARCHITECTURE.md
-│   ├── architecture.xml
-│   ├── VALIDATION_REPORT.md
-│   ├── VALIDATION_DELTA.md
-│   ├── DESIGN_REVIEW.md
-│   ├── ITERATION_PRD.md
-│   ├── ITERATION_PLAN.md
-│   ├── health-check.sh
-│   └── PROJECT_SCAFFOLD/
-│       └── docs/
-│           ├── sync-rules.md
-│           └── ADR.md
-├── sdlc-requirement-analysis/
-│   └── SKILL.md
-├── sdlc-architecture-design/
-│   └── SKILL.md
-├── sdlc-architecture-validation/
-│   └── SKILL.md
-├── sdlc-design-review/
-│   └── SKILL.md
-├── sdlc-project-scaffolding/
-│   └── SKILL.md
-├── sdlc-module-design/
-│   └── SKILL.md
-├── sdlc-iteration-planning/
-│   └── SKILL.md
-├── context-compression/
-│   └── SKILL.md
-└── extensions/
-    ├── ai-agent-design/
-    │   ├── SKILL.md
-    │   └── references/
-    │       ├── dimensions.md
-    │       └── anti-patterns.md
-    ├── data-pipeline-design/
-    │   ├── SKILL.md
-    │   └── references/
-    │       ├── schema-evolution.md
-    │       └── idempotency-patterns.md
-    └── mobile-app-design/
-        ├── SKILL.md
-        └── references/
-            ├── offline-first.md
-            └── push-notification.md
-```
-
 ## Installation
 
-### Option 1: Copy to User Skills (Recommended for Personal Use)
+### Option 1: Clone and Copy (Recommended for Personal Use)
 
-Copy the entire `skill/` directory into your Claude Code user skills folder:
-
-**macOS / Linux:**
 ```bash
-# Clone or navigate to the repository
-cd vclaw/1.0.1/skill
+# Clone this repository
+git clone https://github.com/lzj2819/SDLC-skill.git
+cd SDLC-skill
 
-# Copy all skills to Claude Code user skills directory
+# Copy all skills to Claude Code user skills directory (macOS/Linux)
 cp -r sdlc-requirement-analysis sdlc-architecture-design sdlc-architecture-validation \
   sdlc-design-review sdlc-project-scaffolding sdlc-module-design \
   sdlc-iteration-planning context-compression extensions \
@@ -193,46 +127,51 @@ cp -r sdlc-requirement-analysis sdlc-architecture-design sdlc-architecture-valid
 
 **Windows (PowerShell):**
 ```powershell
+# Clone this repository
+git clone https://github.com/lzj2819/SDLC-skill.git
+cd SDLC-skill
+
 # Copy all skill directories
-$source = "E:\pythonproject\vclaw\vclaw\1.0.1\skill"
 $target = "$env:USERPROFILE\.claude\skills"
 
 @("sdlc-requirement-analysis", "sdlc-architecture-design", "sdlc-architecture-validation",
   "sdlc-design-review", "sdlc-project-scaffolding", "sdlc-module-design",
   "sdlc-iteration-planning", "context-compression", "extensions") | ForEach-Object {
-    Copy-Item -Path "$source\$_" -Destination $target -Recurse -Force
+    Copy-Item -Path "$_" -Destination $target -Recurse -Force
 }
 ```
 
 After copying, restart Claude Code or run `/reload` to pick up the new skills.
 
-### Option 2: Install as Plugin (For Distribution)
+### Option 2: Install via Plugin Marketplace
 
-To distribute this skill chain like `superpowers` so others can install it via `/plugin install`:
+Add this marketplace to your Claude Code configuration:
 
-1. **Publish as a GitHub repository** (or keep in your existing repo)
-2. **Users add your marketplace** to their Claude Code config:
-   ```json
-   // ~/.claude/config.json
-   {
-     "pluginMarketplaces": [
-       {
-         "name": "vclaw-sdlc",
-         "url": "https://raw.githubusercontent.com/lzj2819/vclaw/main/1.0.1/skill/.claude-plugin/marketplace.json"
-       }
-     ]
-   }
-   ```
-3. **Users install the plugin**:
-   ```
-   /plugin install sdlc-skill-chain@vclaw-sdlc
-   ```
+```json
+// ~/.claude/config.json
+{
+  "pluginMarketplaces": [
+    {
+      "name": "vclaw-sdlc",
+      "url": "https://raw.githubusercontent.com/lzj2819/SDLC-skill/main/.claude-plugin/marketplace.json"
+    }
+  ]
+}
+```
+
+Then install the plugin:
+```
+/plugin install sdlc-skill-chain@vclaw-sdlc
+```
 
 ### Option 3: Manual Per-Skill Installation
 
 Install only the skills you need:
 
 ```bash
+git clone https://github.com/lzj2819/SDLC-skill.git
+cd SDLC-skill
+
 # Example: Install only requirement analysis and architecture design
 cp -r sdlc-requirement-analysis ~/.claude/skills/
 cp -r sdlc-architecture-design ~/.claude/skills/
@@ -248,15 +187,24 @@ After installation, verify the skills are loaded:
 
 You should see all 7 core skills plus context-compression and domain extensions listed.
 
-## Plugin Structure
-
-This directory is structured as a Claude Code plugin:
+## Directory Structure
 
 ```
-skill/
+SDLC-skill/
 ├── .claude-plugin/
 │   ├── plugin.json          # Plugin metadata for Claude Code
 │   └── marketplace.json     # Marketplace entry for distribution
+├── LICENSE                  # MIT License
+├── README.md                # This file
+├── sdlc-design.md           # Skill chain design document
+├── sdlc-state.md            # STATE.md template specification
+├── references/              # Shared reference documents
+│   ├── architecture-patterns.md
+│   └── xml-schemas.md
+├── scripts/                 # Utility scripts
+│   ├── architecture-ci.sh
+│   ├── package-plugin.py    # Packaging script for distribution
+│   └── xml-sync.py
 ├── sdlc-requirement-analysis/   # Core skill 1
 ├── sdlc-architecture-design/    # Core skill 2
 ├── sdlc-architecture-validation/ # Core skill 3
@@ -265,17 +213,25 @@ skill/
 ├── sdlc-module-design/          # Core skill 6
 ├── sdlc-iteration-planning/     # Core skill 7
 ├── context-compression/         # Internal utility
-├── extensions/                  # Domain-specific extensions
-└── README.md
+└── extensions/                  # Domain-specific extensions
+    ├── ai-agent-design/
+    ├── data-pipeline-design/
+    └── mobile-app-design/
 ```
 
 ## Packaging
 
-To create a distributable `.skill` package for individual skills:
+To create distributable packages:
 
 ```bash
-# Requires skill-creator tool
-python /path/to/skill-creator/scripts/package_skill.py sdlc-requirement-analysis/
+# Package all skills individually + full plugin zip
+python scripts/package-plugin.py --mode all --output ./dist
 ```
 
-For the full skill chain, distribute this entire directory as a plugin package.
+Outputs:
+- `dist/sdlc-skill-chain-v1.1.0.zip` — Full plugin package
+- `dist/skills/*.skill` — Individual skill packages
+
+## Contributing
+
+This skill chain is part of the [VClaw](https://github.com/lzj2819/vclaw) project. For the full 6-layer AI Agent system, see the main repository.
