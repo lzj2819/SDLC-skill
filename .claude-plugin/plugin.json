@@ -3,8 +3,8 @@
   "description": "SDLC Skill Chain for Claude Code: 7 skills covering the full software development lifecycle from requirements to incremental iteration, built on the VCMF framework and DIVE cycle",
   "version": "1.1.0",
   "author": { "name": "lzj", "email": "lzj2819@gmail.com" },
-  "homepage": "https://github.com/lzj2819/vclaw/tree/main/1.0.1/skill",
-  "repository": "https://github.com/lzj2819/vclaw",
+  "homepage": "https://github.com/lzj2819/SDLC-skill",
+  "repository": "https://github.com/lzj2819/SDLC-skill",
   "license": "MIT",
   "keywords": ["sdlc", "software-development", "architecture-design", "requirement-analysis", "vibe-coding", "vcmf", "dive-cycle", "incremental-development"]
 }

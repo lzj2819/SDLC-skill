@@ -1,6 +1,6 @@
 {
   "name": "vclaw-sdlc",
-  "description": "VClaw SDLC Skill Chain marketplace — Full lifecycle software development skills for Claude Code",
+  "description": "SDLC Skill Chain marketplace — Full lifecycle software development skills for Claude Code",
   "owner": { "name": "lzj", "email": "lzj2819@gmail.com" },
   "plugins": [
     {
