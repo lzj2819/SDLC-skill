@@ -1,0 +1,33 @@
+# Generated artifacts (created during skill usage)
+artifacts/
+
+# Build outputs
+dist/
+*.skill
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment
+.env
+.venv
+venv/
+env/
