@@ -59,7 +59,20 @@ Read `skill/artifacts/STATE.md` if it exists. If `phase` is already `requirement
      - Main process flow and fallback strategies
    - Write the PRD to `skill/artifacts/PRD.md`
 
-6. **Decision Log seeding**
+6. **Requirement Traceability Matrix (RTM) generation**
+   - After PRD is complete, generate `skill/artifacts/RTM.md`
+   - RTM structure:
+     - Columns: Requirement ID, User Story, Acceptance Criteria, Architecture Module, Component, Test Case ID, Status
+     - Each P0/P1 requirement MUST have at least one mapped Module and Component
+     - Status values: pending / designed / implemented / tested / verified
+   - Initial status for all entries: `pending`
+   - RTM is updated by subsequent skills:
+     - `sdlc-architecture-design` → update Architecture Module column
+     - `sdlc-module-design` → update Component column
+     - `sdlc-project-scaffolding` → update Test Case ID column
+     - `sdlc-architecture-validation` → update Status to verified
+
+7. **Decision Log seeding**
    - Create or update `skill/artifacts/DECISION_LOG.md`
    - Record the date, key requirement decisions, reasons, and rejected alternatives
 
@@ -83,6 +96,7 @@ Do NOT proceed to architecture-design, write any code, or scaffold any project u
 ## Output Specification
 
 - `skill/artifacts/PRD.md`
+- `skill/artifacts/RTM.md` (Requirement Traceability Matrix)
 - `skill/artifacts/DECISION_LOG.md`
 - Must include P0/P1/P2 grading
 - Must include acceptance criteria for every user story
