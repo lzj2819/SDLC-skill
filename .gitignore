@@ -1,6 +1,9 @@
 # Generated artifacts (created during skill usage)
 artifacts/
 
+# Worktrees
+.worktrees/
+
 # Build outputs
 dist/
 *.skill
