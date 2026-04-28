@@ -50,11 +50,36 @@ Represents a top-level system module. One per bounded context or service.
 ### `DataModel`
 Defines system-wide data entities.
 
+**DataModel attributes**:
+- `name` (required): Entity name (used as table/collection name in DDL)
+- `ddlType` (optional): DDL target type — one of {table, view, collection}. Default: "table"
+- `tableEngine` (optional): Database engine hint (e.g., "InnoDB", "MyISAM"). Only used when `ddlType="table"`
+
 **DataModel children**:
-- `Entity` (1+): Attributes: `id`, `module`
-  - `Fields`: Contains `Field` nodes
-    - `Field` attributes: `name`, `type`, `nullable` (boolean), `encrypted` (boolean, optional)
-  - `CacheStrategy` (optional): Attributes: `type`, `ttl` (seconds)
+- `Fields` (1): Contains `Field` nodes
+  - `Field` attributes:
+    - `name` (required): Column/field name
+    - `type` (required): Logical type (string, int, long, float, double, boolean, datetime, uuid, text, json)
+    - `required` (boolean, default "false"): Maps to NOT NULL when true
+    - `nullable` (boolean, default "true"): When false, equivalent to `required="true"` (legacy, prefer `required`)
+    - `primaryKey` (boolean, optional): Whether this field is the primary key
+    - `length` (integer, optional): Max length for string types (maps to VARCHAR(length))
+    - `unique` (boolean, optional): Whether a UNIQUE constraint should be created
+    - `index` (boolean, optional): Whether a non-unique index should be created
+    - `default` (string, optional): Default value expression (e.g., "CURRENT_TIMESTAMP", "0", "''")
+    - `encrypted` (boolean, optional): Whether the field is encrypted at rest
+    - `autoIncrement` (boolean, optional): Whether the field auto-increments (typically for primary keys)
+  - `Field` children:
+    - `Description` (optional): Human-readable field description
+- `Relationships` (optional): Explicit foreign key and entity relationships
+  - `Relationship` (1+): Attributes:
+    - `type` (required): One of {one-to-one, one-to-many, many-to-many}
+    - `target` (required): Target `DataModel/@name`
+    - `foreignKey` (required): Local field name that references the target
+    - `targetField` (optional): Target field name. Default: primary key of target
+    - `onDelete` (optional): Referential action — one of {CASCADE, SET_NULL, RESTRICT, NO_ACTION}. Default: "RESTRICT"
+    - `onUpdate` (optional): Referential action. Default: "CASCADE"
+- `CacheStrategy` (optional): Attributes: `type`, `ttl` (seconds), `indexedFields` (comma-separated field names)
 
 ### `StateModel`
 Defines where state lives, who owns it, and its lifecycle.
@@ -236,9 +261,31 @@ Every `State` MUST define all five lifecycle phases in its `lifecycle` attribute
 - `Coupling/DependsOn/@module` MUST reference a `Module/@id` that exists in the system XML
 - Circular dependencies between modules SHOULD be flagged as warnings
 
+### Rule 6: DDL Schema Validity
+- `Field/@type` MUST be one of the supported logical types: string, int, long, float, double, boolean, datetime, uuid, text, json
+- `Field/@length` MUST be specified when `type="string"` and a DDL is generated
+- `Relationships/Relationship/@target` MUST reference an existing `DataModel/@name`
+- `Relationships/Relationship/@foreignKey` MUST reference an existing `Field/@name` within the same `DataModel`
+
 ---
 
 ## Example: Minimal Valid Files
+
+### DataModel Example (with DDL attributes)
+```xml
+<DataModel name="User" ddlType="table" tableEngine="InnoDB">
+  <Fields>
+    <Field name="id" type="uuid" required="true" primaryKey="true"/>
+    <Field name="email" type="string" length="255" required="true" unique="true" index="true"/>
+    <Field name="created_at" type="datetime" required="true" default="CURRENT_TIMESTAMP"/>
+    <Field name="profile_id" type="uuid"/>
+  </Fields>
+  <Relationships>
+    <Relationship type="one-to-one" target="Profile" foreignKey="profile_id" onDelete="SET_NULL"/>
+  </Relationships>
+  <CacheStrategy type="redis" ttl="3600" indexedFields="email"/>
+</DataModel>
+```
 
 ### System Level (excerpt)
 ```xml
