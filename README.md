@@ -1,4 +1,4 @@
-# DevForge Chain v1.1
+# DevForge Chain v1.2
 
 A standalone, composable set of Claude Code skills for the full software development lifecycle. Built on the VCMF (Vibe Coding Maturity Framework) and the DIVE (Design-Implement-Verify-Evolve) cycle.
 
@@ -17,6 +17,9 @@ The original monolithic Chinese design document is preserved at `DevForge.md` fo
 | `devforge-project-scaffolding` | Implement + Evolve | Reality as Baseline, State as Responsibility, Design as Contract, XML as Authority | Generate runnable project scaffolding with XML-driven code generation, CI/CD, transparent test fixtures, ADR, and evolution infrastructure |
 | `devforge-module-design` | Design (Module) | Design as Contract, Interface as Boundary, State as Responsibility | Deep-dive design for a single module: component decomposition, component interfaces, module-level XML, and component-spec templates |
 | `devforge-iteration-planning` | Evolve | Design as Contract, Interface as Boundary, Reality as Baseline, State as Responsibility | Incremental planning for new requirements: impact analysis, incremental PRD, interface versioning, XML sync, and iteration plan generation |
+| `devforge-visualization` | Visualize | Design as Contract, Reality as Baseline | Generate Mermaid diagrams (system-context, module-interaction, data-flow, ER) from `architecture.xml` |
+| `devforge-ops-ready` | Operate | Design as Contract, Interface as Boundary, Reality as Baseline, State as Responsibility | Production infrastructure: Terraform, K8s manifests, Prometheus/Grafana monitoring, blue-green + canary progressive deployment, operational runbook |
+| `devforge-debug-assistant` | Debug | Design as Contract, Interface as Boundary, Reality as Baseline, State as Responsibility | Bug diagnosis with root cause analysis + refactoring suggestions with code health scan |
 
 ### Internal Utilities
 
@@ -108,6 +111,12 @@ Key state sections:
 | Iteration PRD | `skill/artifacts/ITERATION_PRD.md` | `devforge-iteration-planning` |
 | Iteration Plan | `skill/artifacts/ITERATION_PLAN.md` | `devforge-iteration-planning` |
 | Scaffolding | `skill/artifacts/PROJECT_SCAFFOLD/` | `devforge-project-scaffolding` |
+| RTM | `skill/artifacts/RTM.md` | `devforge-requirement-analysis` |
+| Database Schema | `skill/artifacts/schema.sql` | `devforge-architecture-design` |
+| OpenAPI Spec | `skill/artifacts/openapi.yaml` | `devforge-architecture-design` |
+| ERD | `skill/artifacts/ERD.md` | `devforge-architecture-design` |
+| Debug Report | `skill/artifacts/DEBUG_REPORT.md` | `devforge-debug-assistant` |
+| Refactor Report | `skill/artifacts/REFACTOR_REPORT.md` | `devforge-debug-assistant` |
 
 ## Installation
 
@@ -121,7 +130,8 @@ cd DevForge
 # Copy all skills to Claude Code user skills directory (macOS/Linux)
 cp -r devforge-requirement-analysis devforge-architecture-design devforge-architecture-validation \
   devforge-design-review devforge-project-scaffolding devforge-module-design \
-  devforge-iteration-planning context-compression extensions \
+  devforge-iteration-planning devforge-visualization devforge-ops-ready \
+  devforge-debug-assistant context-compression extensions \
   ~/.claude/skills/
 ```
 
@@ -136,7 +146,8 @@ $target = "$env:USERPROFILE\.claude\skills"
 
 @("devforge-requirement-analysis", "devforge-architecture-design", "devforge-architecture-validation",
   "devforge-design-review", "devforge-project-scaffolding", "devforge-module-design",
-  "devforge-iteration-planning", "context-compression", "extensions") | ForEach-Object {
+  "devforge-iteration-planning", "devforge-visualization", "devforge-ops-ready",
+  "devforge-debug-assistant", "context-compression", "extensions") | ForEach-Object {
     Copy-Item -Path "$_" -Destination $target -Recurse -Force
 }
 ```
@@ -185,7 +196,7 @@ After installation, verify the skills are loaded:
 /skills
 ```
 
-You should see all 7 core skills plus context-compression and domain extensions listed.
+You should see all 10 core skills plus context-compression and domain extensions listed.
 
 ## Directory Structure
 
@@ -212,6 +223,9 @@ DevForge/
 ├── devforge-project-scaffolding/    # Core skill 5
 ├── devforge-module-design/          # Core skill 6
 ├── devforge-iteration-planning/     # Core skill 7
+├── devforge-visualization/          # Core skill 8 (v1.2)
+├── devforge-ops-ready/              # Core skill 9 (v1.2)
+├── devforge-debug-assistant/        # Core skill 10 (v1.2)
 ├── context-compression/         # Internal utility
 └── extensions/                  # Domain-specific extensions
     ├── ai-agent-design/

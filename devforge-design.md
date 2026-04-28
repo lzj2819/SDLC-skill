@@ -1,8 +1,10 @@
-# DevForge Decomposition Design v1.1
+# DevForge Decomposition Design v1.2
 
-> **Design Objective**: Decompose the original monolithic skill `软件开发全流程智能体技能(DevForge).md` into composable skills that embed VCMF principles and the DIVE cycle. The skill chain models a "single thinker's iterative drafts" rather than a "role relay race": each skill is the same thinker unfolding the same complex problem from a different dimension, always holding the complete intent.
+> **Design Objective**: Decompose the original monolithic skill `DevForge.md` into composable skills that embed VCMF principles and the DIVE cycle. The skill chain models a "single thinker's iterative drafts" rather than a "role relay race": each skill is the same thinker unfolding the same complex problem from a different dimension, always holding the complete intent.
 >
 > **v1.1 Additions**: Three-layer XML architecture (System/Module/Component), dynamic pattern selection (10 patterns), module-level design skill, iteration planning skill, domain extensions (overlay mechanism), context compression utility, and XML-driven code generation.
+>
+> **v1.2 Additions**: Database schema (DDL) generation, OpenAPI 3.0 spec generation, test coverage integration, architecture visualization (Mermaid diagrams), production-ready infrastructure (Terraform/K8s/monitoring), progressive deployment (blue-green + canary), bug diagnosis & refactoring assistant, and requirement traceability matrix (RTM).
 
 ---
 
@@ -10,13 +12,14 @@
 
 ### 1.1 Selection Conclusion
 
-Adopt **Option B: Workflow-Aggregate Decomposition (7 Skills + Utilities)**.
+Adopt **Option B: Workflow-Aggregate Decomposition (10 Skills + Utilities)**.
 
 **Reasons**:
 - Creates a natural skill chain where each skill maps cleanly to a DIVE stage
 - Skill granularity is moderate, trigger conditions are clear, and users do not need to switch too frequently
 - Aligns with the VCMF principles by inserting explicit checkpoints at every phase transition
 - v1.1 additions (module-design, iteration-planning) extend the chain without breaking existing flow
+- v1.2 additions (visualization, ops-ready, debug-assistant) provide optional post-scaffolding capabilities
 
 ### 1.2 Scope
 
@@ -91,6 +94,32 @@ User inputs a raw idea
 |           + Updated architecture.xml + VALIDATION_DELTA   |
 +-----------------------------------------------------------+
     | [APPROVE]
+    v
++-----------------------------------------------------------+
+|  (Optional) devforge-visualization                            |
+|  Trigger: [VISUALIZE]                                     |
+|  Outputs: Mermaid diagrams (system-context,               |
+|           module-interaction, data-flow, ER)              |
+|           → docs/architecture/diagrams/                   |
++-----------------------------------------------------------+
+    | [APPROVE]
+    v
++-----------------------------------------------------------+
+|  (Optional) devforge-ops-ready                                |
+|  Trigger: [OPS]                                           |
+|  Outputs: Terraform + K8s manifests + monitoring          |
+|           + multi-env configs + progressive deployment    |
+|           + operational runbook                           |
++-----------------------------------------------------------+
+    | [APPROVE]
+    v
++-----------------------------------------------------------+
+|  (Optional) devforge-debug-assistant                          |
+|  Trigger: [DEBUG] or test failure                         |
+|  Mode A: Bug diagnosis → DEBUG_REPORT.md                  |
+|  Mode B: Refactoring → REFACTOR_REPORT.md                 |
++-----------------------------------------------------------+
+    | [APPROVE FIX / APPROVE REFACTOR]
     v
    Done (or loop back to module-design / architecture-design)
 ```
@@ -496,6 +525,12 @@ skill/
 │   └── SKILL.md
 ├── devforge-iteration-planning/
 │   └── SKILL.md
+├── devforge-visualization/
+│   └── SKILL.md
+├── devforge-ops-ready/
+│   └── SKILL.md
+├── devforge-debug-assistant/
+│   └── SKILL.md
 ├── context-compression/
 │   └── SKILL.md
 └── extensions/
@@ -529,6 +564,9 @@ skill/
 | `devforge-project-scaffolding` | Every file traceable to artifact | Code signatures match contracts | Mock + real tests generated | Code matches `StateModel` | Code matches `component-spec.xml` |
 | `devforge-module-design` | Traces to system PRD scope | Component interface contracts | Module-level test cases | `ModuleStateModel` | Fills module + component XML |
 | `devforge-iteration-planning` | Scope validation against Immutable Goal | Versioned interface changes | Impact analysis identifies all affected modules | State migration strategy | XML sync across layers |
+| `devforge-visualization` | Diagrams reflect approved XML | Shows all cross-module interfaces | Data flow matches `<Coupling>` definitions | — | — |
+| `devforge-ops-ready` | Resources map 1:1 to `Module` nodes | K8s ports match `Interface` definitions | Metrics are collectable | Persistence policies match `StateModel` | — |
+| `devforge-debug-assistant` | Fixes respect `INTERFACE_CONTRACT.md` | Refactoring preserves public interfaces | Diagnosis based on actual test output/logs | State fixes respect `StateModel` ownership | Code signatures match `component-spec.xml` |
 
 ---
 
@@ -539,11 +577,166 @@ skill/
 | **Design** | `devforge-requirement-analysis` + `devforge-architecture-design` + `devforge-module-design` | Lock the "things that should not change": requirements, interfaces, state ownership, architecture, component decomposition |
 | **Implement** | `devforge-project-scaffolding` | Generate runnable project skeleton with infrastructure code and XML-driven code generation |
 | **Verify** | `devforge-architecture-validation` + `devforge-design-review` | Mock flow validation + real-LLM semantic checks + consistency audits + adversarial inspection |
-| **Evolve** | `devforge-iteration-planning` | Impact analysis, incremental PRD, interface versioning, XML sync, iteration planning |
+| **Evolve** | `devforge-iteration-planning` | Impact analysis, incremental PRD, interface versioning, XML sync, iteration plan generation |
+| **Visualize** | `devforge-visualization` | System context, module interaction, data flow, ER diagrams from `architecture.xml` |
+| **Operate** | `devforge-ops-ready` | Terraform, K8s, monitoring, progressive deployment (blue-green + canary), runbook |
+| **Debug** | `devforge-debug-assistant` | Bug diagnosis (root cause + fix proposal) + refactoring suggestions (code smells + architecture alignment) |
 
 ---
 
-## 8. Implementation Path (v1.1 Completed)
+### 3.8 `devforge-visualization` (v1.2 New)
+
+```yaml
+---
+name: devforge-visualization
+description: Use when a system architecture XML has been approved and the user wants visual diagrams. Trigger when user says [VISUALIZE] or "generate architecture diagram".
+---
+```
+
+**Scope**: Generate Mermaid-based architecture diagrams from `architecture.xml`.
+
+**Input**: Approved `skill/artifacts/architecture.xml`.
+
+**Output**:
+- `docs/architecture/diagrams/system-context.md`
+- `docs/architecture/diagrams/module-interaction.md`
+- `docs/architecture/diagrams/data-flow.md`
+- `docs/architecture/diagrams/er-diagram.md`
+
+**VCMF Checkpoints**:
+- Design as Contract: Diagrams must reflect approved XML, not invention
+- Interface as Boundary: Interaction diagrams must show all cross-module interfaces
+- Reality as Baseline: Data flow must match actual XML `<Coupling>` definitions
+
+**Key Workflow**:
+1. Parse `architecture.xml`
+2. Generate system context diagram (system + external dependencies)
+3. Generate module interaction sequence diagram (core user story call chains)
+4. Generate data flow diagram (data transformation across modules)
+5. Generate ER diagram from `DataModel` nodes
+6. Output all diagrams to `docs/architecture/diagrams/`
+7. Gate: "架构可视化图表已生成。回复 [APPROVE] 完成，或提出修改意见。"
+
+---
+
+### 3.9 `devforge-ops-ready` (v1.2 New)
+
+```yaml
+---
+name: devforge-ops-ready
+description: Use when a project has completed scaffolding and the user needs production-ready infrastructure. Trigger when user says [OPS] or "generate deployment config".
+---
+```
+
+**Scope**: Generate Terraform, Kubernetes, monitoring, and progressive deployment configurations.
+
+**Input**: Approved `architecture.xml`, `STATE.md`.
+
+**Output**:
+- `infrastructure/terraform/` — Terraform modules (network, compute, database, cache, storage)
+- `infrastructure/kubernetes/` — K8s manifests with Kustomize (base + dev/staging/prod overlays)
+- `infrastructure/monitoring/` — Prometheus rules + Grafana dashboards
+- `infrastructure/multi-env/` — Environment-specific Terraform variables
+- `infrastructure/kubernetes/overlays/prod/progressive/blue-green/` — Blue-green deployment
+- `infrastructure/kubernetes/overlays/prod/progressive/canary/` — Canary deployment
+- `docs/ops/runbook.md` — Operational manual
+
+**VCMF Checkpoints**:
+- Design as Contract: Terraform resources map 1:1 to `Module` nodes
+- Interface as Boundary: K8s service ports match `Interface` definitions
+- Reality as Baseline: Monitoring metrics are collectable
+- State as Responsibility: Persistence policies match `StateModel`
+
+**Key Workflow**:
+1. Read `architecture.xml` and infer resource requirements
+2. Generate Terraform configuration
+3. Generate K8s manifests with Kustomize
+4. Generate monitoring (Prometheus RED metrics + Grafana dashboards)
+5. Generate multi-environment configs
+6. Generate progressive deployment manifests (blue-green + canary with promotion/rollback policies)
+7. Generate operational runbook
+8. Update `STATE.md`
+9. Gate: "生产就绪基础设施已生成。回复 [APPROVE] 完成，或提出修改意见。"
+
+---
+
+### 3.10 `devforge-debug-assistant` (v1.2 New)
+
+```yaml
+---
+name: devforge-debug-assistant
+description: Use when tests are failing, logs show anomalies, or the user wants code-level improvements. Trigger when user says [DEBUG] or "fix this bug" or "refactor this code".
+---
+```
+
+**Scope**: Bug diagnosis with root cause analysis and refactoring suggestions.
+
+**Input**: Failing test output, error logs, source code, `component-spec.xml`.
+
+**Output**:
+- Mode A: `skill/artifacts/DEBUG_REPORT.md`
+- Mode B: `skill/artifacts/REFACTOR_REPORT.md`
+
+**VCMF Checkpoints**:
+- Design as Contract: Fixes must not violate `INTERFACE_CONTRACT.md`
+- Interface as Boundary: Refactoring must preserve public interfaces
+- Reality as Baseline: Diagnosis based on actual test output / logs
+- State as Responsibility: Bug fixes involving state must respect `StateModel` ownership
+
+**Key Workflow (Mode A - Bug Fix)**:
+1. Collect evidence (failing tests, stack traces, logs)
+2. Root cause analysis (logic error, state error, interface mismatch, dependency failure)
+3. Propose minimal fix with regression risk assessment
+4. Generate `DEBUG_REPORT.md`
+5. Human gate: "调试报告已生成。回复 [APPROVE FIX] 应用修复，或提出修改意见。"
+
+**Key Workflow (Mode B - Refactor)**:
+1. Code health scan (code smells, architecture alignment)
+2. Identify improvement opportunities
+3. Propose refactorings with before/after snippets and risk levels
+4. Generate `REFACTOR_REPORT.md`
+5. Human gate: "重构报告已生成。回复 [APPROVE REFACTOR] 应用重构，或提出修改意见。"
+
+---
+
+### 3.11 `context-compression` (v1.1 Internal Utility)
+
+```yaml
+---
+name: context-compression
+description: Internal utility skill used by other DevForges to compress session context into a persistent digest. NOT for direct user invocation.
+---
+```
+
+**Scope**: Automatic context compression after each skill completes.
+
+**Input**: `STATE.md` + primary output artifact of completed skill + `DECISION_LOG.md`.
+
+**Output**: Updated `STATE.md` (Compressed Context, Artifact Index, DecisionDigest).
+
+**Key Workflow**:
+1. Read existing compressed context
+2. Extract top 3 decisions and top 2 risks from completed skill
+3. Generate 200-word digest
+4. Update Compressed Context section in STATE.md
+5. Append to Artifact Index
+6. Update DecisionDigest list (keep last 20 entries)
+
+---
+
+## 8. Implementation Path (v1.2 Completed)
+
+### Completed in v1.2
+
+- [x] Database schema (DDL) generation (`schema.sql`, `ERD.md`) in `devforge-architecture-design`
+- [x] OpenAPI 3.0 specification generation (`openapi.yaml`) in `devforge-architecture-design`
+- [x] Test coverage integration (pytest-cov, jest, jacoco, Go cover) in `devforge-project-scaffolding`
+- [x] `devforge-visualization/SKILL.md` — Mermaid diagram generation
+- [x] `devforge-ops-ready/SKILL.md` — Terraform, K8s, monitoring, multi-env, runbook
+- [x] Progressive deployment strategies (blue-green + canary) in `devforge-ops-ready`
+- [x] `devforge-debug-assistant/SKILL.md` — Bug diagnosis + refactoring suggestions
+- [x] RTM (Requirement Traceability Matrix) auto-generation in `devforge-requirement-analysis`
+- [x] Phase 8/9/10 registered in `DevForge.md`
 
 ### Completed in v1.1
 

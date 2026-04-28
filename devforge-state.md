@@ -34,7 +34,7 @@ description: Template for the file-based state used by the DevForge chain
 ## 4. Current State (Overwritten)
 > Reflects the latest progress.
 
-- phase: [requirement_analysis_completed | architecture_design_completed | architecture_validated | design_review_completed | scaffolding_completed | module_design_completed | iteration_planning_completed | evolution_completed]
+- phase: [requirement_analysis_completed | architecture_design_completed | architecture_validated | design_review_completed | scaffolding_completed | module_design_completed | iteration_planning_completed | visualization_completed | ops_ready_completed | evolution_completed]
 - DIVE:
   - Design: [pending | in_progress | completed]
   - Implement: [pending | in_progress | completed]
@@ -45,7 +45,7 @@ description: Template for the file-based state used by the DevForge chain
   - `refactor`: Run devforge-architecture-design for architectural changes
   - `module`: Run devforge-module-design for the next un-designed module
   - `none`: No pending action; project is in steady state
-- Next skill: [devforge-architecture-design | devforge-architecture-validation | devforge-design-review | devforge-project-scaffolding | devforge-module-design | devforge-iteration-planning]
+- Next skill: [devforge-architecture-design | devforge-architecture-validation | devforge-design-review | devforge-project-scaffolding | devforge-module-design | devforge-iteration-planning | devforge-visualization | devforge-ops-ready | devforge-debug-assistant]
 
 ## 5. Module Registry (Updated by devforge-module-design and devforge-iteration-planning)
 > Tracks the status of every module in the system.
@@ -111,8 +111,14 @@ iteration_history:
 | Design Review | skill/artifacts/DESIGN_REVIEW.md | 2026-04-24 | 2 medium risks flagged |
 | Health Check Script | skill/artifacts/health-check.sh | 2026-04-24 | 5 checks implemented |
 | Iteration PRD | skill/artifacts/ITERATION_PRD.md | 2026-04-24 | Scope delta for v1.1 |
-| Iteration Plan | skill/artifacts/ITERATION_PLAN.md | 2026-04-24 | 2 modules affected |
+| Iteration Plan | skill/artifacts/ITERATION_PRD.md | 2026-04-24 | 2 modules affected |
 | Scaffolding | skill/artifacts/PROJECT_SCAFFOLD/ | 2026-04-24 | Docker + CI ready |
+| RTM | skill/artifacts/RTM.md | 2026-04-24 | P0/P1 requirements mapped |
+| Database Schema | skill/artifacts/schema.sql | 2026-04-24 | DDL from DataModel |
+| OpenAPI Spec | skill/artifacts/openapi.yaml | 2026-04-24 | REST API contracts |
+| ERD | skill/artifacts/ERD.md | 2026-04-24 | Entity relationship diagram |
+| Debug Report | skill/artifacts/DEBUG_REPORT.md | 2026-04-24 | Bug diagnosis result |
+| Refactor Report | skill/artifacts/REFACTOR_REPORT.md | 2026-04-24 | Code health scan result |
 
 ## 9. Known Pitfalls & Risks (Append-Only)
 > Every skill MUST append risks discovered during its unfold.
