@@ -1,9 +1,9 @@
 ---
-name: sdlc-visualization
+name: devforge-visualization
 description: Use when a system architecture has been designed and the user wants visual diagrams (system context, module interaction, data flow, ER diagram) generated from the architecture XML. Trigger when user says [VISUALIZE] or "generate architecture diagrams".
 ---
 
-# SDLC Visualization
+# DevForge Visualization
 
 ## Overview
 
@@ -21,13 +21,13 @@ Generate visual architecture diagrams from an approved `architecture.xml`. This 
 
 - The user has approved an architecture and wants visual diagrams
 - The user types `[VISUALIZE]` or says "generate architecture diagrams"
-- Can be invoked after `sdlc-architecture-design` or at any time when `architecture.xml` exists
+- Can be invoked after `devforge-architecture-design` or at any time when `architecture.xml` exists
 
 ## Precondition Check
 
 Read `skill/artifacts/STATE.md`. Acceptable phases: `architecture_design_completed`, `architecture_validated`, `design_review_completed`, `scaffolding_completed`, `module_design_completed`.
 
-If `architecture.xml` is missing, stop and instruct the user to complete `sdlc-architecture-design` first.
+If `architecture.xml` is missing, stop and instruct the user to complete `devforge-architecture-design` first.
 
 ## Workflow
 

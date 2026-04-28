@@ -1,9 +1,9 @@
 ---
-name: sdlc-iteration-planning
+name: devforge-iteration-planning
 description: Use when a project has completed initial scaffolding and the user wants to add new requirements, features, or modules incrementally without rewriting the existing architecture. Trigger when user says "add new feature", "next iteration", "incremental requirement", or proposes changes after scaffolding is complete.
 ---
 
-# SDLC Iteration Planning
+# DevForge Iteration Planning
 
 ## Overview
 
@@ -24,7 +24,7 @@ This skill performs impact analysis, writes an incremental PRD, updates architec
 
 - The user has completed initial scaffolding and wants to add new functionality
 - The user says "I need to add...", "next version should include...", "can we also support..."
-- Do NOT use if the user wants to redesign or refactor existing architecture (use `sdlc-architecture-design` instead)
+- Do NOT use if the user wants to redesign or refactor existing architecture (use `devforge-architecture-design` instead)
 
 ## Precondition Check
 
@@ -78,7 +78,7 @@ Before starting, read `skill/artifacts/STATE.md` (or `docs/architecture/system/S
      - Treat as a new bounded context
      - Design module interface, coupling, and state ownership
      - Append new `Module` node to `architecture.xml`
-     - Generate module XML template (same rules as `sdlc-architecture-design`)
+     - Generate module XML template (same rules as `devforge-architecture-design`)
    - For each "modify_module" or "extend_interface" impact:
      - Read the existing `module-architecture.xml` (or module template if not yet detailed)
      - Add new components or extend existing component interfaces
@@ -124,7 +124,7 @@ Before starting, read `skill/artifacts/STATE.md` (or `docs/architecture/system/S
 
 9. **State update**
    - Update `STATE.md`:
-     - Append to **Completed Steps**: `[YYYY-MM-DD HH:MM] sdlc-iteration-planning: Analyzed [N] new requirements. Impact: [X] modules affected. Iteration scope: [summary]`
+     - Append to **Completed Steps**: `[YYYY-MM-DD HH:MM] devforge-iteration-planning: Analyzed [N] new requirements. Impact: [X] modules affected. Iteration scope: [summary]`
      - Update **Current State**:
        - `phase: iteration_planning_completed`
        - `NextAction: iterate` (indicates we are in an iteration loop)

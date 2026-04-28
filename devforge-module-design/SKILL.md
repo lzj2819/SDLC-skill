@@ -1,9 +1,9 @@
 ---
-name: sdlc-module-design
+name: devforge-module-design
 description: Use when a system-level architecture has been approved and the user needs detailed design for a specific module, including module-level PRD, component decomposition, component interfaces, and module-level XML. Trigger when user says [MODULE {module_id}] or asks to design a specific module in detail.
 ---
 
-# SDLC Module Design
+# DevForge Module Design
 
 ## Overview
 
@@ -30,7 +30,7 @@ This is the "same thinker" facing the module-level view of the same problem.
 
 Before starting, read `skill/artifacts/STATE.md` (or `docs/architecture/system/STATE.md`).
 - Acceptable phases: `architecture_design_completed`, `architecture_validated`, `design_review_completed`, `scaffolding_completed`, `module_design_completed`
-- If phase is earlier than `architecture_design_completed`, stop and instruct the user to complete `sdlc-architecture-design` first
+- If phase is earlier than `architecture_design_completed`, stop and instruct the user to complete `devforge-architecture-design` first
 - If `architecture.xml` is missing, stop and instruct the user to complete system-level architecture first
 
 ## Workflow
@@ -109,7 +109,7 @@ Before starting, read `skill/artifacts/STATE.md` (or `docs/architecture/system/S
 
 9. **State update**
    - Update `STATE.md`:
-     - Append to **Completed Steps**: `[YYYY-MM-DD HH:MM] sdlc-module-design: Designed module [module_id]. Components: [list]. Key decisions: [summary]`
+     - Append to **Completed Steps**: `[YYYY-MM-DD HH:MM] devforge-module-design: Designed module [module_id]. Components: [list]. Key decisions: [summary]`
      - Update **Current State**: if all modules are designed, set `phase: module_design_completed`; otherwise keep current phase
      - Update **Module Registry**: append `{id: module_id, status: design_completed, path: modules/{module_id}/}`
      - Append any module-specific risks to **Known Pitfalls**

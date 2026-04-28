@@ -1,9 +1,9 @@
 ---
-name: sdlc-project-scaffolding
+name: devforge-project-scaffolding
 description: Use when architecture design (and optional validation) is approved and the user needs concrete project scaffolding, CI/CD pipelines, transparent test fixtures, and evolution infrastructure
 ---
 
-# SDLC Project Scaffolding
+# DevForge Project Scaffolding
 
 ## Overview
 
@@ -151,7 +151,7 @@ Read `skill/artifacts/STATE.md`. Acceptable phases: `architecture_design_complet
 
 15. **State update**
     - Update `STATE.md`:
-      - Append to **Completed Steps**: `[YYYY-MM-DD HH:MM] sdlc-project-scaffolding: Generated PROJECT_SCAFFOLD with [N] files`
+      - Append to **Completed Steps**: `[YYYY-MM-DD HH:MM] devforge-project-scaffolding: Generated PROJECT_SCAFFOLD with [N] files`
       - Update **Current State**: `phase: scaffolding_completed`, DIVE `Implement: completed`, `Verify: completed`, `Evolve: in_progress`
 
 16. **Human gate**
@@ -160,7 +160,7 @@ Read `skill/artifacts/STATE.md`. Acceptable phases: `architecture_design_complet
     - Do NOT mark complete without [APPROVE]
 
 <HARD-GATE>
-Do NOT mark the SDLC workflow as complete until the user replies [APPROVE].
+Do NOT mark the DevForge workflow as complete until the user replies [APPROVE].
 </HARD-GATE>
 
 ## Output Specification

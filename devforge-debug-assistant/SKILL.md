@@ -1,9 +1,9 @@
 ---
-name: sdlc-debug-assistant
+name: devforge-debug-assistant
 description: Use when tests are failing, logs show anomalies, or the user wants code-level improvements. Provides bug diagnosis, root cause analysis, and refactoring suggestions. Trigger when user says [DEBUG] or "fix this bug" or "refactor this code".
 ---
 
-# SDLC Debug Assistant
+# DevForge Debug Assistant
 
 ## Overview
 
@@ -24,7 +24,7 @@ Analyze failing tests, error logs, or existing code to provide actionable bug fi
 - Error logs contain exceptions or anomalies
 - The user wants to improve code quality (refactoring)
 - The user types `[DEBUG]` or says "fix this bug" / "refactor this"
-- Do NOT use if no code or tests exist yet (use `sdlc-project-scaffolding` first)
+- Do NOT use if no code or tests exist yet (use `devforge-project-scaffolding` first)
 
 ## Precondition Check
 

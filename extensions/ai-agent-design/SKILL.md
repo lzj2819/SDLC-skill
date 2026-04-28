@@ -1,17 +1,17 @@
 ---
 name: ai-agent-design
-description: Domain extension for AI Agent system architecture. Use when the project involves LLM-based agents, tool use, memory systems, or multi-agent orchestration. This is NOT a standalone skill — it is dynamically loaded by sdlc-architecture-design when the PRD contains ai-agent characteristic tags.
+description: Domain extension for AI Agent system architecture. Use when the project involves LLM-based agents, tool use, memory systems, or multi-agent orchestration. This is NOT a standalone skill — it is dynamically loaded by devforge-architecture-design when the PRD contains ai-agent characteristic tags.
 ---
 
 # AI Agent Design Extension
 
 ## Overview
 
-This extension augments the generic `sdlc-architecture-design` skill with AI Agent-specific evaluation dimensions, anti-patterns, and architecture guidance. It is loaded automatically when the PRD contains tags like `ai_agent`, `llm_orchestration`, `tool_use`, or `multi_agent`.
+This extension augments the generic `devforge-architecture-design` skill with AI Agent-specific evaluation dimensions, anti-patterns, and architecture guidance. It is loaded automatically when the PRD contains tags like `ai_agent`, `llm_orchestration`, `tool_use`, or `multi_agent`.
 
 ## Extension Mechanism
 
-When `sdlc-architecture-design` detects an AI Agent domain tag:
+When `devforge-architecture-design` detects an AI Agent domain tag:
 1. It reads this SKILL.md to understand the overlay rules
 2. It reads `references/dimensions.md` for additional evaluation dimensions
 3. It reads `references/anti-patterns.md` for domain-specific risks

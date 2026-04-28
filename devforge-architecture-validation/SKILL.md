@@ -1,13 +1,13 @@
 ---
-name: sdlc-architecture-validation
+name: devforge-architecture-validation
 description: Use when a system architecture XML and interface contracts have been approved and the user wants to validate them through LLM-based sandbox simulation with mock data
 ---
 
-# SDLC Architecture Validation
+# DevForge Architecture Validation
 
 ## Overview
 
-Perform technical validation of an approved architecture XML: consistency checks, mock data flow simulation, topology connectivity verification. This skill focuses on "does the architecture document hang together technically?" For adversarial design inspection, use `sdlc-design-review` instead.
+Perform technical validation of an approved architecture XML: consistency checks, mock data flow simulation, topology connectivity verification. This skill focuses on "does the architecture document hang together technically?" For adversarial design inspection, use `devforge-design-review` instead.
 
 ## VCMF Checkpoints
 
@@ -57,7 +57,7 @@ Read `skill/artifacts/STATE.md`. Acceptable phases: `architecture_design_complet
      - Does the LLM output match the expected XML schema when prompted?
      - Does the LLM correctly parse and return the mock data structure?
    - If API key is unavailable, skip this step and note it in the report
-   - Note: Security judgment, error translation, and tool selection validation are performed by `sdlc-design-review`
+   - Note: Security judgment, error translation, and tool selection validation are performed by `devforge-design-review`
 
 7. **Trace logging**
    - Print the simulation trace in this format:
@@ -110,4 +110,4 @@ Do NOT proceed to project-scaffolding if validation failed. If validation passed
 - Do NOT proceed to scaffolding if validation failed
 - Do NOT hallucinate API responses; explicitly state what is simulated vs real
 - Do NOT generate an empty or placeholder health-check script
-- Do NOT perform adversarial design inspection; delegate that to `sdlc-design-review`
+- Do NOT perform adversarial design inspection; delegate that to `devforge-design-review`

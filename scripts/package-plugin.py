@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Package the SDLC Skill Chain for distribution.
+Package the DevForge Chain for distribution.
 
 Usage:
     python package-plugin.py [--output OUTPUT_DIR] [--mode {plugin|skills|all}]
@@ -91,27 +91,27 @@ def package_individual_skill(skill_dir: Path, output_dir: Path) -> Path:
 
 def package_plugin(base_dir: Path, output_dir: Path, version: str) -> Path:
     """Package the entire skill chain as a plugin ZIP."""
-    output_path = output_dir / f"sdlc-skill-chain-v{version}.zip"
+    output_path = output_dir / f"DevForge-chain-v{version}.zip"
 
     # Files/directories to include at root level
     include_items = [
         ".claude-plugin",
-        "sdlc-requirement-analysis",
-        "sdlc-architecture-design",
-        "sdlc-architecture-validation",
-        "sdlc-design-review",
-        "sdlc-project-scaffolding",
-        "sdlc-module-design",
-        "sdlc-iteration-planning",
+        "devforge-requirement-analysis",
+        "devforge-architecture-design",
+        "devforge-architecture-validation",
+        "devforge-design-review",
+        "devforge-project-scaffolding",
+        "devforge-module-design",
+        "devforge-iteration-planning",
         "context-compression",
         "extensions",
         "references",
         "scripts",
         "artifacts",
         "README.md",
-        "sdlc-design.md",
-        "sdlc-state.md",
-        "sdlc-plan.md",
+        "devforge-design.md",
+        "devforge-state.md",
+        "devforge-plan.md",
     ]
 
     with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED) as zf:
@@ -140,7 +140,7 @@ def package_plugin(base_dir: Path, output_dir: Path, version: str) -> Path:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Package SDLC Skill Chain for distribution")
+    parser = argparse.ArgumentParser(description="Package DevForge Chain for distribution")
     parser.add_argument("--output", "-o", default="./dist", help="Output directory (default: ./dist)")
     parser.add_argument("--mode", choices=["plugin", "skills", "all"], default="plugin",
                         help="Package mode: plugin=full plugin, skills=individual .skill files, all=both")

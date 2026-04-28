@@ -1,10 +1,10 @@
 {
-  "name": "sdlc-skill-chain",
-  "description": "SDLC Skill Chain for Claude Code: 7 skills covering the full software development lifecycle from requirements to incremental iteration, built on the VCMF framework and DIVE cycle",
+  "name": "DevForge-chain",
+  "description": "DevForge Chain for Claude Code: 7 skills covering the full software development lifecycle from requirements to incremental iteration, built on the VCMF framework and DIVE cycle",
   "version": "1.1.0",
   "author": { "name": "lzj", "email": "lzj2819@gmail.com" },
-  "homepage": "https://github.com/lzj2819/SDLC-skill",
-  "repository": "https://github.com/lzj2819/SDLC-skill",
+  "homepage": "https://github.com/lzj2819/DevForge",
+  "repository": "https://github.com/lzj2819/DevForge",
   "license": "MIT",
-  "keywords": ["sdlc", "software-development", "architecture-design", "requirement-analysis", "vibe-coding", "vcmf", "dive-cycle", "incremental-development"]
+  "keywords": ["devforge", "software-development", "architecture-design", "requirement-analysis", "vibe-coding", "vcmf", "dive-cycle", "incremental-development"]
 }

@@ -1,6 +1,6 @@
-# SDLC Skill Decomposition Design v1.1
+# DevForge Decomposition Design v1.1
 
-> **Design Objective**: Decompose the original monolithic skill `软件开发全流程智能体技能(SDLC-Skill).md` into composable skills that embed VCMF principles and the DIVE cycle. The skill chain models a "single thinker's iterative drafts" rather than a "role relay race": each skill is the same thinker unfolding the same complex problem from a different dimension, always holding the complete intent.
+> **Design Objective**: Decompose the original monolithic skill `软件开发全流程智能体技能(DevForge).md` into composable skills that embed VCMF principles and the DIVE cycle. The skill chain models a "single thinker's iterative drafts" rather than a "role relay race": each skill is the same thinker unfolding the same complex problem from a different dimension, always holding the complete intent.
 >
 > **v1.1 Additions**: Three-layer XML architecture (System/Module/Component), dynamic pattern selection (10 patterns), module-level design skill, iteration planning skill, domain extensions (overlay mechanism), context compression utility, and XML-driven code generation.
 
@@ -31,7 +31,7 @@ User inputs a raw idea
     |
     v
 +-----------------------------------------------------------+
-|  sdlc-requirement-analysis                                |
+|  devforge-requirement-analysis                                |
 |  DIVE: Design                                             |
 |  1st Unfold: Lock goal and boundaries                     |
 |  Outputs: PRD.md + DECISION_LOG.md                        |
@@ -39,7 +39,7 @@ User inputs a raw idea
     | [APPROVE]
     v
 +-----------------------------------------------------------+
-|  sdlc-architecture-design                                 |
+|  devforge-architecture-design                                 |
 |  DIVE: Design (deepen)                                    |
 |  2nd Unfold: Dynamic pattern exploration + synthesis      |
 |  Internal: orchestrator-worker + domain extension overlay |
@@ -53,7 +53,7 @@ User inputs a raw idea
     |                         |
     v                         v
 +------------------+   +---------------------------+
-| sdlc-architecture|   | sdlc-design-review         |
+| devforge-architecture|   | devforge-design-review         |
 | -validation      |   | DIVE: Verify               |
 | (Optional)       |   | 3rd Unfold: Skeptical      |
 | Technical        |   |    examination (NOT gate)  |
@@ -64,7 +64,7 @@ User inputs a raw idea
     +-------------------------+
                               v
 +-----------------------------------------------------------+
-|  sdlc-project-scaffolding                                 |
+|  devforge-project-scaffolding                                 |
 |  DIVE: Implement + Evolve                                 |
 |  4th Unfold: Ground with full context                     |
 |  Reads ALL historical artifacts + XML specs               |
@@ -75,7 +75,7 @@ User inputs a raw idea
     | [APPROVE]
     v
 +-----------------------------------------------------------+
-|  (Optional) sdlc-module-design                            |
+|  (Optional) devforge-module-design                            |
 |  DIVE: Design (module-level)                              |
 |  Trigger: [MODULE {id}]                                   |
 |  Outputs: module-prd.md + module-architecture.xml         |
@@ -84,7 +84,7 @@ User inputs a raw idea
     | [APPROVE / NEXT MODULE]
     v
 +-----------------------------------------------------------+
-|  (Iteration) sdlc-iteration-planning                      |
+|  (Iteration) devforge-iteration-planning                      |
 |  DIVE: Evolve                                             |
 |  Trigger: New requirements after scaffolding              |
 |  Outputs: ITERATION_PRD.md + ITERATION_PLAN.md            |
@@ -109,11 +109,11 @@ User inputs a raw idea
 
 ## 3. Skill Detailed Design
 
-### 3.1 `sdlc-requirement-analysis`
+### 3.1 `devforge-requirement-analysis`
 
 ```yaml
 ---
-name: sdlc-requirement-analysis
+name: devforge-requirement-analysis
 description: Use when a user provides an initial product idea or goal and needs a structured PRD with user stories, acceptance criteria, interface boundaries, and functional requirements
 ---
 ```
@@ -147,11 +147,11 @@ description: Use when a user provides an initial product idea or goal and needs 
 
 ---
 
-### 3.2 `sdlc-architecture-design`
+### 3.2 `devforge-architecture-design`
 
 ```yaml
 ---
-name: sdlc-architecture-design
+name: devforge-architecture-design
 description: Use when a PRD has been approved and the user needs system architecture, interface contracts, test case design, and XML-based architecture modeling
 ---
 ```
@@ -190,11 +190,11 @@ description: Use when a PRD has been approved and the user needs system architec
 
 ---
 
-### 3.3 `sdlc-architecture-validation`
+### 3.3 `devforge-architecture-validation`
 
 ```yaml
 ---
-name: sdlc-architecture-validation
+name: devforge-architecture-validation
 description: Use when a system architecture XML and interface contracts have been approved and the user wants to validate them through LLM-based sandbox simulation with mock data
 ---
 ```
@@ -236,11 +236,11 @@ description: Use when a system architecture XML and interface contracts have bee
 
 ---
 
-### 3.4 `sdlc-design-review`
+### 3.4 `devforge-design-review`
 
 ```yaml
 ---
-name: sdlc-design-review
+name: devforge-design-review
 description: Use when a system architecture has been designed and the user wants an adversarial inspection to find design flaws before implementation begins
 ---
 ```
@@ -273,11 +273,11 @@ description: Use when a system architecture has been designed and the user wants
 
 ---
 
-### 3.5 `sdlc-project-scaffolding`
+### 3.5 `devforge-project-scaffolding`
 
 ```yaml
 ---
-name: sdlc-project-scaffolding
+name: devforge-project-scaffolding
 description: Use when architecture design (and optional validation) is approved and the user needs concrete project scaffolding, CI/CD pipelines, transparent test fixtures, and evolution infrastructure
 ---
 ```
@@ -319,11 +319,11 @@ description: Use when architecture design (and optional validation) is approved 
 
 ---
 
-### 3.6 `sdlc-module-design` (v1.1 New)
+### 3.6 `devforge-module-design` (v1.1 New)
 
 ```yaml
 ---
-name: sdlc-module-design
+name: devforge-module-design
 description: Use when a system-level architecture has been approved and the user needs detailed design for a specific module, including module-level PRD, component decomposition, component interfaces, and module-level XML. Trigger when user says [MODULE {module_id}] or asks to design a specific module in detail.
 ---
 ```
@@ -359,11 +359,11 @@ description: Use when a system-level architecture has been approved and the user
 
 ---
 
-### 3.7 `sdlc-iteration-planning` (v1.1 New)
+### 3.7 `devforge-iteration-planning` (v1.1 New)
 
 ```yaml
 ---
-name: sdlc-iteration-planning
+name: devforge-iteration-planning
 description: Use when a project has completed initial scaffolding and the user wants to add new requirements, features, or modules incrementally without rewriting the existing architecture.
 ---
 ```
@@ -404,7 +404,7 @@ description: Use when a project has completed initial scaffolding and the user w
 ```yaml
 ---
 name: context-compression
-description: Internal utility skill used by other SDLC skills to compress session context into a persistent digest. NOT for direct user invocation.
+description: Internal utility skill used by other DevForges to compress session context into a persistent digest. NOT for direct user invocation.
 ---
 ```
 
@@ -455,10 +455,10 @@ This prevents requirement drift across multi-turn conversations.
 ```
 skill/
 ├── README.md
-├── sdlc-design.md
-├── sdlc-plan.md
-├── sdlc-state.md
-├── 软件开发全流程智能体技能(SDLC-Skill).md
+├── devforge-design.md
+├── devforge-plan.md
+├── devforge-state.md
+├── 软件开发全流程智能体技能(DevForge).md
 ├── references/
 │   ├── architecture-patterns.md      # 10-pattern library with evaluation dimensions
 │   └── xml-schemas.md                # Three-layer XML schema definitions
@@ -482,19 +482,19 @@ skill/
 │       └── docs/
 │           ├── sync-rules.md
 │           └── ADR.md
-├── sdlc-requirement-analysis/
+├── devforge-requirement-analysis/
 │   └── SKILL.md
-├── sdlc-architecture-design/
+├── devforge-architecture-design/
 │   └── SKILL.md
-├── sdlc-architecture-validation/
+├── devforge-architecture-validation/
 │   └── SKILL.md
-├── sdlc-design-review/
+├── devforge-design-review/
 │   └── SKILL.md
-├── sdlc-project-scaffolding/
+├── devforge-project-scaffolding/
 │   └── SKILL.md
-├── sdlc-module-design/
+├── devforge-module-design/
 │   └── SKILL.md
-├── sdlc-iteration-planning/
+├── devforge-iteration-planning/
 │   └── SKILL.md
 ├── context-compression/
 │   └── SKILL.md
@@ -522,13 +522,13 @@ skill/
 
 | Skill | Design as Contract | Interface as Boundary | Reality as Baseline | State as Responsibility | XML as Authority |
 |-------|-------------------|----------------------|---------------------|------------------------|-----------------|
-| `sdlc-requirement-analysis` | PRD success metrics & scope boundaries | Cross-module interaction points | Observable acceptance criteria | State ownership documented | — |
-| `sdlc-architecture-design` | Traceability to PRD; no invented reqs | Interface contracts in markdown + XML | Test cases for all paths + NFRs | `<StateModel>` in XML | System + Module XML templates |
-| `sdlc-architecture-validation` | XML modules traceable to PRD | `Coupling` matches Interface Contract | Real-LLM semantic validation (degraded OK) | `StateModel` consistency check | Reference integrity check |
-| `sdlc-design-review` | Flag orphaned assumptions | Verify edge case handling | Verify mock data coverage | Verify complete lifecycle | — |
-| `sdlc-project-scaffolding` | Every file traceable to artifact | Code signatures match contracts | Mock + real tests generated | Code matches `StateModel` | Code matches `component-spec.xml` |
-| `sdlc-module-design` | Traces to system PRD scope | Component interface contracts | Module-level test cases | `ModuleStateModel` | Fills module + component XML |
-| `sdlc-iteration-planning` | Scope validation against Immutable Goal | Versioned interface changes | Impact analysis identifies all affected modules | State migration strategy | XML sync across layers |
+| `devforge-requirement-analysis` | PRD success metrics & scope boundaries | Cross-module interaction points | Observable acceptance criteria | State ownership documented | — |
+| `devforge-architecture-design` | Traceability to PRD; no invented reqs | Interface contracts in markdown + XML | Test cases for all paths + NFRs | `<StateModel>` in XML | System + Module XML templates |
+| `devforge-architecture-validation` | XML modules traceable to PRD | `Coupling` matches Interface Contract | Real-LLM semantic validation (degraded OK) | `StateModel` consistency check | Reference integrity check |
+| `devforge-design-review` | Flag orphaned assumptions | Verify edge case handling | Verify mock data coverage | Verify complete lifecycle | — |
+| `devforge-project-scaffolding` | Every file traceable to artifact | Code signatures match contracts | Mock + real tests generated | Code matches `StateModel` | Code matches `component-spec.xml` |
+| `devforge-module-design` | Traces to system PRD scope | Component interface contracts | Module-level test cases | `ModuleStateModel` | Fills module + component XML |
+| `devforge-iteration-planning` | Scope validation against Immutable Goal | Versioned interface changes | Impact analysis identifies all affected modules | State migration strategy | XML sync across layers |
 
 ---
 
@@ -536,10 +536,10 @@ skill/
 
 | DIVE Stage | Skills | Key Activity |
 |------------|--------|--------------|
-| **Design** | `sdlc-requirement-analysis` + `sdlc-architecture-design` + `sdlc-module-design` | Lock the "things that should not change": requirements, interfaces, state ownership, architecture, component decomposition |
-| **Implement** | `sdlc-project-scaffolding` | Generate runnable project skeleton with infrastructure code and XML-driven code generation |
-| **Verify** | `sdlc-architecture-validation` + `sdlc-design-review` | Mock flow validation + real-LLM semantic checks + consistency audits + adversarial inspection |
-| **Evolve** | `sdlc-iteration-planning` | Impact analysis, incremental PRD, interface versioning, XML sync, iteration planning |
+| **Design** | `devforge-requirement-analysis` + `devforge-architecture-design` + `devforge-module-design` | Lock the "things that should not change": requirements, interfaces, state ownership, architecture, component decomposition |
+| **Implement** | `devforge-project-scaffolding` | Generate runnable project skeleton with infrastructure code and XML-driven code generation |
+| **Verify** | `devforge-architecture-validation` + `devforge-design-review` | Mock flow validation + real-LLM semantic checks + consistency audits + adversarial inspection |
+| **Evolve** | `devforge-iteration-planning` | Impact analysis, incremental PRD, interface versioning, XML sync, iteration planning |
 
 ---
 
@@ -550,14 +550,14 @@ skill/
 - [x] Dynamic pattern library (`references/architecture-patterns.md`, 10 patterns)
 - [x] Three-layer XML schema (`references/xml-schemas.md`)
 - [x] XML CI scripts (`scripts/architecture-ci.sh`, `scripts/xml-sync.py`)
-- [x] `sdlc-module-design/SKILL.md`
-- [x] `sdlc-iteration-planning/SKILL.md`
+- [x] `devforge-module-design/SKILL.md`
+- [x] `devforge-iteration-planning/SKILL.md`
 - [x] `context-compression/SKILL.md`
 - [x] Domain extensions (`extensions/ai-agent-design/`, `extensions/data-pipeline-design/`, `extensions/mobile-app-design/`)
-- [x] Updated `sdlc-state.md` with Module Registry, Iteration History, Compressed Context, Artifact Index
+- [x] Updated `devforge-state.md` with Module Registry, Iteration History, Compressed Context, Artifact Index
 - [x] Updated precondition checks across all skills for iteration states
-- [x] Updated `sdlc-project-scaffolding` for XML-driven code generation and architecture CI
-- [x] Updated `sdlc-architecture-validation` for `VALIDATION_DELTA.md`
+- [x] Updated `devforge-project-scaffolding` for XML-driven code generation and architecture CI
+- [x] Updated `devforge-architecture-validation` for `VALIDATION_DELTA.md`
 
 ---
 

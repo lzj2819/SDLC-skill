@@ -1,9 +1,9 @@
 ---
-name: sdlc-requirement-analysis
+name: devforge-requirement-analysis
 description: Use when a user provides an initial product idea or goal and needs a structured PRD with user stories, acceptance criteria, interface boundaries, and functional requirements
 ---
 
-# SDLC Requirement Analysis
+# DevForge Requirement Analysis
 
 ## Overview
 
@@ -67,10 +67,10 @@ Read `skill/artifacts/STATE.md` if it exists. If `phase` is already `requirement
      - Status values: pending / designed / implemented / tested / verified
    - Initial status for all entries: `pending`
    - RTM is updated by subsequent skills:
-     - `sdlc-architecture-design` → update Architecture Module column
-     - `sdlc-module-design` → update Component column
-     - `sdlc-project-scaffolding` → update Test Case ID column
-     - `sdlc-architecture-validation` → update Status to verified
+     - `devforge-architecture-design` → update Architecture Module column
+     - `devforge-module-design` → update Component column
+     - `devforge-project-scaffolding` → update Test Case ID column
+     - `devforge-architecture-validation` → update Status to verified
 
 7. **Decision Log seeding**
    - Create or update `skill/artifacts/DECISION_LOG.md`
@@ -79,7 +79,7 @@ Read `skill/artifacts/STATE.md` if it exists. If `phase` is already `requirement
 7. **State update**
    - Read `skill/artifacts/STATE.md`
    - Write the **Immutable Goal** section if not already present (verbatim user idea + success metrics + scope boundary)
-   - Append to **Completed Steps**: `[YYYY-MM-DD HH:MM] sdlc-requirement-analysis: Locked P0/P1/P2 scope. Key decisions: [list]`
+   - Append to **Completed Steps**: `[YYYY-MM-DD HH:MM] devforge-requirement-analysis: Locked P0/P1/P2 scope. Key decisions: [list]`
    - Set `phase: requirement_analysis_completed`
    - Set DIVE `Design: in_progress`, others `pending`
    - Update artifact statuses

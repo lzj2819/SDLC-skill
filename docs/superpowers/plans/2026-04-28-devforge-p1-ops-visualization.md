@@ -1,10 +1,10 @@
-# SDLC-skill P1 运维与可视化增强 — 实现计划
+# DevForge P1 运维与可视化增强 — 实现计划
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 创建两个独立 skill —— `sdlc-visualization`（架构可视化图表生成）和 `sdlc-ops-ready`（生产就绪基础设施生成），扩展 SDLC-skill 的生产交付能力。
+**Goal:** 创建两个独立 skill —— `devforge-visualization`（架构可视化图表生成）和 `devforge-ops-ready`（生产就绪基础设施生成），扩展 DevForge 的生产交付能力。
 
-**Architecture:** `sdlc-visualization` 解析 `architecture.xml` 产出 Mermaid 图表；`sdlc-ops-ready` 基于架构推断资源需求，生成 Terraform + K8s + 监控配置。两者均为独立 skill，通过用户显式触发调用。
+**Architecture:** `devforge-visualization` 解析 `architecture.xml` 产出 Mermaid 图表；`devforge-ops-ready` 基于架构推断资源需求，生成 Terraform + K8s + 监控配置。两者均为独立 skill，通过用户显式触发调用。
 
 **Tech Stack:** Markdown (SKILL.md)、Mermaid 语法、Terraform HCL、Kubernetes YAML、Prometheus/Grafana 配置
 
@@ -14,25 +14,25 @@
 
 | 文件 | 操作 | 说明 |
 |------|------|------|
-| `sdlc-visualization/SKILL.md` | 创建 | 新 skill：架构可视化 |
-| `sdlc-ops-ready/SKILL.md` | 创建 | 新 skill：生产就绪基础设施 |
-| `sdlc-ops-ready/references/aws-modules.md` | 创建 | AWS 特定资源映射 |
-| `sdlc-ops-ready/references/azure-modules.md` | 创建 | Azure 特定资源映射 |
-| `sdlc-ops-ready/references/gcp-modules.md` | 创建 | GCP 特定资源映射 |
-| `sdlc-ops-ready/references/k8s-best-practices.md` | 创建 | K8s 通用最佳实践 |
-| `软件开发全流程智能体技能(SDLC-Skill).md` | 修改 | 在总览中注册 P1 新 skill |
+| `devforge-visualization/SKILL.md` | 创建 | 新 skill：架构可视化 |
+| `devforge-ops-ready/SKILL.md` | 创建 | 新 skill：生产就绪基础设施 |
+| `devforge-ops-ready/references/aws-modules.md` | 创建 | AWS 特定资源映射 |
+| `devforge-ops-ready/references/azure-modules.md` | 创建 | Azure 特定资源映射 |
+| `devforge-ops-ready/references/gcp-modules.md` | 创建 | GCP 特定资源映射 |
+| `devforge-ops-ready/references/k8s-best-practices.md` | 创建 | K8s 通用最佳实践 |
+| `软件开发全流程智能体技能(DevForge).md` | 修改 | 在总览中注册 P1 新 skill |
 
 ---
 
-### Task 1: 创建 sdlc-visualization/SKILL.md
+### Task 1: 创建 devforge-visualization/SKILL.md
 
 **Files:**
-- Create: `sdlc-visualization/SKILL.md`
+- Create: `devforge-visualization/SKILL.md`
 
 - [ ] **Step 1: 创建目录**
 
 ```bash
-mkdir -p sdlc-visualization
+mkdir -p devforge-visualization
 ```
 
 - [ ] **Step 2: 编写 SKILL.md**
@@ -46,11 +46,11 @@ mkdir -p sdlc-visualization
 
 ```markdown
 ---
-name: sdlc-visualization
+name: devforge-visualization
 description: Use when a system architecture has been designed and the user wants visual diagrams (system context, module interaction, data flow, ER diagram) generated from the architecture XML. Trigger when user says [VISUALIZE] or "generate architecture diagrams".
 ---
 
-# SDLC Visualization
+# DevForge Visualization
 
 ## Overview
 
@@ -68,13 +68,13 @@ Generate visual architecture diagrams from an approved `architecture.xml`. This 
 
 - The user has approved an architecture and wants visual diagrams
 - The user types `[VISUALIZE]` or says "generate architecture diagrams"
-- Can be invoked after `sdlc-architecture-design` or at any time when `architecture.xml` exists
+- Can be invoked after `devforge-architecture-design` or at any time when `architecture.xml` exists
 
 ## Precondition Check
 
 Read `skill/artifacts/STATE.md`. Acceptable phases: `architecture_design_completed`, `architecture_validated`, `design_review_completed`, `scaffolding_completed`, `module_design_completed`.
 
-If `architecture.xml` is missing, stop and instruct the user to complete `sdlc-architecture-design` first.
+If `architecture.xml` is missing, stop and instruct the user to complete `devforge-architecture-design` first.
 
 ## Workflow
 
@@ -140,15 +140,15 @@ If `architecture.xml` is missing, stop and instruct the user to complete `sdlc-a
 - [ ] **Step 3: 验证文件结构**
 
 ```bash
-ls sdlc-visualization/SKILL.md
-head -n 5 sdlc-visualization/SKILL.md
+ls devforge-visualization/SKILL.md
+head -n 5 devforge-visualization/SKILL.md
 ```
 
 - [ ] **Step 4: 提交**
 
 ```bash
-git add sdlc-visualization/
-git commit -m "feat(visualization): add sdlc-visualization skill
+git add devforge-visualization/
+git commit -m "feat(visualization): add devforge-visualization skill
 
 - Generate 4 Mermaid diagrams from architecture.xml
 - System context, module interaction, data flow, ER diagram
@@ -160,27 +160,27 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 
 ---
 
-### Task 2: 创建 sdlc-ops-ready/SKILL.md
+### Task 2: 创建 devforge-ops-ready/SKILL.md
 
 **Files:**
-- Create: `sdlc-ops-ready/SKILL.md`
-- Create: `sdlc-ops-ready/references/` (4 files)
+- Create: `devforge-ops-ready/SKILL.md`
+- Create: `devforge-ops-ready/references/` (4 files)
 
 - [ ] **Step 1: 创建目录**
 
 ```bash
-mkdir -p sdlc-ops-ready/references
+mkdir -p devforge-ops-ready/references
 ```
 
 - [ ] **Step 2: 编写 SKILL.md**
 
 ```markdown
 ---
-name: sdlc-ops-ready
+name: devforge-ops-ready
 description: Use when a project has completed scaffolding and the user needs production-ready infrastructure — Terraform, Kubernetes manifests, monitoring, and multi-environment deployment. Trigger when user says [OPS] or "generate deployment config".
 ---
 
-# SDLC Ops Ready
+# DevForge Ops Ready
 
 ## Overview
 
@@ -441,8 +441,8 @@ If `architecture.xml` is missing, stop and instruct the user to complete prior p
 - [ ] **Step 4: 提交**
 
 ```bash
-git add sdlc-ops-ready/
-git commit -m "feat(ops-ready): add sdlc-ops-ready skill with cloud references
+git add devforge-ops-ready/
+git commit -m "feat(ops-ready): add devforge-ops-ready skill with cloud references
 
 - Generate Terraform, K8s, monitoring, and multi-env configs
 - Support AWS, Azure, GCP via reference modules
@@ -458,7 +458,7 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 ### Task 3: 更新根目录 SKILL.md 注册新 skill
 
 **Files:**
-- Modify: `软件开发全流程智能体技能(SDLC-Skill).md`
+- Modify: `软件开发全流程智能体技能(DevForge).md`
 
 - [ ] **Step 1: 在总览中增加 P1 skill 的说明**
 
@@ -497,11 +497,11 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 - [ ] **Step 2: 提交**
 
 ```bash
-git add 软件开发全流程智能体技能\(SDLC-Skill\).md
-git commit -m "docs: register P1 skills in main SDLC overview
+git add 软件开发全流程智能体技能\(DevForge\).md
+git commit -m "docs: register P1 skills in main DevForge overview
 
-- Add Phase 8: Visualization (sdlc-visualization)
-- Add Phase 9: Ops Ready (sdlc-ops-ready)
+- Add Phase 8: Visualization (devforge-visualization)
+- Add Phase 9: Ops Ready (devforge-ops-ready)
 
 Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 ```
@@ -513,12 +513,12 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 - [ ] **Step 1: 验证所有新文件存在**
 
 ```bash
-ls sdlc-visualization/SKILL.md
-ls sdlc-ops-ready/SKILL.md
-ls sdlc-ops-ready/references/aws-modules.md
-ls sdlc-ops-ready/references/azure-modules.md
-ls sdlc-ops-ready/references/gcp-modules.md
-ls sdlc-ops-ready/references/k8s-best-practices.md
+ls devforge-visualization/SKILL.md
+ls devforge-ops-ready/SKILL.md
+ls devforge-ops-ready/references/aws-modules.md
+ls devforge-ops-ready/references/azure-modules.md
+ls devforge-ops-ready/references/gcp-modules.md
+ls devforge-ops-ready/references/k8s-best-practices.md
 ```
 
 - [ ] **Step 2: 验证提交历史**
@@ -531,8 +531,8 @@ Expected: 能看到 P1 相关的提交。
 - [ ] **Step 3: 验证根目录 SKILL.md 更新**
 
 ```bash
-grep -n "阶段八" 软件开发全流程智能体技能\(SDLC-Skill\).md
-grep -n "阶段九" 软件开发全流程智能体技能\(SDLC-Skill\).md
+grep -n "阶段八" 软件开发全流程智能体技能\(DevForge\).md
+grep -n "阶段九" 软件开发全流程智能体技能\(DevForge\).md
 ```
 
 ---
@@ -541,9 +541,9 @@ grep -n "阶段九" 软件开发全流程智能体技能\(SDLC-Skill\).md
 
 | Spec 要求 | 实现任务 | 状态 |
 |-----------|----------|------|
-| sdlc-visualization skill | Task 1 | ✅ |
+| devforge-visualization skill | Task 1 | ✅ |
 | 4 类 Mermaid 图表 | Task 1 | ✅ |
-| sdlc-ops-ready skill | Task 2 | ✅ |
+| devforge-ops-ready skill | Task 2 | ✅ |
 | Terraform 生成 | Task 2 | ✅ |
 | K8s manifests 生成 | Task 2 | ✅ |
 | 监控配置生成 | Task 2 | ✅ |

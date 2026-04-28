@@ -1,10 +1,10 @@
-# SDLC-skill P2 开发者体验进阶 — 实现计划
+# DevForge P2 开发者体验进阶 — 实现计划
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 实现 P2 优化项：Bug 定位修复、重构建议、需求追溯矩阵、多环境部署策略，完成 SDLC-skill v1.2 的全部功能增强。
+**Goal:** 实现 P2 优化项：Bug 定位修复、重构建议、需求追溯矩阵、多环境部署策略，完成 DevForge v1.2 的全部功能增强。
 
-**Architecture:** 新增 `sdlc-debug-assistant` skill（统一处理 Bug 定位和重构建议）；扩展 `sdlc-requirement-analysis` 在 PRD 阶段自动生成 RTM；扩展 `sdlc-ops-ready` 增加蓝绿/金丝雀发布策略。
+**Architecture:** 新增 `devforge-debug-assistant` skill（统一处理 Bug 定位和重构建议）；扩展 `devforge-requirement-analysis` 在 PRD 阶段自动生成 RTM；扩展 `devforge-ops-ready` 增加蓝绿/金丝雀发布策略。
 
 **Tech Stack:** Markdown (SKILL.md)、Mermaid 语法、K8s 渐进式发布配置
 
@@ -14,33 +14,33 @@
 
 | 文件 | 操作 | 说明 |
 |------|------|------|
-| `sdlc-debug-assistant/SKILL.md` | 创建 | 新 skill：Bug 定位 + 重构建议 |
-| `sdlc-requirement-analysis/SKILL.md` | 修改 | PRD 生成时自动输出 RTM |
-| `sdlc-ops-ready/SKILL.md` | 修改 | 增加蓝绿/金丝雀发布策略 |
-| `软件开发全流程智能体技能(SDLC-Skill).md` | 修改 | 注册 debug-assistant |
+| `devforge-debug-assistant/SKILL.md` | 创建 | 新 skill：Bug 定位 + 重构建议 |
+| `devforge-requirement-analysis/SKILL.md` | 修改 | PRD 生成时自动输出 RTM |
+| `devforge-ops-ready/SKILL.md` | 修改 | 增加蓝绿/金丝雀发布策略 |
+| `软件开发全流程智能体技能(DevForge).md` | 修改 | 注册 debug-assistant |
 
 ---
 
-### Task 1: 创建 sdlc-debug-assistant/SKILL.md
+### Task 1: 创建 devforge-debug-assistant/SKILL.md
 
 **Files:**
-- Create: `sdlc-debug-assistant/SKILL.md`
+- Create: `devforge-debug-assistant/SKILL.md`
 
 - [ ] **Step 1: 创建目录**
 
 ```bash
-mkdir -p sdlc-debug-assistant
+mkdir -p devforge-debug-assistant
 ```
 
 - [ ] **Step 2: 编写 SKILL.md**
 
 ```markdown
 ---
-name: sdlc-debug-assistant
+name: devforge-debug-assistant
 description: Use when tests are failing, logs show anomalies, or the user wants code-level improvements. Provides bug diagnosis, root cause analysis, and refactoring suggestions. Trigger when user says [DEBUG] or "fix this bug" or "refactor this code".
 ---
 
-# SDLC Debug Assistant
+# DevForge Debug Assistant
 
 ## Overview
 
@@ -61,7 +61,7 @@ Analyze failing tests, error logs, or existing code to provide actionable bug fi
 - Error logs contain exceptions or anomalies
 - The user wants to improve code quality (refactoring)
 - The user types `[DEBUG]` or says "fix this bug" / "refactor this"
-- Do NOT use if no code or tests exist yet (use `sdlc-project-scaffolding` first)
+- Do NOT use if no code or tests exist yet (use `devforge-project-scaffolding` first)
 
 ## Precondition Check
 
@@ -161,8 +161,8 @@ If no code exists, stop and instruct the user to complete scaffolding first.
 - [ ] **Step 3: 提交**
 
 ```bash
-git add sdlc-debug-assistant/
-git commit -m "feat(debug-assistant): add sdlc-debug-assistant skill
+git add devforge-debug-assistant/
+git commit -m "feat(debug-assistant): add devforge-debug-assistant skill
 
 - Bug diagnosis with root cause analysis
 - Automated fix proposals with regression risk assessment
@@ -175,10 +175,10 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 
 ---
 
-### Task 2: 扩展 sdlc-requirement-analysis 自动生成 RTM
+### Task 2: 扩展 devforge-requirement-analysis 自动生成 RTM
 
 **Files:**
-- Modify: `sdlc-requirement-analysis/SKILL.md`
+- Modify: `devforge-requirement-analysis/SKILL.md`
 
 - [ ] **Step 1: 在 PRD 生成步骤中增加 RTM 输出**
 
@@ -193,10 +193,10 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
      - Status values: pending / designed / implemented / tested / verified
    - Initial status for all entries: `pending`
    - RTM is updated by subsequent skills:
-     - `sdlc-architecture-design` → update Architecture Module column
-     - `sdlc-module-design` → update Component column
-     - `sdlc-project-scaffolding` → update Test Case ID column
-     - `sdlc-architecture-validation` → update Status to verified
+     - `devforge-architecture-design` → update Architecture Module column
+     - `devforge-module-design` → update Component column
+     - `devforge-project-scaffolding` → update Test Case ID column
+     - `devforge-architecture-validation` → update Status to verified
 ```
 
 - [ ] **Step 2: 更新 Output Specification**
@@ -209,12 +209,12 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 - [ ] **Step 3: 提交**
 
 ```bash
-git add sdlc-requirement-analysis/SKILL.md
+git add devforge-requirement-analysis/SKILL.md
 git commit -m "feat(requirement-analysis): auto-generate RTM with PRD
 
 - Add RTM generation step after PRD creation
 - Map requirements to modules, components, and test cases
-- Track status through SDLC pipeline
+- Track status through DevForge pipeline
 - Updated Output Specification
 
 Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
@@ -222,10 +222,10 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 
 ---
 
-### Task 3: 扩展 sdlc-ops-ready 增加蓝绿/金丝雀发布
+### Task 3: 扩展 devforge-ops-ready 增加蓝绿/金丝雀发布
 
 **Files:**
-- Modify: `sdlc-ops-ready/SKILL.md`
+- Modify: `devforge-ops-ready/SKILL.md`
 
 - [ ] **Step 1: 在工作流中增加渐进式发布步骤**
 
@@ -270,7 +270,7 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 - [ ] **Step 3: 提交**
 
 ```bash
-git add sdlc-ops-ready/SKILL.md
+git add devforge-ops-ready/SKILL.md
 git commit -m "feat(ops-ready): add progressive deployment strategies
 
 - Blue-green deployment with instant rollback
@@ -286,7 +286,7 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 ### Task 4: 更新根目录 SKILL.md 注册 debug-assistant
 
 **Files:**
-- Modify: `软件开发全流程智能体技能(SDLC-Skill).md`
+- Modify: `软件开发全流程智能体技能(DevForge).md`
 
 - [ ] **Step 1: 在阶段九之后增加阶段十**
 
@@ -316,10 +316,10 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 - [ ] **Step 2: 提交**
 
 ```bash
-git add 软件开发全流程智能体技能\(SDLC-Skill\).md
-git commit -m "docs: register P2 debug-assistant in main SDLC overview
+git add 软件开发全流程智能体技能\(DevForge\).md
+git commit -m "docs: register P2 debug-assistant in main DevForge overview
 
-- Add Phase 10: Debug & Refactor (sdlc-debug-assistant)
+- Add Phase 10: Debug & Refactor (devforge-debug-assistant)
 
 Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 ```
@@ -331,9 +331,9 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 - [ ] **Step 1: 验证所有文件存在**
 
 ```bash
-ls sdlc-debug-assistant/SKILL.md
-ls sdlc-requirement-analysis/SKILL.md
-ls sdlc-ops-ready/SKILL.md
+ls devforge-debug-assistant/SKILL.md
+ls devforge-requirement-analysis/SKILL.md
+ls devforge-ops-ready/SKILL.md
 ```
 
 - [ ] **Step 2: 验证提交历史**
@@ -345,7 +345,7 @@ git log --oneline -5
 - [ ] **Step 3: 验证根目录 SKILL.md 包含阶段十**
 
 ```bash
-grep -n "阶段十" 软件开发全流程智能体技能\(SDLC-Skill\).md
+grep -n "阶段十" 软件开发全流程智能体技能\(DevForge\).md
 ```
 
 ---

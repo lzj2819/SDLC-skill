@@ -1,6 +1,6 @@
 ---
 name: context-compression
-description: Internal utility skill used by other SDLC skills to compress session context into a persistent digest. NOT for direct user invocation — called automatically by skills after completing their workflow.
+description: Internal utility skill used by other DevForges to compress session context into a persistent digest. NOT for direct user invocation — called automatically by skills after completing their workflow.
 ---
 
 # Context Compression
@@ -11,7 +11,7 @@ This skill extracts the essential decisions, risks, and state from a completed s
 
 ## When to Use
 
-- **Automatically invoked** by `sdlc-requirement-analysis`, `sdlc-architecture-design`, `sdlc-architecture-validation`, `sdlc-design-review`, `sdlc-project-scaffolding`, `sdlc-module-design`, and `sdlc-iteration-planning` as their final step before the human gate.
+- **Automatically invoked** by `devforge-requirement-analysis`, `devforge-architecture-design`, `devforge-architecture-validation`, `devforge-design-review`, `devforge-project-scaffolding`, `devforge-module-design`, and `devforge-iteration-planning` as their final step before the human gate.
 - Do NOT invoke directly unless the user explicitly asks to "compress context" or "summarize project state".
 
 ## Input

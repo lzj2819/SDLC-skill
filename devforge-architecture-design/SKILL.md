@@ -1,9 +1,9 @@
 ---
-name: sdlc-architecture-design
+name: devforge-architecture-design
 description: Use when a PRD has been approved and the user needs system architecture, interface contracts, test case design, and XML-based architecture modeling
 ---
 
-# SDLC Architecture Design
+# DevForge Architecture Design
 
 ## Overview
 
@@ -33,7 +33,7 @@ This skill uses an orchestrator-worker pattern internally:
 
 ## Precondition Check
 
-Before starting, read `skill/artifacts/STATE.md`. Acceptable entry phases: `requirement_analysis_completed` (initial design), `iteration_planning_completed` (architecture refactor within iteration), `evolution_completed` (post-evolution redesign). If `PRD.md` is missing, stop and ask the user to run `sdlc-requirement-analysis` first.
+Before starting, read `skill/artifacts/STATE.md`. Acceptable entry phases: `requirement_analysis_completed` (initial design), `iteration_planning_completed` (architecture refactor within iteration), `evolution_completed` (post-evolution redesign). If `PRD.md` is missing, stop and ask the user to run `devforge-requirement-analysis` first.
 
 ## Workflow
 
@@ -139,7 +139,7 @@ Before starting, read `skill/artifacts/STATE.md`. Acceptable entry phases: `requ
 
 10. **State update**
     - Update `STATE.md`:
-      - Append to **Completed Steps**: `[YYYY-MM-DD HH:MM] sdlc-architecture-design: Evaluated N patterns. Selected [pattern]. Key reasoning: [summary]`
+      - Append to **Completed Steps**: `[YYYY-MM-DD HH:MM] devforge-architecture-design: Evaluated N patterns. Selected [pattern]. Key reasoning: [summary]`
       - Append to **Known Pitfalls** any risks identified during evaluation
       - Set `phase: architecture_design_completed`
       - Set DIVE `Design: completed`, `Implement: pending`

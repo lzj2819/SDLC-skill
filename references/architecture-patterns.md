@@ -1,6 +1,6 @@
 # Architecture Patterns Reference
 
-This file defines the full pattern library used by `sdlc-architecture-design`.
+This file defines the full pattern library used by `devforge-architecture-design`.
 Patterns are selected dynamically based on project characteristic tags extracted from the PRD.
 
 ---

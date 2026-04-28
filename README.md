@@ -1,22 +1,22 @@
-# SDLC Skill Chain v1.1
+# DevForge Chain v1.1
 
 A standalone, composable set of Claude Code skills for the full software development lifecycle. Built on the VCMF (Vibe Coding Maturity Framework) and the DIVE (Design-Implement-Verify-Evolve) cycle.
 
-[GitHub Repository](https://github.com/lzj2819/SDLC-skill) | [License: MIT](LICENSE)
+[GitHub Repository](https://github.com/lzj2819/DevForge) | [License: MIT](LICENSE)
 
-The original monolithic Chinese design document is preserved at `软件开发全流程智能体技能(SDLC-Skill).md` for reference.
+The original monolithic Chinese design document is preserved at `DevForge.md` for reference.
 
 ## Skills
 
 | Skill | DIVE Stage | VCMF Principles | Purpose |
 |-------|------------|-----------------|---------|
-| `sdlc-requirement-analysis` | Design | Design as Contract, Interface as Boundary | Turn an idea into a structured PRD with user stories, acceptance criteria, and cross-module interaction points |
-| `sdlc-architecture-design` | Design | Design as Contract, Interface as Boundary, State as Responsibility | Evaluate architecture patterns dynamically (10-pattern library), design interface contracts, model three-layer XML architecture (System/Module/Component), and define test cases |
-| `sdlc-architecture-validation` | Verify | Interface as Boundary, Reality as Baseline | Technical validation via mock simulation, real-LLM format checks, consistency audits, and incremental delta reports |
-| `sdlc-design-review` | Verify | Design as Contract, Interface as Boundary, Reality as Baseline, State as Responsibility | Adversarial inspection (Attacker/Operator/Extender lenses) to find design flaws; produces problem list, not PASS/FAIL |
-| `sdlc-project-scaffolding` | Implement + Evolve | Reality as Baseline, State as Responsibility, Design as Contract, XML as Authority | Generate runnable project scaffolding with XML-driven code generation, CI/CD, transparent test fixtures, ADR, and evolution infrastructure |
-| `sdlc-module-design` | Design (Module) | Design as Contract, Interface as Boundary, State as Responsibility | Deep-dive design for a single module: component decomposition, component interfaces, module-level XML, and component-spec templates |
-| `sdlc-iteration-planning` | Evolve | Design as Contract, Interface as Boundary, Reality as Baseline, State as Responsibility | Incremental planning for new requirements: impact analysis, incremental PRD, interface versioning, XML sync, and iteration plan generation |
+| `devforge-requirement-analysis` | Design | Design as Contract, Interface as Boundary | Turn an idea into a structured PRD with user stories, acceptance criteria, and cross-module interaction points |
+| `devforge-architecture-design` | Design | Design as Contract, Interface as Boundary, State as Responsibility | Evaluate architecture patterns dynamically (10-pattern library), design interface contracts, model three-layer XML architecture (System/Module/Component), and define test cases |
+| `devforge-architecture-validation` | Verify | Interface as Boundary, Reality as Baseline | Technical validation via mock simulation, real-LLM format checks, consistency audits, and incremental delta reports |
+| `devforge-design-review` | Verify | Design as Contract, Interface as Boundary, Reality as Baseline, State as Responsibility | Adversarial inspection (Attacker/Operator/Extender lenses) to find design flaws; produces problem list, not PASS/FAIL |
+| `devforge-project-scaffolding` | Implement + Evolve | Reality as Baseline, State as Responsibility, Design as Contract, XML as Authority | Generate runnable project scaffolding with XML-driven code generation, CI/CD, transparent test fixtures, ADR, and evolution infrastructure |
+| `devforge-module-design` | Design (Module) | Design as Contract, Interface as Boundary, State as Responsibility | Deep-dive design for a single module: component decomposition, component interfaces, module-level XML, and component-spec templates |
+| `devforge-iteration-planning` | Evolve | Design as Contract, Interface as Boundary, Reality as Baseline, State as Responsibility | Incremental planning for new requirements: impact analysis, incremental PRD, interface versioning, XML sync, and iteration plan generation |
 
 ### Internal Utilities
 
@@ -26,7 +26,7 @@ The original monolithic Chinese design document is preserved at `软件开发全
 
 ### Domain Extensions
 
-Located in `extensions/`. Dynamically loaded by `sdlc-architecture-design` when PRD characteristic tags match.
+Located in `extensions/`. Dynamically loaded by `devforge-architecture-design` when PRD characteristic tags match.
 
 | Extension | Trigger Tags | Purpose |
 |-----------|--------------|---------|
@@ -77,37 +77,37 @@ Key state sections:
 
 ### Initial Development
 
-1. Invoke `sdlc-requirement-analysis` with your product idea.
-2. After approving the PRD, invoke `sdlc-architecture-design`.
-3. After approving the architecture, optionally invoke `sdlc-architecture-validation` for technical consistency checks.
-4. (Recommended) Invoke `sdlc-design-review` for adversarial inspection.
-5. After reviewing the issue list, invoke `sdlc-project-scaffolding`.
-6. (Optional) For each module, invoke `sdlc-module-design` with `[MODULE {module_id}]`.
+1. Invoke `devforge-requirement-analysis` with your product idea.
+2. After approving the PRD, invoke `devforge-architecture-design`.
+3. After approving the architecture, optionally invoke `devforge-architecture-validation` for technical consistency checks.
+4. (Recommended) Invoke `devforge-design-review` for adversarial inspection.
+5. After reviewing the issue list, invoke `devforge-project-scaffolding`.
+6. (Optional) For each module, invoke `devforge-module-design` with `[MODULE {module_id}]`.
 
 ### Incremental Development (After Initial Scaffolding)
 
-1. Invoke `sdlc-iteration-planning` with new requirements.
-2. After approving the iteration plan, invoke `sdlc-module-design` for new modules or `sdlc-architecture-design` for architectural changes.
-3. Invoke `sdlc-project-scaffolding` to generate/update code for affected modules.
+1. Invoke `devforge-iteration-planning` with new requirements.
+2. After approving the iteration plan, invoke `devforge-module-design` for new modules or `devforge-architecture-design` for architectural changes.
+3. Invoke `devforge-project-scaffolding` to generate/update code for affected modules.
 
 ## Artifact Index
 
 | Artifact | Path | Produced By |
 |----------|------|-------------|
-| PRD | `skill/artifacts/PRD.md` | `sdlc-requirement-analysis` |
+| PRD | `skill/artifacts/PRD.md` | `devforge-requirement-analysis` |
 | Decision Log | `skill/artifacts/DECISION_LOG.md` | All skills (appended) |
-| Interface Contract | `skill/artifacts/INTERFACE_CONTRACT.md` | `sdlc-architecture-design` |
-| Architecture Design | `skill/artifacts/ARCHITECTURE.md` | `sdlc-architecture-design` |
-| Architecture XML (System) | `skill/artifacts/architecture.xml` | `sdlc-architecture-design` |
-| Module Architecture XML | `skill/artifacts/modules/{id}/module-architecture.xml` | `sdlc-module-design` |
-| Component Spec XML | `skill/artifacts/modules/{id}/components/{cid}/component-spec.xml` | `sdlc-module-design` |
-| Validation Report | `skill/artifacts/VALIDATION_REPORT.md` | `sdlc-architecture-validation` |
-| Validation Delta | `docs/architecture/validation/VALIDATION_DELTA_*.md` | `sdlc-architecture-validation` |
-| Design Review | `skill/artifacts/DESIGN_REVIEW.md` | `sdlc-design-review` |
-| Health Check Script | `skill/artifacts/health-check.sh` | `sdlc-architecture-validation` |
-| Iteration PRD | `skill/artifacts/ITERATION_PRD.md` | `sdlc-iteration-planning` |
-| Iteration Plan | `skill/artifacts/ITERATION_PLAN.md` | `sdlc-iteration-planning` |
-| Scaffolding | `skill/artifacts/PROJECT_SCAFFOLD/` | `sdlc-project-scaffolding` |
+| Interface Contract | `skill/artifacts/INTERFACE_CONTRACT.md` | `devforge-architecture-design` |
+| Architecture Design | `skill/artifacts/ARCHITECTURE.md` | `devforge-architecture-design` |
+| Architecture XML (System) | `skill/artifacts/architecture.xml` | `devforge-architecture-design` |
+| Module Architecture XML | `skill/artifacts/modules/{id}/module-architecture.xml` | `devforge-module-design` |
+| Component Spec XML | `skill/artifacts/modules/{id}/components/{cid}/component-spec.xml` | `devforge-module-design` |
+| Validation Report | `skill/artifacts/VALIDATION_REPORT.md` | `devforge-architecture-validation` |
+| Validation Delta | `docs/architecture/validation/VALIDATION_DELTA_*.md` | `devforge-architecture-validation` |
+| Design Review | `skill/artifacts/DESIGN_REVIEW.md` | `devforge-design-review` |
+| Health Check Script | `skill/artifacts/health-check.sh` | `devforge-architecture-validation` |
+| Iteration PRD | `skill/artifacts/ITERATION_PRD.md` | `devforge-iteration-planning` |
+| Iteration Plan | `skill/artifacts/ITERATION_PLAN.md` | `devforge-iteration-planning` |
+| Scaffolding | `skill/artifacts/PROJECT_SCAFFOLD/` | `devforge-project-scaffolding` |
 
 ## Installation
 
@@ -115,28 +115,28 @@ Key state sections:
 
 ```bash
 # Clone this repository
-git clone https://github.com/lzj2819/SDLC-skill.git
-cd SDLC-skill
+git clone https://github.com/lzj2819/DevForge.git
+cd DevForge
 
 # Copy all skills to Claude Code user skills directory (macOS/Linux)
-cp -r sdlc-requirement-analysis sdlc-architecture-design sdlc-architecture-validation \
-  sdlc-design-review sdlc-project-scaffolding sdlc-module-design \
-  sdlc-iteration-planning context-compression extensions \
+cp -r devforge-requirement-analysis devforge-architecture-design devforge-architecture-validation \
+  devforge-design-review devforge-project-scaffolding devforge-module-design \
+  devforge-iteration-planning context-compression extensions \
   ~/.claude/skills/
 ```
 
 **Windows (PowerShell):**
 ```powershell
 # Clone this repository
-git clone https://github.com/lzj2819/SDLC-skill.git
-cd SDLC-skill
+git clone https://github.com/lzj2819/DevForge.git
+cd DevForge
 
 # Copy all skill directories
 $target = "$env:USERPROFILE\.claude\skills"
 
-@("sdlc-requirement-analysis", "sdlc-architecture-design", "sdlc-architecture-validation",
-  "sdlc-design-review", "sdlc-project-scaffolding", "sdlc-module-design",
-  "sdlc-iteration-planning", "context-compression", "extensions") | ForEach-Object {
+@("devforge-requirement-analysis", "devforge-architecture-design", "devforge-architecture-validation",
+  "devforge-design-review", "devforge-project-scaffolding", "devforge-module-design",
+  "devforge-iteration-planning", "context-compression", "extensions") | ForEach-Object {
     Copy-Item -Path "$_" -Destination $target -Recurse -Force
 }
 ```
@@ -152,8 +152,8 @@ Add this marketplace to your Claude Code configuration:
 {
   "pluginMarketplaces": [
     {
-      "name": "vclaw-sdlc",
-      "url": "https://raw.githubusercontent.com/lzj2819/SDLC-skill/main/.claude-plugin/marketplace.json"
+      "name": "vclaw-devforge",
+      "url": "https://raw.githubusercontent.com/lzj2819/DevForge/main/.claude-plugin/marketplace.json"
     }
   ]
 }
@@ -161,7 +161,7 @@ Add this marketplace to your Claude Code configuration:
 
 Then install the plugin:
 ```
-/plugin install sdlc-skill-chain@vclaw-sdlc
+/plugin install DevForge-chain@vclaw-devforge
 ```
 
 ### Option 3: Manual Per-Skill Installation
@@ -169,12 +169,12 @@ Then install the plugin:
 Install only the skills you need:
 
 ```bash
-git clone https://github.com/lzj2819/SDLC-skill.git
-cd SDLC-skill
+git clone https://github.com/lzj2819/DevForge.git
+cd DevForge
 
 # Example: Install only requirement analysis and architecture design
-cp -r sdlc-requirement-analysis ~/.claude/skills/
-cp -r sdlc-architecture-design ~/.claude/skills/
+cp -r devforge-requirement-analysis ~/.claude/skills/
+cp -r devforge-architecture-design ~/.claude/skills/
 ```
 
 ## Verification
@@ -190,14 +190,14 @@ You should see all 7 core skills plus context-compression and domain extensions 
 ## Directory Structure
 
 ```
-SDLC-skill/
+DevForge/
 ├── .claude-plugin/
 │   ├── plugin.json          # Plugin metadata for Claude Code
 │   └── marketplace.json     # Marketplace entry for distribution
 ├── LICENSE                  # MIT License
 ├── README.md                # This file
-├── sdlc-design.md           # Skill chain design document
-├── sdlc-state.md            # STATE.md template specification
+├── devforge-design.md           # Skill chain design document
+├── devforge-state.md            # STATE.md template specification
 ├── references/              # Shared reference documents
 │   ├── architecture-patterns.md
 │   └── xml-schemas.md
@@ -205,13 +205,13 @@ SDLC-skill/
 │   ├── architecture-ci.sh
 │   ├── package-plugin.py    # Packaging script for distribution
 │   └── xml-sync.py
-├── sdlc-requirement-analysis/   # Core skill 1
-├── sdlc-architecture-design/    # Core skill 2
-├── sdlc-architecture-validation/ # Core skill 3
-├── sdlc-design-review/          # Core skill 4
-├── sdlc-project-scaffolding/    # Core skill 5
-├── sdlc-module-design/          # Core skill 6
-├── sdlc-iteration-planning/     # Core skill 7
+├── devforge-requirement-analysis/   # Core skill 1
+├── devforge-architecture-design/    # Core skill 2
+├── devforge-architecture-validation/ # Core skill 3
+├── devforge-design-review/          # Core skill 4
+├── devforge-project-scaffolding/    # Core skill 5
+├── devforge-module-design/          # Core skill 6
+├── devforge-iteration-planning/     # Core skill 7
 ├── context-compression/         # Internal utility
 └── extensions/                  # Domain-specific extensions
     ├── ai-agent-design/
@@ -229,7 +229,7 @@ python scripts/package-plugin.py --mode all --output ./dist
 ```
 
 Outputs:
-- `dist/sdlc-skill-chain-v1.1.0.zip` — Full plugin package
+- `dist/DevForge-chain-v1.1.0.zip` — Full plugin package
 - `dist/skills/*.skill` — Individual skill packages
 
 ## Contributing

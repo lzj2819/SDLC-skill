@@ -1,16 +1,16 @@
 ---
-name: sdlc-design-review
+name: devforge-design-review
 description: Use when a system architecture has been designed and the user wants an adversarial inspection to find design flaws before implementation begins
 ---
 
-# SDLC Design Review
+# DevForge Design Review
 
 ## Overview
 
 Perform adversarial inspection (Red Team mode) on an approved architecture. The ONLY job of this skill is to find problems. It does NOT produce a PASS/FAIL gate. It produces a problem list for the user and subsequent skills to reference.
 
 This skill answers: "Are there design flaws a technically correct document can still have?"
-For technical consistency checks, use `sdlc-architecture-validation` instead.
+For technical consistency checks, use `devforge-architecture-validation` instead.
 
 ## VCMF Checkpoints
 

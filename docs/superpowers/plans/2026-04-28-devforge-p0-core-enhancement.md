@@ -1,10 +1,10 @@
-# SDLC-skill P0 核心交付物增强 — 实现计划
+# DevForge P0 核心交付物增强 — 实现计划
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 在现有核心 skill 中集成数据库 Schema 生成、OpenAPI 规范生成、测试覆盖率检查三项能力，补齐"设计→交付物"的断层。
 
-**Architecture:** 通过扩展 `references/xml-schemas.md` 的 `DataModel` 定义增加 DDL 相关属性，在 `sdlc-architecture-design` 工作流中新增两个输出节点（DDL + OpenAPI），在 `sdlc-project-scaffolding` 的 CI 配置中集成覆盖率检查。
+**Architecture:** 通过扩展 `references/xml-schemas.md` 的 `DataModel` 定义增加 DDL 相关属性，在 `devforge-architecture-design` 工作流中新增两个输出节点（DDL + OpenAPI），在 `devforge-project-scaffolding` 的 CI 配置中集成覆盖率检查。
 
 **Tech Stack:** Markdown 文档编辑、Mermaid 语法、GitHub Actions YAML、OpenAPI 3.0
 
@@ -15,8 +15,8 @@
 | 文件 | 操作 | 说明 |
 |------|------|------|
 | `references/xml-schemas.md` | 修改 | `DataModel` 节点增加 `Relationships` 和 DDL 属性 |
-| `sdlc-architecture-design/SKILL.md` | 修改 | 新增第 10 步（DDL 生成）、第 11 步（OpenAPI 生成） |
-| `sdlc-project-scaffolding/SKILL.md` | 修改 | CI/CD 第 7 步增加覆盖率 job |
+| `devforge-architecture-design/SKILL.md` | 修改 | 新增第 10 步（DDL 生成）、第 11 步（OpenAPI 生成） |
+| `devforge-project-scaffolding/SKILL.md` | 修改 | CI/CD 第 7 步增加覆盖率 job |
 | `docs/sync-rules.md` | 创建 | 文档同步规则（架构变更时同步更新哪些文件） |
 
 ---
@@ -149,14 +149,14 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 
 ---
 
-### Task 2: sdlc-architecture-design 新增第 10 步 — DDL 生成
+### Task 2: devforge-architecture-design 新增第 10 步 — DDL 生成
 
 **Files:**
-- Modify: `sdlc-architecture-design/SKILL.md:65-83`
+- Modify: `devforge-architecture-design/SKILL.md:65-83`
 
 - [ ] **Step 1: 在 XML architecture modeling 之后插入 DDL 生成步骤**
 
-找到 `sdlc-architecture-design/SKILL.md` 中第 5 步（XML architecture modeling）的结束位置。当前第 5 步之后直接是第 6 步（Architecture documentation）。
+找到 `devforge-architecture-design/SKILL.md` 中第 5 步（XML architecture modeling）的结束位置。当前第 5 步之后直接是第 6 步（Architecture documentation）。
 
 在 `## Output Specification` 之前的 `6. **Architecture documentation**` 之前，插入新的第 10 步。
 
@@ -284,14 +284,14 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 
 读取文件确认步骤编号正确：
 ```bash
-grep -n "^[0-9]\+\." sdlc-architecture-design/SKILL.md | head -20
+grep -n "^[0-9]\+\." devforge-architecture-design/SKILL.md | head -20
 ```
 Expected: 步骤从 1 到 11，包含新增的 DDL 和 OpenAPI 步骤。
 
 - [ ] **Step 5: 提交**
 
 ```bash
-git add sdlc-architecture-design/SKILL.md
+git add devforge-architecture-design/SKILL.md
 git commit -m "feat(architecture-design): add DDL and OpenAPI generation steps
 
 - Add Step 6: Database Schema (DDL) Generation from DataModel
@@ -304,14 +304,14 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 
 ---
 
-### Task 3: sdlc-project-scaffolding 新增覆盖率 CI Job
+### Task 3: devforge-project-scaffolding 新增覆盖率 CI Job
 
 **Files:**
-- Modify: `sdlc-project-scaffolding/SKILL.md:84-86`
+- Modify: `devforge-project-scaffolding/SKILL.md:84-86`
 
 - [ ] **Step 1: 在 CI/CD 第 7 步中增加覆盖率检查**
 
-找到 `sdlc-project-scaffolding/SKILL.md` 第 7 步（CI/CD pipeline）的现有描述：
+找到 `devforge-project-scaffolding/SKILL.md` 第 7 步（CI/CD pipeline）的现有描述：
 
 ```markdown
 7. **CI/CD pipeline**:
@@ -338,14 +338,14 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 
 读取文件确认 CI/CD 步骤包含覆盖率：
 ```bash
-grep -A 10 "Coverage check job" sdlc-project-scaffolding/SKILL.md
+grep -A 10 "Coverage check job" devforge-project-scaffolding/SKILL.md
 ```
 Expected: 能看到覆盖率检查的多种语言配置和阈值要求。
 
 - [ ] **Step 3: 提交**
 
 ```bash
-git add sdlc-project-scaffolding/SKILL.md
+git add devforge-project-scaffolding/SKILL.md
 git commit -m "feat(scaffolding): add coverage check to CI/CD pipeline
 
 - Add coverage check job with 80% threshold
@@ -441,9 +441,9 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 
 ### Task 5: 验证所有修改的一致性
 
-- [ ] **Step 1: 验证 xml-schemas.md 与 sdlc-architecture-design 的一致性**
+- [ ] **Step 1: 验证 xml-schemas.md 与 devforge-architecture-design 的一致性**
 
-确认 `sdlc-architecture-design` 中引用的属性名称与 `xml-schemas.md` 定义一致：
+确认 `devforge-architecture-design` 中引用的属性名称与 `xml-schemas.md` 定义一致：
 
 检查清单：
 - `DataModel/@name` ✓
@@ -461,7 +461,7 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 - `Relationships/Relationship/@onDelete` ✓
 - `Relationships/Relationship/@onUpdate` ✓
 
-- [ ] **Step 2: 验证 sdlc-project-scaffolding 覆盖率配置完整**
+- [ ] **Step 2: 验证 devforge-project-scaffolding 覆盖率配置完整**
 
 确认覆盖率 job 的描述包含所有必要元素：
 - 多种语言支持 ✓
@@ -502,17 +502,17 @@ Expected: 能看到 4 个提交，按 Task 1-4 的顺序。
 ```bash
 # 1. 确认所有文件已修改/创建
 git diff --name-only HEAD~4
-# Expected: references/xml-schemas.md, sdlc-architecture-design/SKILL.md, sdlc-project-scaffolding/SKILL.md, docs/sync-rules.md
+# Expected: references/xml-schemas.md, devforge-architecture-design/SKILL.md, devforge-project-scaffolding/SKILL.md, docs/sync-rules.md
 
 # 2. 确认 xml-schemas.md 包含 Relationships
 grep -n "Relationships" references/xml-schemas.md
 
 # 3. 确认 architecture-design 包含 DDL 和 OpenAPI 步骤
-grep -n "Database Schema" sdlc-architecture-design/SKILL.md
-grep -n "OpenAPI" sdlc-architecture-design/SKILL.md
+grep -n "Database Schema" devforge-architecture-design/SKILL.md
+grep -n "OpenAPI" devforge-architecture-design/SKILL.md
 
 # 4. 确认 scaffolding 包含覆盖率
-grep -n "Coverage check job" sdlc-project-scaffolding/SKILL.md
+grep -n "Coverage check job" devforge-project-scaffolding/SKILL.md
 
 # 5. 确认 sync-rules.md 存在
 ls docs/sync-rules.md

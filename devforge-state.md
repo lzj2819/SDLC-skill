@@ -1,9 +1,9 @@
 ---
-title: SDLC State
-description: Template for the file-based state used by the SDLC skill chain
+title: DevForge State
+description: Template for the file-based state used by the DevForge chain
 ---
 
-# SDLC State
+# DevForge State
 
 > **File path variant**: During initial development this file lives at `skill/artifacts/STATE.md`. During incremental iteration mode it lives at `docs/architecture/system/STATE.md`.
 
@@ -17,13 +17,13 @@ description: Template for the file-based state used by the SDLC skill chain
 ## 2. Completed Steps (Append-Only, Never Overwritten)
 > Each skill appends its key decisions here after completion.
 
-- [YYYY-MM-DD HH:MM] sdlc-requirement-analysis: [key decision summary]
-- [YYYY-MM-DD HH:MM] sdlc-architecture-design: [key decision summary]
-- [YYYY-MM-DD HH:MM] sdlc-architecture-validation: [key decision summary]
-- [YYYY-MM-DD HH:MM] sdlc-design-review: [key decision summary]
-- [YYYY-MM-DD HH:MM] sdlc-project-scaffolding: [key decision summary]
-- [YYYY-MM-DD HH:MM] sdlc-module-design: [module_id] - [key decision summary]
-- [YYYY-MM-DD HH:MM] sdlc-iteration-planning: [iteration scope summary]
+- [YYYY-MM-DD HH:MM] devforge-requirement-analysis: [key decision summary]
+- [YYYY-MM-DD HH:MM] devforge-architecture-design: [key decision summary]
+- [YYYY-MM-DD HH:MM] devforge-architecture-validation: [key decision summary]
+- [YYYY-MM-DD HH:MM] devforge-design-review: [key decision summary]
+- [YYYY-MM-DD HH:MM] devforge-project-scaffolding: [key decision summary]
+- [YYYY-MM-DD HH:MM] devforge-module-design: [module_id] - [key decision summary]
+- [YYYY-MM-DD HH:MM] devforge-iteration-planning: [iteration scope summary]
 
 ## 3. DecisionDigest (Append-Only, Last 20 Entries)
 > Quick-reference digest of key architectural and product decisions. Truncate older entries to keep the list at 20 items max.
@@ -41,13 +41,13 @@ description: Template for the file-based state used by the SDLC skill chain
   - Verify: [pending | in_progress | completed]
   - Evolve: [pending | in_progress | completed]
 - NextAction: [iterate | refactor | module | none]
-  - `iterate`: Run sdlc-iteration-planning for incremental features
-  - `refactor`: Run sdlc-architecture-design for architectural changes
-  - `module`: Run sdlc-module-design for the next un-designed module
+  - `iterate`: Run devforge-iteration-planning for incremental features
+  - `refactor`: Run devforge-architecture-design for architectural changes
+  - `module`: Run devforge-module-design for the next un-designed module
   - `none`: No pending action; project is in steady state
-- Next skill: [sdlc-architecture-design | sdlc-architecture-validation | sdlc-design-review | sdlc-project-scaffolding | sdlc-module-design | sdlc-iteration-planning]
+- Next skill: [devforge-architecture-design | devforge-architecture-validation | devforge-design-review | devforge-project-scaffolding | devforge-module-design | devforge-iteration-planning]
 
-## 5. Module Registry (Updated by sdlc-module-design and sdlc-iteration-planning)
+## 5. Module Registry (Updated by devforge-module-design and devforge-iteration-planning)
 > Tracks the status of every module in the system.
 
 ```yaml

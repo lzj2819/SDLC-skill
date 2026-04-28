@@ -1,13 +1,13 @@
 ---
 name: mobile-app-design
-description: Domain extension for mobile application architecture. Use when the project involves iOS, Android, or cross-platform mobile apps with backend integration. Dynamically loaded by sdlc-architecture-design when PRD contains mobile characteristic tags.
+description: Domain extension for mobile application architecture. Use when the project involves iOS, Android, or cross-platform mobile apps with backend integration. Dynamically loaded by devforge-architecture-design when PRD contains mobile characteristic tags.
 ---
 
 # Mobile App Design Extension
 
 ## Overview
 
-This extension augments the generic `sdlc-architecture-design` skill with mobile-specific evaluation dimensions, anti-patterns, and architecture guidance. Loaded when PRD contains tags like `mobile_app`, `ios`, `android`, `react_native`, `flutter`.
+This extension augments the generic `devforge-architecture-design` skill with mobile-specific evaluation dimensions, anti-patterns, and architecture guidance. Loaded when PRD contains tags like `mobile_app`, `ios`, `android`, `react_native`, `flutter`.
 
 ## When to Load
 

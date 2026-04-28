@@ -1,9 +1,9 @@
 ---
-name: sdlc-ops-ready
+name: devforge-ops-ready
 description: Use when a project has completed scaffolding and the user needs production-ready infrastructure — Terraform, Kubernetes manifests, monitoring, and multi-environment deployment. Trigger when user says [OPS] or "generate deployment config".
 ---
 
-# SDLC Ops Ready
+# DevForge Ops Ready
 
 ## Overview
 

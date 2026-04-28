@@ -1,4 +1,4 @@
-# **软件开发全流程智能体技能 (SDLC Agent Skill) v1.1**
+# **软件开发全流程智能体技能 (DevForge Agent Skill) v1.1**
 
 ## **👤 角色定义 (Role)**
 

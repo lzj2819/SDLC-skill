@@ -1,11 +1,11 @@
 {
-  "name": "vclaw-sdlc",
-  "description": "SDLC Skill Chain marketplace — Full lifecycle software development skills for Claude Code",
+  "name": "vclaw-devforge",
+  "description": "DevForge Chain marketplace — Full lifecycle software development skills for Claude Code",
   "owner": { "name": "lzj", "email": "lzj2819@gmail.com" },
   "plugins": [
     {
-      "name": "sdlc-skill-chain",
-      "description": "SDLC Skill Chain v1.1: 7 core skills (requirement-analysis, architecture-design, architecture-validation, design-review, project-scaffolding, module-design, iteration-planning) + context-compression utility + 3 domain extensions (ai-agent, data-pipeline, mobile-app). Built on VCMF framework with DIVE cycle.",
+      "name": "DevForge-chain",
+      "description": "DevForge Chain v1.1: 7 core skills (requirement-analysis, architecture-design, architecture-validation, design-review, project-scaffolding, module-design, iteration-planning) + context-compression utility + 3 domain extensions (ai-agent, data-pipeline, mobile-app). Built on VCMF framework with DIVE cycle.",
       "version": "1.1.0",
       "source": "./",
       "author": { "name": "lzj", "email": "lzj2819@gmail.com" }
