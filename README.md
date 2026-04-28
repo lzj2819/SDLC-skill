@@ -198,6 +198,38 @@ After installation, verify the skills are loaded:
 
 You should see all 10 core skills plus context-compression and domain extensions listed.
 
+## Environment Configuration
+
+> **No configuration required to get started.** DevForge skills are pure Markdown files interpreted by Claude Code. Install, invoke, and they work immediately.
+>
+> However, **certain stages need external API credentials to unlock their full capability**. If these are not configured, the skill degrades gracefully instead of failing.
+
+### What Requires Configuration
+
+| Stage | What You Need | Without It |
+|-------|--------------|------------|
+| **Architecture Validation** (`devforge-architecture-validation`) | LLM API Key + Base URL | Falls back to mock-data simulation + consistency checks |
+| **Project Scaffolding** (`devforge-project-scaffolding`) | Database / cache connection strings | Generates `.env.template` placeholders for the target project |
+| **Ops Ready** (`devforge-ops-ready`) | Cloud platform credentials (AWS/Azure/GCP) | Terraform configs are generated; `terraform apply` is deferred until you configure credentials |
+
+### Recommended Setup
+
+Copy the provided template and fill in only the sections you need:
+
+```bash
+cp .env.example .env
+```
+
+Key sections in `.env.example`:
+- **LLM API** — `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, or `OPENROUTER_API_KEY` (pick one provider)
+- **Database** — `DATABASE_URL`, `REDIS_URL` (for the generated project's runtime)
+- **Cloud** — `AWS_*`, `AZURE_*`, or `GOOGLE_*` (for infrastructure deployment)
+- **Monitoring** — `GRAFANA_ADMIN_PASSWORD`, `PROMETHEUS_RETENTION`
+
+All variables are **optional**. The skill chain never crashes due to missing env vars; it simply operates in a reduced-capability mode and tells you what it's skipping.
+
+---
+
 ## Directory Structure
 
 ```
