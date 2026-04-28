@@ -81,14 +81,55 @@ Before starting, read `skill/artifacts/STATE.md`. Acceptable entry phases: `requ
      - `ModuleStateModel` placeholder pre-populated with any system-level `State` entries owned by this module
    - **Reference integrity**: Ensure all `ModuleDetail/@ref` attributes use relative paths that resolve correctly from the system XML location
 
-6. **Architecture documentation**
+6. **Database Schema (DDL) Generation**
+   - Read `architecture.xml` and extract all `DataModel` nodes
+   - For each `DataModel`, generate SQL DDL:
+     - `CREATE TABLE {DataModel/@name}` (when `ddlType="table"`)
+     - Map `Field/@type` to SQL types:
+       - string + length → VARCHAR(length)
+       - string without length → TEXT
+       - int → INT
+       - long → BIGINT
+       - float → FLOAT
+       - double → DOUBLE
+       - boolean → BOOLEAN (or TINYINT(1) for MySQL)
+       - datetime → TIMESTAMP or DATETIME
+       - uuid → CHAR(36) or UUID (PostgreSQL)
+       - text → TEXT
+       - json → JSON
+     - `required="true"` or `nullable="false"` → NOT NULL
+     - `primaryKey="true"` → PRIMARY KEY
+     - `unique="true"` → UNIQUE constraint
+     - `index="true"` → CREATE INDEX
+     - `default` → DEFAULT {value}
+     - `autoIncrement="true"` → AUTO_INCREMENT (MySQL) or SERIAL (PostgreSQL)
+   - Generate `ALTER TABLE` for foreign keys from `Relationships/Relationship`:
+     - `ALTER TABLE {source} ADD CONSTRAINT ... FOREIGN KEY ({foreignKey}) REFERENCES {target}({targetField}) ON DELETE {onDelete} ON UPDATE {onUpdate}`
+   - Output `skill/artifacts/schema.sql`
+   - Generate `skill/artifacts/ERD.md` using Mermaid `erDiagram` syntax:
+     - Each `DataModel` → an entity
+     - Each `Relationship` → a relationship line (1:1, 1:N, N:M)
+
+7. **OpenAPI Specification Generation**
+   - Read `INTERFACE_CONTRACT.md` and `architecture.xml`
+   - Convert interface definitions to OpenAPI 3.0 format:
+     - `openapi: 3.0.0` header with project name and version from STATE.md
+     - `paths`: Each interface method → `/{module}/{endpoint}/{method}`
+     - `requestBody`: Input schema with `$ref` to `#/components/schemas/{InputSchemaName}`
+     - `responses/200`: Output schema with `$ref`
+     - `responses/{code}`: Error codes from `ErrorCodes/Error`
+     - `components/schemas`: Reuse `DataModel` definitions; define request/response DTOs for non-DataModel schemas
+   - Output `skill/artifacts/openapi.yaml`
+   - Ensure schema names are consistent between `openapi.yaml` and `schema.sql`
+
+8. **Architecture documentation**
    - Write `skill/artifacts/ARCHITECTURE.md` containing:
      - Selected architecture and justification
      - Interface contract summary
      - Test case catalog
      - Mock data definitions
 
-7. **Decision Log update**
+9. **Decision Log update**
    - Append architecture decisions to `skill/artifacts/DECISION_LOG.md`
    - Each entry MUST include:
      - Date and decision ID
@@ -96,17 +137,17 @@ Before starting, read `skill/artifacts/STATE.md`. Acceptable entry phases: `requ
      - Full reasoning chain (why recommended, why each alternative rejected)
      - Rejected alternatives with specific reasons
 
-8. **State update**
-   - Update `STATE.md`:
-     - Append to **Completed Steps**: `[YYYY-MM-DD HH:MM] sdlc-architecture-design: Evaluated N patterns. Selected [pattern]. Key reasoning: [summary]`
-     - Append to **Known Pitfalls** any risks identified during evaluation
-     - Set `phase: architecture_design_completed`
-     - Set DIVE `Design: completed`, `Implement: pending`
+10. **State update**
+    - Update `STATE.md`:
+      - Append to **Completed Steps**: `[YYYY-MM-DD HH:MM] sdlc-architecture-design: Evaluated N patterns. Selected [pattern]. Key reasoning: [summary]`
+      - Append to **Known Pitfalls** any risks identified during evaluation
+      - Set `phase: architecture_design_completed`
+      - Set DIVE `Design: completed`, `Implement: pending`
 
-9. **Human gate**
-   - Present architecture summary and XML outline
-   - Say exactly: "架构设计、接口契约和 XML 模型已生成。请确认当前阶段输出。回复 [APPROVE] 进入架构验证阶段，或提出修改意见。"
-   - Do NOT proceed until [APPROVE]
+11. **Human gate**
+    - Present architecture summary and XML outline
+    - Say exactly: "架构设计、接口契约和 XML 模型已生成。请确认当前阶段输出。回复 [APPROVE] 进入架构验证阶段，或提出修改意见。"
+    - Do NOT proceed until [APPROVE]
 
 <HARD-GATE>
 Do NOT proceed to architecture-validation or scaffolding until the user replies [APPROVE].
@@ -117,6 +158,9 @@ Do NOT proceed to architecture-validation or scaffolding until the user replies 
 - `skill/artifacts/ARCHITECTURE.md`
 - `skill/artifacts/INTERFACE_CONTRACT.md`
 - `skill/artifacts/architecture.xml` (strict schema)
+- `skill/artifacts/schema.sql` (auto-generated from DataModel)
+- `skill/artifacts/ERD.md` (Mermaid ER diagram)
+- `skill/artifacts/openapi.yaml` (OpenAPI 3.0 spec)
 
 ## Red Flags
 

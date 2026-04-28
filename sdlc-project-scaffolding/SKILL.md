@@ -83,6 +83,13 @@ Read `skill/artifacts/STATE.md`. Acceptable phases: `architecture_design_complet
 7. **CI/CD pipeline**
    - Generate CI config (e.g., `.github/workflows/ci.yml` or `.gitlab-ci.yml`)
    - Must include: dependency install, lint, mock test execution, real test execution (with `continue-on-error` or skip logic so missing API keys do not fail the build)
+   - **Coverage check job**: After test execution, run coverage analysis with minimum threshold:
+     - Python: `pytest --cov=src --cov-report=xml --cov-report=term --cov-fail-under=80`
+     - Node.js: `jest --coverage --coverageThreshold='{"global":{"lines":80}}'`
+     - Java: `mvn jacoco:check` with `minimum` line ratio 0.80
+     - Go: `go test -coverprofile=coverage.out ./...` + `go tool cover -func=coverage.out` with threshold check
+     - Upload coverage report as artifact (e.g., `coverage.xml`, `coverage/`, `target/site/jacoco/`)
+     - CI MUST fail if coverage is below the threshold
    - **Architecture consistency check job**: Add a job that runs `scripts/architecture-ci.sh` and `scripts/xml-sync.py --verify-only` to ensure code remains synchronized with XML specifications. This job should fail the build if:
      - XML files are malformed
      - Component function signatures in code diverge from `component-spec.xml`
