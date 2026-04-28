@@ -96,7 +96,31 @@ If `architecture.xml` is missing, stop and instruct the user to complete prior p
      - `staging.tfvars` — medium resources, pre-prod data
      - `prod.tfvars` — high resources, encryption, backup, multi-AZ
 
-7. **Operational runbook generation**
+7. **Progressive deployment strategy**
+   - Output: `infrastructure/kubernetes/overlays/prod/progressive/`
+   - Generate K8s manifests for two deployment strategies:
+
+     **Blue-Green Deployment** (`blue-green/`):
+     - Two identical environments (blue = current, green = new)
+     - Service selector switches traffic from blue to green after health check
+     - Instant rollback: switch selector back to blue
+     - Resource cost: 2x during transition
+
+     **Canary Deployment** (`canary/`):
+     - Primary deployment (100% traffic) + Canary deployment (5% traffic)
+     - Traffic splitting via Ingress (nginx canary annotations or Istio VirtualService)
+     - Automated promotion criteria:
+       - Error rate < 1% for 10 minutes
+       - P99 latency < baseline + 20% for 10 minutes
+     - Automated rollback criteria:
+       - Error rate > 5% for 2 minutes
+       - P99 latency > baseline + 50% for 2 minutes
+     - Gradual traffic shift: 5% → 25% → 50% → 100%
+
+   - Generate `promotion-policy.yaml` defining the criteria and thresholds
+   - Generate `rollback-policy.yaml` defining emergency rollback triggers
+
+8. **Operational runbook generation**
    - Output: `docs/ops/runbook.md`
    - Sections:
      - Deployment procedure (Terraform apply order)
@@ -115,6 +139,10 @@ If `architecture.xml` is missing, stop and instruct the user to complete prior p
 
 - `infrastructure/terraform/` — Terraform modules and root config
 - `infrastructure/kubernetes/` — K8s manifests with Kustomize
+- `infrastructure/kubernetes/overlays/prod/progressive/blue-green/` — Blue-green deployment manifests
+- `infrastructure/kubernetes/overlays/prod/progressive/canary/` — Canary deployment manifests
+- `infrastructure/kubernetes/overlays/prod/progressive/promotion-policy.yaml` — Promotion criteria
+- `infrastructure/kubernetes/overlays/prod/progressive/rollback-policy.yaml` — Rollback triggers
 - `infrastructure/monitoring/` — Prometheus rules + Grafana dashboards
 - `infrastructure/multi-env/` — Environment-specific configs
 - `docs/ops/runbook.md` — Operational manual
