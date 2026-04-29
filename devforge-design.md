@@ -4,7 +4,7 @@
 >
 > **v1.1 Additions**: Three-layer XML architecture (System/Module/Component), dynamic pattern selection (10 patterns), module-level design skill, iteration planning skill, domain extensions (overlay mechanism), context compression utility, and XML-driven code generation.
 >
-> **v1.2 Additions**: Database schema (DDL) generation, OpenAPI 3.0 spec generation, test coverage integration, architecture visualization (Mermaid diagrams), production-ready infrastructure (Terraform/K8s/monitoring), progressive deployment (blue-green + canary), bug diagnosis & refactoring assistant, and requirement traceability matrix (RTM).
+> **v1.2 Additions**: Database schema (DDL) generation, OpenAPI 3.0 spec generation, test coverage integration, architecture visualization (Mermaid diagrams), production-ready infrastructure (Terraform/K8s/monitoring), progressive deployment (blue-green + canary), bug diagnosis & refactoring assistant, requirement traceability matrix (RTM), **context-management protocol** (layered summary + repo-index.md), **self-validation checkpoints** (syntax/schema/traceability), **language adaptation** (user-input language detection), and **technology stack validation** (active search before tool recommendation).
 
 ---
 
@@ -133,6 +133,10 @@ User inputs a raw idea
 6. **Adversarial Inspection**: Validation checks technical consistency; design-review finds flaws. The reviewer is a skeptic, not a successor.
 7. **XML as Authority**: `component-spec.xml` is the single source of truth for code generation. CI enforces consistency between code and XML.
 8. **Incremental Evolution**: The existing framework stays; only additions and targeted modifications are allowed in iterations.
+9. **Context Management**: Follow `references/context-management-protocol.md` for artifact loading priority. Use layered summaries (200-word global, 50-word module digest, 1-line decision index) and `repo-index.md` for rapid codebase navigation. Load only relevant artifacts to stay within context window limits (8k/12k token thresholds).
+10. **Self-validation**: Every skill that produces artifacts includes an automated self-validation step before the human gate. Checks include: syntax validity, schema compliance, traceability coverage, and cross-reference integrity.
+11. **Language Adaptation**: Skill system instructions remain in English for maximum model compliance. All user-facing gate messages, summaries, and explanations adapt to the user's input language (Chinese/English/auto-detected).
+12. **Technology Stack Validation**: Before recommending any third-party library, framework, or tool, perform active search (WebSearch/WebFetch) for deprecation notices, CVEs, and maintenance status. Blacklist known-vulnerable tools (e.g., VM2) without explicit user approval.
 
 ---
 
@@ -463,11 +467,17 @@ The `STATE.md` contains 8 sections:
 1. **Immutable Goal** — Never overwritten
 2. **Completed Steps** — Append-only reasoning chain
 3. **Current State** — Phase, DIVE progress, NextAction
-4. **Module Registry** — Status of every module
+4. **Module Registry** — Status of every module (includes `digest` field: 50-word micro-summary for rapid context recovery)
 5. **Iteration History** — All iterations after initial scaffolding
 6. **Compressed Context** — 200-word digest for fast session recovery
 7. **Artifact Index** — Quick reference to all artifacts
 8. **Known Pitfalls & Risks** — Append-only
+
+**Context Loading Protocol** (`references/context-management-protocol.md`):
+- Layered summary architecture: Level 1 (200-word global), Level 2 (50-word module digest), Level 3 (1-line decision index)
+- Artifact loading rules per skill: Required vs Optional artifacts with full/summary loading
+- Context truncation thresholds: >8,000 tokens (load Optional as summaries), >12,000 tokens (load only 2 critical Required in full)
+- Cross-session recovery: New sessions read Compressed Context first, then Artifact Index, then Required artifacts
 
 The `Decisions Log` (`DECISION_LOG.md`) records key decisions with:
 - Date, Decision ID, Question, Answer, Risk
@@ -490,10 +500,14 @@ skill/
 ├── 软件开发全流程智能体技能(DevForge).md
 ├── references/
 │   ├── architecture-patterns.md      # 10-pattern library with evaluation dimensions
-│   └── xml-schemas.md                # Three-layer XML schema definitions
+│   ├── xml-schemas.md                # Three-layer XML schema definitions
+│   ├── system-prompt-template.md     # Global role definition + VCMF constraints
+│   ├── context-management-protocol.md # Layered summary + artifact loading rules
+│   └── validation-scripts-manifest.md # Script capability mapping + known gaps
 ├── scripts/
 │   ├── architecture-ci.sh            # CI health check script
-│   └── xml-sync.py                   # XML sync and validation script
+│   ├── xml-sync.py                   # XML sync and validation script
+│   └── package-plugin.py             # Packaging script for distribution
 ├── artifacts/                        # Generated artifacts (or docs/architecture/ in iteration mode)
 │   ├── STATE.md
 │   ├── PRD.md
@@ -737,6 +751,14 @@ description: Internal utility skill used by other DevForges to compress session 
 - [x] `devforge-debug-assistant/SKILL.md` — Bug diagnosis + refactoring suggestions
 - [x] RTM (Requirement Traceability Matrix) auto-generation in `devforge-requirement-analysis`
 - [x] Phase 8/9/10 registered in `DevForge.md`
+- [x] Context management protocol (`references/context-management-protocol.md`) — layered summaries, artifact loading rules, token thresholds
+- [x] `repo-index.md` generation in `devforge-project-scaffolding` — rapid codebase navigation for debug/ops skills
+- [x] Module Registry `digest` field in `devforge-state.md` — 50-word micro-summaries for context recovery
+- [x] Self-validation checkpoints — syntax validation, schema compliance, traceability checks across 7 skills
+- [x] Language adaptation — all 10 skills adapt user-facing output to user's input language
+- [x] Technology stack validation rule — active search (WebSearch/WebFetch) before recommending tools; blacklist enforcement (VM2, RCE libs)
+- [x] `references/system-prompt-template.md` — global VCMF constraints + output quality standards
+- [x] `references/validation-scripts-manifest.md` — script capability mapping + gap documentation
 
 ### Completed in v1.1
 
@@ -762,6 +784,10 @@ description: Internal utility skill used by other DevForges to compress session 
 - **Privacy management**: All API keys and tokens must live in `.env` files only
 - **XML as Authority**: Code signatures must match `component-spec.xml`; CI enforces this
 - **Incremental Evolution**: Existing framework stays; only additions and targeted modifications allowed
+- **Context Management**: Follow `references/context-management-protocol.md` for artifact loading. Use layered summaries (200-word global, 50-word module digest, 1-line decision index). Respect 8k/12k token thresholds.
+- **Self-validation**: Every artifact-producing skill runs automated checks before the human gate (syntax, schema, traceability, cross-reference integrity).
+- **Language Adaptation**: System instructions in English; user-facing messages in the user's input language.
+- **Technology Stack Validation**: Active search before recommending tools; never recommend blacklisted libraries (VM2, known RCE) without explicit approval.
 
 ---
 

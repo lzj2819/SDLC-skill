@@ -122,6 +122,9 @@ iteration_history:
 | ERD | skill/artifacts/ERD.md | 2026-04-24 | Entity relationship diagram |
 | Debug Report | skill/artifacts/DEBUG_REPORT.md | 2026-04-24 | Bug diagnosis result |
 | Refactor Report | skill/artifacts/REFACTOR_REPORT.md | 2026-04-24 | Code health scan result |
+| System Prompt | references/system-prompt-template.md | 2026-04-29 | Global role definition + VCMF constraints |
+| Context Protocol | references/context-management-protocol.md | 2026-04-29 | Layered summary + artifact loading rules |
+| Validation Scripts Manifest | references/validation-scripts-manifest.md | 2026-04-29 | Script capability mapping + known gaps |
 
 ## 9. Known Pitfalls & Risks (Append-Only)
 > Every skill MUST append risks discovered during its unfold.

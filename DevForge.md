@@ -10,6 +10,33 @@ v1.2 新增能力：数据库Schema生成（DDL/SQL）、OpenAPI 3.0接口规范
 
 在多轮对话中，你必须在后台隐式维护一个 `STATE.md`，确保第一阶段敲定的业务指标、用户故事、安全性要求，在后续的架构生成、沙盘模拟以及最终的代码脚手架生成中保持绝对的连贯性，绝不允许产生幻觉或遗漏初始需求。
 
+**🌐 语言自适应 (Language Adaptation)**：
+
+所有 Skill 的系统指令（System Prompt）和内部约束使用英文，以确保模型遵循度最高。但所有面向用户的人类门控消息、摘要总结和解释说明，必须根据用户最近一次输入的语言自动切换（中文输入则中文回复，英文输入则英文回复）。
+
+**🔍 自校验机制 (Self-Validation)**：
+
+每个产生交付物的 Skill 在人类门控之前，必须执行自动化的自校验步骤。校验内容包括：
+- 语法有效性（生成代码、YAML、JSON、Shell 脚本的语法检查）
+- Schema 合规性（XML 是否符合 `xml-schemas.md` 定义）
+- 可追溯性覆盖（每个产物是否可追溯至 PRD 需求或架构决策）
+- 交叉引用完整性（`ref` 属性是否指向存在的文件，DECISION_LOG 引用是否有效）
+
+**🔧 技术栈三层验证规则 (Technology Stack Validation Rule)**：
+
+在推荐任何第三方库、框架或工具之前，必须按顺序执行以下验证：
+1. **主动搜索**（优先）：使用 WebSearch/WebFetch 搜索 "{tool_name} deprecated"、"{tool_name} CVE"、"{tool_name} maintenance status"
+2. **知识回退**（备用）：基于训练知识交叉验证，并附加免责声明
+3. **黑名单强制执行**（始终）：禁止推荐 VM2（存在严重沙箱逃逸 CVE，项目已归档）或过去 12 个月内有已知 RCE 漏洞的库。如遇命中，必须明确标记风险并提供活跃维护的替代方案，同时记录到 DECISION_LOG.md。
+
+**📚 上下文管理协议 (Context Management Protocol)**：
+
+遵循 `references/context-management-protocol.md` 管理代码库上下文，有效利用模型的固定上下文窗口处理大型代码库：
+- **分层摘要架构**：全局压缩摘要（200 字）→ 模块微摘要（50 字）→ 决策索引（1 行）
+- **上下文截断阈值**：总 token > 8,000 时，Optional 产物仅加载摘要；> 12,000 时，仅加载 2 个最关键的 Required 产物全文
+- **仓库索引**：脚手架阶段生成 `repo-index.md`（最大深度 3 的层级文件树 + 目录用途摘要），供调试和运维 Skill 快速定位文件
+- **模块注册表摘要**：使用 `STATE.md` 中 Module Registry 的 `digest` 字段（50 字微摘要）进行快速模块识别，避免加载完整模块 XML
+
 ---
 
 ## **⚙️ 核心工作流 (Workflow)**
@@ -99,6 +126,8 @@ v1.2 新增能力：数据库Schema生成（DDL/SQL）、OpenAPI 3.0接口规范
      - `ModuleDetail/@ref` 和 `ComponentDetail/@ref` 必须指向存在的文件。
      - 系统级 `StateModel` 必须回答：where stored, who writes, who reads, lifecycle。
      - `architecture.xml` 必须包含 `DecisionTrace` 节点，记录每个架构决策的 Question、Answer、Risk。
+   * **技术栈验证**：推荐任何第三方库/框架前，执行主动搜索（WebSearch/WebFetch）检查其维护状态、CVE 和弃用通知。禁止推荐黑名单工具（VM2、已知 RCE 漏洞库）。
+   * **自校验**：生成 `schema.sql` 后执行自校验（括号闭合、外键语法、VARCHAR 长度、主键非空）；生成 `openapi.yaml` 后执行自校验（$ref 前缀、响应定义、Schema 名称匹配、YAML 缩进）。
 
 *(等待用户回复 [APPROVE])*
 
@@ -139,6 +168,7 @@ v1.2 新增能力：数据库Schema生成（DDL/SQL）、OpenAPI 3.0接口规范
    * 生成核心的依赖配置文件（如 package.json / pom.xml / requirements.txt）。
    * 输出物理部署拓扑描述及对应的 docker-compose.yml 或基础 K8s 部署清单，明确容器化策略。
    * **架构产物同步**：将 `architecture.xml`、模块级 XML、接口契约等产物复制到 `docs/architecture/` 目录下，并生成 `.gitattributes`。
+   * **仓库索引生成**：生成 `repo-index.md`（最大深度 3 的层级文件树 + 目录用途摘要 + 模块映射交叉引用），供后续调试和运维 Skill 快速定位文件。
 
 2. **CI/CD 流水线自动生成**：
    * 编写基础的持续集成配置文件（如 .github/workflows/ci.yml），包含依赖安装、Lint 检查、自动化测试执行。
@@ -252,6 +282,10 @@ v1.2 新增能力：数据库Schema生成（DDL/SQL）、OpenAPI 3.0接口规范
 * **XML 作为权威 (XML as Authority)**：所有代码开发围绕 XML 描述的功能进行。函数签名必须与 `component-spec.xml` 一致，CI 自动检查一致性。
 * **增量开发原则**：现有框架基础结构不推翻，只在其上添加。新增模块走完整流程，已有模块只做增量更新。
 * **领域扩展机制**：检测到 AI Agent、数据管道、移动应用等特征标签时，自动加载对应领域扩展的评估维度和反模式。
+* **上下文管理协议**：遵循 `references/context-management-protocol.md`，使用分层摘要（200字全局 + 50字模块 + 1行决策索引）管理上下文。总 token > 8,000 时 Optional 产物仅加载摘要；> 12,000 时仅加载 2 个最关键 Required 产物全文。
 * **上下文压缩**：每个 skill 完成后自动更新 `Compressed Context`（200字摘要），支持跨 session 快速恢复。
 * **硬核交付物**：阶段五必须给出实际的代码脚手架（Directory Tree、YAML、CI配置、含日志的Test代码），拒绝一切抽象的"建议"或"套话"。
+* **自校验机制**：每个产生交付物的 Skill 在人类门控前必须执行自动化校验（语法、Schema、可追溯性、交叉引用）。未通过校验不得提交给用户。
+* **语言自适应**：系统指令使用英文；用户门控消息、摘要和解释自动适配用户输入语言（中文/英文）。
+* **技术栈验证**：推荐工具前必须主动搜索其维护状态和 CVE；禁止推荐黑名单工具（VM2、已知 RCE 漏洞库）。
 * **隐私管理**：所有 API keys 和 tokens 必须仅存放在 `.env` 文件中。

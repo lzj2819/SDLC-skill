@@ -45,6 +45,28 @@ Located in `extensions/`. Dynamically loaded by `devforge-architecture-design` w
 - **State as Responsibility** — Who creates a state, who persists it, who reads it, and who cleans it up must be documented and enforced in both architecture and code.
 - **XML as Authority** — `component-spec.xml` is the single source of truth for code generation. Function signatures, error handling, and file paths must match the XML specification. CI enforces this.
 
+## Context Management
+
+DevForge handles large codebases through a layered context management protocol (`references/context-management-protocol.md`):
+
+- **Layered summaries**: 200-word global digest → 50-word module micro-digest → 1-line decision index
+- **Token thresholds**: >8,000 tokens loads Optional artifacts as summaries only; >12,000 tokens loads only 2 critical Required artifacts in full
+- **Repo index**: `devforge-project-scaffolding` generates `repo-index.md` for rapid file location in large projects
+- **Module registry digests**: `STATE.md` Module Registry includes a `digest` field (50-word max) for quick module identification without loading full XMLs
+
+## Self-Validation
+
+Every artifact-producing skill includes an automated self-validation step before the human gate:
+
+- **Syntax validation**: Generated code, YAML, JSON, and shell scripts are checked for syntactic validity
+- **Schema compliance**: XML files are validated against `xml-schemas.md` definitions
+- **Traceability coverage**: Every artifact must trace back to a PRD requirement or architecture decision
+- **Cross-reference integrity**: All `ref` attributes must resolve to existing files; all DECISION_LOG citations must be valid
+
+## Language Adaptation
+
+System instructions and internal constraints are in English for maximum model compliance. All user-facing gate messages, summaries, and explanations automatically adapt to the user's input language (Chinese or English).
+
 ## Three-Layer XML Architecture
 
 ```
@@ -243,7 +265,10 @@ DevForge/
 ├── devforge-state.md            # STATE.md template specification
 ├── references/              # Shared reference documents
 │   ├── architecture-patterns.md
-│   └── xml-schemas.md
+│   ├── xml-schemas.md
+│   ├── system-prompt-template.md     # Global role definition + VCMF constraints
+│   ├── context-management-protocol.md # Layered summary + artifact loading rules
+│   └── validation-scripts-manifest.md # Script capability mapping + known gaps
 ├── scripts/                 # Utility scripts
 │   ├── architecture-ci.sh
 │   ├── package-plugin.py    # Packaging script for distribution
