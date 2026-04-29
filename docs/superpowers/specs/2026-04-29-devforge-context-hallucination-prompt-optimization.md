@@ -91,8 +91,8 @@ module_registry:
 | `devforge-iteration-planning` | PRD.md, STATE.md, architecture.xml, INTERFACE_CONTRACT.md, all module-prd.md | — |
 
 **协议规则**：
-- 当 artifact 总 token 估计超过阈值（8000 tokens）时，Required 全载，Optional 仅载摘要
-- 当总 token 估计超过 12000 tokens 时，Required 中除核心 2 个文件外，其余仅载摘要
+- 当 artifact 总 token 估计超过阈值（50,000 tokens）时，Required 全载，Optional 仅载摘要
+- 当总 token 估计超过 150,000 tokens 时，Required 中除核心 2 个文件外，其余仅载摘要
 - 摘要格式：文件路径 + 最后修改时间 + 1 句话内容摘要
 
 ### 3.4 Artifact Index 增强（对应 4.4）

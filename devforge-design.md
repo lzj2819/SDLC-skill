@@ -476,7 +476,7 @@ The `STATE.md` contains 8 sections:
 **Context Loading Protocol** (`references/context-management-protocol.md`):
 - Layered summary architecture: Level 1 (200-word global), Level 2 (50-word module digest), Level 3 (1-line decision index)
 - Artifact loading rules per skill: Required vs Optional artifacts with full/summary loading
-- Context truncation thresholds: >8,000 tokens (load Optional as summaries), >12,000 tokens (load only 2 critical Required in full)
+- Context truncation thresholds: >50,000 tokens (load Optional as summaries), >150,000 tokens (load only 2 critical Required in full)
 - Cross-session recovery: New sessions read Compressed Context first, then Artifact Index, then Required artifacts
 
 The `Decisions Log` (`DECISION_LOG.md`) records key decisions with:

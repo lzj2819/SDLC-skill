@@ -33,7 +33,7 @@ v1.2 新增能力：数据库Schema生成（DDL/SQL）、OpenAPI 3.0接口规范
 
 遵循 `references/context-management-protocol.md` 管理代码库上下文，有效利用模型的固定上下文窗口处理大型代码库：
 - **分层摘要架构**：全局压缩摘要（200 字）→ 模块微摘要（50 字）→ 决策索引（1 行）
-- **上下文截断阈值**：总 token > 8,000 时，Optional 产物仅加载摘要；> 12,000 时，仅加载 2 个最关键的 Required 产物全文
+- **上下文截断阈值**：总 token > 50,000 时，Optional 产物仅加载摘要；> 150,000 时，仅加载 2 个最关键的 Required 产物全文
 - **仓库索引**：脚手架阶段生成 `repo-index.md`（最大深度 3 的层级文件树 + 目录用途摘要），供调试和运维 Skill 快速定位文件
 - **模块注册表摘要**：使用 `STATE.md` 中 Module Registry 的 `digest` 字段（50 字微摘要）进行快速模块识别，避免加载完整模块 XML
 
@@ -282,7 +282,7 @@ v1.2 新增能力：数据库Schema生成（DDL/SQL）、OpenAPI 3.0接口规范
 * **XML 作为权威 (XML as Authority)**：所有代码开发围绕 XML 描述的功能进行。函数签名必须与 `component-spec.xml` 一致，CI 自动检查一致性。
 * **增量开发原则**：现有框架基础结构不推翻，只在其上添加。新增模块走完整流程，已有模块只做增量更新。
 * **领域扩展机制**：检测到 AI Agent、数据管道、移动应用等特征标签时，自动加载对应领域扩展的评估维度和反模式。
-* **上下文管理协议**：遵循 `references/context-management-protocol.md`，使用分层摘要（200字全局 + 50字模块 + 1行决策索引）管理上下文。总 token > 8,000 时 Optional 产物仅加载摘要；> 12,000 时仅加载 2 个最关键 Required 产物全文。
+* **上下文管理协议**：遵循 `references/context-management-protocol.md`，使用分层摘要（200字全局 + 50字模块 + 1行决策索引）管理上下文。总 token > 50,000 时 Optional 产物仅加载摘要；> 150,000 时仅加载 2 个最关键 Required 产物全文。
 * **上下文压缩**：每个 skill 完成后自动更新 `Compressed Context`（200字摘要），支持跨 session 快速恢复。
 * **硬核交付物**：阶段五必须给出实际的代码脚手架（Directory Tree、YAML、CI配置、含日志的Test代码），拒绝一切抽象的"建议"或"套话"。
 * **自校验机制**：每个产生交付物的 Skill 在人类门控前必须执行自动化校验（语法、Schema、可追溯性、交叉引用）。未通过校验不得提交给用户。

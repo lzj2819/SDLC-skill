@@ -143,11 +143,11 @@ This document defines how DevForge skills load artifacts to stay within context 
 
 When total loaded artifact token estimate exceeds thresholds:
 
-### Threshold 1: > 8,000 tokens
+### Threshold 1: > 50,000 tokens
 - Load all Required artifacts in full
 - Load Optional artifacts as summaries only (path + last-modified + 1-sentence digest)
 
-### Threshold 2: > 12,000 tokens
+### Threshold 2: > 150,000 tokens
 - Load only the 2 most critical Required artifacts in full (STATE.md + current skill's primary input)
 - Load all other artifacts as summaries only
 - Log what was truncated to STATE.md Known Pitfalls
@@ -171,7 +171,7 @@ Run: `grep -c "devforge-project-scaffolding" references/context-management-proto
 Expected: `1`
 
 Run: `grep "Threshold 2" references/context-management-protocol.md`
-Expected: Shows the 12,000 token threshold rule
+Expected: Shows the 150,000 token threshold rule
 
 - [ ] **Step 3: Commit**
 
@@ -882,7 +882,7 @@ In Mode A (Bug Diagnosis), after step 1 (Collect evidence), insert:
 1.5. **Apply context protocol**
    - Load `references/context-management-protocol.md`
    - Prioritize loading: repo-index.md, target component-spec.xml, failing test output
-   - Load other artifacts as summaries if context exceeds 8,000 tokens
+   - Load other artifacts as summaries if context exceeds 50,000 tokens
 ```
 
 In Mode B (Refactoring), after step 1 (Code health scan), insert:
@@ -891,7 +891,7 @@ In Mode B (Refactoring), after step 1 (Code health scan), insert:
 1.5. **Apply context protocol**
    - Load `references/context-management-protocol.md`
    - Prioritize loading: repo-index.md, target component-spec.xml, DESIGN_REVIEW.md issues
-   - Load other artifacts as summaries if context exceeds 8,000 tokens
+   - Load other artifacts as summaries if context exceeds 50,000 tokens
 ```
 
 - [ ] **Step 3: Verify insertions**

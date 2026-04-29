@@ -35,11 +35,11 @@ This document defines how DevForge skills load artifacts to stay within context 
 
 When total loaded artifact token estimate exceeds thresholds:
 
-### Threshold 1: > 8,000 tokens
+### Threshold 1: > 50,000 tokens
 - Load all Required artifacts in full
 - Load Optional artifacts as summaries only (path + last-modified + 1-sentence digest)
 
-### Threshold 2: > 12,000 tokens
+### Threshold 2: > 150,000 tokens
 - Load only the 2 most critical Required artifacts in full (STATE.md + current skill's primary input)
 - Load all other artifacts as summaries only
 - Log what was truncated to STATE.md Known Pitfalls

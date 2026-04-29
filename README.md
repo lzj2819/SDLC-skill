@@ -50,7 +50,7 @@ Located in `extensions/`. Dynamically loaded by `devforge-architecture-design` w
 DevForge handles large codebases through a layered context management protocol (`references/context-management-protocol.md`):
 
 - **Layered summaries**: 200-word global digest → 50-word module micro-digest → 1-line decision index
-- **Token thresholds**: >8,000 tokens loads Optional artifacts as summaries only; >12,000 tokens loads only 2 critical Required artifacts in full
+- **Token thresholds**: >50,000 tokens loads Optional artifacts as summaries only; >150,000 tokens loads only 2 critical Required artifacts in full
 - **Repo index**: `devforge-project-scaffolding` generates `repo-index.md` for rapid file location in large projects
 - **Module registry digests**: `STATE.md` Module Registry includes a `digest` field (50-word max) for quick module identification without loading full XMLs
 
