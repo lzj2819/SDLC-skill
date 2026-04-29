@@ -33,6 +33,12 @@ Before starting, read `skill/artifacts/STATE.md` (or `docs/architecture/system/S
 - If phase is earlier than `scaffolding_completed`, stop and instruct the user to complete prior phases first
 - If `architecture.xml` is missing, stop — the system has no architecture baseline to increment upon
 
+## Language Adaptation
+
+- System instructions and constraints in this skill are in English for maximum model compliance
+- User-facing gate messages, summaries, and explanations use the same language as the user's most recent input
+- If the user writes in Chinese, respond in Chinese. If English, respond in English
+
 ## Workflow
 
 1. **Load full baseline**
@@ -122,7 +128,17 @@ Before starting, read `skill/artifacts/STATE.md` (or `docs/architecture/system/S
      - Risk summary (breaking changes, backward compatibility concerns)
      - Rollback criteria (when to abort the iteration)
 
-9. **State update**
+9. **Self-validation: iteration plan consistency**
+   - Before finalizing, verify iteration artifacts with automated checks:
+     - **Impact matrix completeness**: Confirm every new requirement in `ITERATION_PRD.md` has a corresponding row in the Impact Matrix with non-empty Affected Module, Impact Type, and Severity
+     - **No circular dependencies**: Scan updated `architecture.xml` `Coupling` nodes for circular dependencies among affected modules. If found, break the cycle before proceeding.
+     - **Versioning correctness**: Verify that every `breaking` severity change has an incremented interface version in `INTERFACE_CONTRACT.md`; verify `additive` changes are annotated with `[ADDED vX.Y]`
+     - **Incremental PRD purity**: Confirm `ITERATION_PRD.md` contains ONLY new or modified requirements. If any unchanged requirement is copied from the original PRD, remove it.
+     - **Sync report completeness**: Verify the XML sync report lists every file that was modified during XML synchronization. If any modified file is missing from the report, add it.
+     - **Backward compatibility documentation**: For every `breaking` change, confirm `ITERATION_PLAN.md` contains a backward compatibility or migration strategy
+   - If any check fails, fix the iteration artifacts before proceeding
+
+10. **State update**
    - Update `STATE.md`:
      - Append to **Completed Steps**: `[YYYY-MM-DD HH:MM] devforge-iteration-planning: Analyzed [N] new requirements. Impact: [X] modules affected. Iteration scope: [summary]`
      - Update **Current State**:
@@ -132,7 +148,7 @@ Before starting, read `skill/artifacts/STATE.md` (or `docs/architecture/system/S
      - Update **Module Registry**: add new modules with status `pending`; update affected modules' status if they change
      - Append iteration-specific risks to **Known Pitfalls**
 
-10. **Human gate**
+11. **Human gate**
     - Present iteration summary:
       - Number of new requirements
       - Impact matrix (modules affected, severity)
