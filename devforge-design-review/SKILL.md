@@ -31,6 +31,12 @@ For technical consistency checks, use `devforge-architecture-validation` instead
 
 Read `skill/artifacts/STATE.md`. Acceptable phases: `architecture_design_completed`, `architecture_validated`, `module_design_completed`, `iteration_planning_completed`. If phase is not in this list or `architecture.xml` is missing, stop and instruct the user to complete prior phases first.
 
+## Language Adaptation
+
+- System instructions and constraints in this skill are in English for maximum model compliance
+- User-facing gate messages, summaries, and explanations use the same language as the user's most recent input
+- If the user writes in Chinese, respond in Chinese. If English, respond in English
+
 ## Workflow
 
 1. **Read all historical artifacts**
@@ -76,11 +82,20 @@ Read `skill/artifacts/STATE.md`. Acceptable phases: `architecture_design_complet
      - Cross-reference table linking issues to architecture decisions
      - Human gate phrase
 
-7. **Update `STATE.md`**
+7. **Self-validation: review quality**
+   - Before finalizing, verify `DESIGN_REVIEW.md` quality with automated checks:
+     - **Lens coverage**: Confirm issues exist from all three lenses (Attacker, Operator, Extender). If any lens is missing, add a note: "No issues identified from [Lens] perspective — re-verify."
+     - **Severity completeness**: Verify every issue has a severity label (Must Fix / Should Fix / Nice to Fix / Documented Risks)
+     - **Artifact grounding**: For each issue, confirm it cites at least one source artifact (PRD requirement ID, architecture.xml Module ID, or DECISION_LOG entry ID). Flag any issue without a source as potentially invented.
+     - **No PASS/FAIL**: Grep for "PASS" or "FAIL" or " verdict" in the document. If found, remove — this skill must NOT produce a gatekeeper conclusion.
+     - **Cross-reference validity**: Verify every cited DECISION_LOG entry ID exists in `DECISION_LOG.md`; verify every cited PRD requirement exists in `PRD.md`
+   - If any check fails, fix the review document before proceeding
+
+8. **Update `STATE.md`**
    - Append all identified risks to **Known Pitfalls & Risks**
    - Set `phase: design_review_completed` (or keep existing phase if validation not yet run)
 
-8. **Human gate**
+9. **Human gate**
    - Present issue summary (count by severity)
    - Say exactly: "设计审查报告已生成。这不是'通过/不通过'的检查，而是一份问题清单。请审阅上述问题，决定哪些需要修复、哪些可以接受。回复 [APPROVE] 进入项目脚手架阶段，回复 [FIX <issue_id>] 要求修复特定问题，或提出修改意见。"
    - Do NOT proceed until [APPROVE]
