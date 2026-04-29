@@ -30,6 +30,12 @@ Read `skill/artifacts/STATE.md`. Acceptable phases: `scaffolding_completed`, `mo
 
 If `architecture.xml` is missing, stop and instruct the user to complete prior phases first.
 
+## Language Adaptation
+
+- System instructions and constraints in this skill are in English for maximum model compliance
+- User-facing gate messages, summaries, and explanations use the same language as the user's most recent input
+- If the user writes in Chinese, respond in Chinese. If English, respond in English
+
 ## Workflow
 
 1. **Cloud platform selection**
@@ -129,10 +135,23 @@ If `architecture.xml` is missing, stop and instruct the user to complete prior p
      - Alert response (for each Prometheus rule, include diagnosis steps)
      - Security response (credential rotation, incident containment)
 
-8. **State update**
+9. **Tool and config validation**
+   - Before finalizing, verify infrastructure artifacts:
+     - **Tool version validation**: For every third-party tool referenced (Terraform providers, Helm charts, Prometheus Operator, Istio), perform active search:
+       - Search: "{tool_name} deprecated", "{tool_name} CVE", "{tool_name} maintenance status"
+       - Verify last release/commit within 12 months
+       - Flag any deprecation notice or security advisory
+       - Follow the same 3-layer validation rule as `devforge-architecture-design` (Active Search → Knowledge Verification → Blacklist Enforcement)
+     - **Terraform syntax validation**: Run `terraform fmt -check` and `terraform validate` (if Terraform CLI is available) or visually verify HCL syntax correctness
+     - **Kubernetes manifest validation**: Verify all generated YAML is valid (`kubectl --dry-run=client apply -f` if cluster available, or YAML syntax check via `python -c "import yaml; yaml.safe_load(open('file'))"`)
+     - **Prometheus rule validation**: Verify PromQL expressions are syntactically valid (search for known PromQL syntax if unsure)
+     - **Resource traceability**: Confirm every Terraform resource and K8s manifest maps to at least one `Module` or `StateModel` in `architecture.xml`
+   - If any check fails, fix the infrastructure artifacts before proceeding
+
+10. **State update**
    - Update `STATE.md`: append to Completed Steps
 
-9. **Human gate**
+11. **Human gate**
    - Present summary: "生产就绪基础设施已生成，包含 Terraform、K8s、监控和多环境配置。请确认当前阶段输出。回复 [APPROVE] 完成，或提出修改意见。"
 
 ## Output Specification
