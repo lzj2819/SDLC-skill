@@ -27,6 +27,12 @@ Perform technical validation of an approved architecture XML: consistency checks
 
 Read `skill/artifacts/STATE.md`. Acceptable phases: `architecture_design_completed`, `architecture_validated`, `module_design_completed`, `iteration_planning_completed`. If phase is not in this list or `architecture.xml` is missing, stop and instruct the user to complete prior phases first.
 
+## Language Adaptation
+
+- System instructions and constraints in this skill are in English for maximum model compliance
+- User-facing gate messages, summaries, and explanations use the same language as the user's most recent input
+- If the user writes in Chinese, respond in Chinese. If English, respond in English
+
 ## Workflow
 
 1. **API readiness check**
@@ -81,11 +87,20 @@ Read `skill/artifacts/STATE.md`. Acceptable phases: `architecture_design_complet
      - All `StateModel` entries have required attributes
    - The script should be runnable in a Unix shell
 
-10. **State update**
+10. **Self-validation: report and script quality**
+    - Before finalizing, verify validation outputs with automated checks:
+      - **Report completeness**: Confirm `VALIDATION_REPORT.md` contains a PASS/FAIL verdict for every `Module` in `architecture.xml`
+      - **Trace log format**: Verify every trace line follows the exact format `[API Response] -> [Case ID] -> ... -> Final Result`
+      - **Health-check script syntax**: If `health-check.sh` is generated, verify it is valid shell syntax (`bash -n health-check.sh` must pass)
+      - **Simulation transparency**: Grep the report for any statement that could be misread as real API results; ensure all simulated outputs are explicitly labeled "[SIMULATED]"
+      - **Delta report accuracy**: Verify `VALIDATION_DELTA.md` only contains issues that differ from the previous validation report (if one exists)
+    - If any check fails, regenerate the failing artifact before proceeding
+
+11. **State update**
     - Update `STATE.md`: `phase: architecture_validated`
     - Set DIVE `Verify: completed`
 
-11. **Human gate**
+12. **Human gate**
     - Present validation summary
     - Say exactly: "架构验证报告和健康检查脚本已生成。请确认当前阶段输出。回复 [APPROVE] 进入项目脚手架阶段，或提出修改意见。"
     - Do NOT proceed until [APPROVE]
