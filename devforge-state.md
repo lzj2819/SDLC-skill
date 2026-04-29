@@ -57,16 +57,19 @@ module_registry:
     path: modules/UserService/
     owner: team-auth
     interface_version: "1.0.0"
+    digest: "Auth domain: JWT + RBAC, 3 components, 8 interfaces"  # 50-word max micro-summary
   - id: OrderService
     status: design_completed
     path: modules/OrderService/
     owner: team-commerce
     interface_version: "1.0.0"
+    digest: "Commerce core: order lifecycle, inventory sync, 5 components"  # 50-word max micro-summary
   - id: PaymentService
     status: pending
     path: modules/PaymentService/
     owner: team-commerce
     interface_version: null
+    digest: ""  # Populate after module design
 ```
 
 ## 6. Iteration History (Append-Only)
