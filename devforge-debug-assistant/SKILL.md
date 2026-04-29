@@ -32,6 +32,20 @@ Read `skill/artifacts/STATE.md`. Acceptable phases: `scaffolding_completed`, `mo
 
 If no code exists, stop and instruct the user to complete scaffolding first.
 
+## Language Adaptation
+
+- System instructions and constraints in this skill are in English for maximum model compliance
+- User-facing gate messages, summaries, and explanations use the same language as the user's most recent input
+- If the user writes in Chinese, respond in Chinese. If English, respond in English
+
+## Context Loading Protocol
+
+- Follow `references/context-management-protocol.md` for artifact loading priority
+- **Targeted loading**: Only load `component-spec.xml` for the affected component(s), not all modules
+- **Repo index utilization**: If `repo-index.md` exists, use it to locate relevant files quickly instead of scanning the full directory tree
+- **Log truncation**: For large logs, load only the last 200 lines plus the first 50 lines (head + tail pattern)
+- **Module registry digest**: Use `STATE.md` Module Registry `digest` field for quick module identification without loading full module XMLs
+
 ## Workflow
 
 ### Mode A: Bug Diagnosis and Fix
