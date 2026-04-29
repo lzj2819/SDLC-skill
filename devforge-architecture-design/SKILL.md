@@ -37,6 +37,11 @@ Before starting, read `skill/artifacts/STATE.md`. Acceptable entry phases: `requ
 
 ## Workflow
 
+## Language Adaptation
+- System instructions and constraints in this skill are in English for maximum model compliance
+- User-facing gate messages, summaries, and explanations use the same language as the user's most recent input
+- If the user writes in Chinese, respond in Chinese. If English, respond in English
+
 1. **Architecture parallel exploration**
    - Read `PRD.md`, `STATE.md`, `DECISION_LOG.md` (full historical context)
    - Read `skill/references/architecture-patterns.md` (full pattern library with evaluation dimensions)
@@ -110,6 +115,13 @@ Before starting, read `skill/artifacts/STATE.md`. Acceptable entry phases: `requ
      - Each `DataModel` → an entity
      - Each `Relationship` → a relationship line (1:1, 1:N, N:M)
 
+6.1. **Self-validation: schema.sql**
+   - Check: Every CREATE TABLE ends with `);`
+   - Check: Every ALTER TABLE has valid FOREIGN KEY syntax
+   - Check: No `VARCHAR()` without length parameter
+   - Check: Primary key fields are NOT NULL
+   - If any check fails, regenerate the failing statement before proceeding
+
 7. **OpenAPI Specification Generation**
    - Read `INTERFACE_CONTRACT.md` and `architecture.xml`
    - Convert interface definitions to OpenAPI 3.0 format:
@@ -122,12 +134,44 @@ Before starting, read `skill/artifacts/STATE.md`. Acceptable entry phases: `requ
    - Output `skill/artifacts/openapi.yaml`
    - Ensure schema names are consistent between `openapi.yaml` and `schema.sql`
 
+7.1. **Self-validation: openapi.yaml**
+   - Check: All `$ref` values start with `#/components/schemas/`
+   - Check: All paths have at least one response defined
+   - Check: Schema names in `components/schemas` match DataModel names in architecture.xml
+   - Check: YAML indentation is consistent (2 spaces)
+   - If any check fails, regenerate the failing section before proceeding
+
 8. **Architecture documentation**
    - Write `skill/artifacts/ARCHITECTURE.md` containing:
      - Selected architecture and justification
      - Interface contract summary
      - Test case catalog
      - Mock data definitions
+     - **Technology Stack Recommendation** (validated per rule below)
+
+8.1. **Technology Stack Validation Rule**：
+Before recommending any third-party library, framework, or tool, you MUST perform the following verification in order:
+
+1. **Active Search** (Primary):
+   - Use `WebSearch` or `WebFetch` to search: "{tool_name} deprecated", "{tool_name} CVE", "{tool_name} maintenance status"
+   - Check the project's GitHub repository or official website for:
+     - Last commit/release date (within 12 months = actively maintained)
+     - Any deprecation notice or archive status
+     - Open security advisories
+   - If search tools are unavailable, proceed to step 2 with a disclaimer
+
+2. **Knowledge Verification** (Fallback):
+   - Cross-check against your training knowledge for known issues
+   - Add disclaimer: "⚠️ This recommendation is based on available information; please verify current status before adoption."
+
+3. **Blacklist Enforcement** (Always):
+   - NEVER recommend the following without explicit user approval:
+     - VM2 (critical sandbox escape CVEs, project archived)
+     - Any library with known RCE vulnerabilities in the last 12 months
+   - If a searched tool matches the blacklist or shows deprecation/security issues, you MUST:
+     - Flag it explicitly in the recommendation
+     - Provide an actively maintained alternative
+     - Document the risk in DECISION_LOG.md
 
 9. **Decision Log update**
    - Append architecture decisions to `skill/artifacts/DECISION_LOG.md`
