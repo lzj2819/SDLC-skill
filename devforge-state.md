@@ -130,3 +130,39 @@ iteration_history:
 > Every skill MUST append risks discovered during its unfold.
 
 - [YYYY-MM-DD] Risk: [description]. Mitigation: [strategy].
+
+## 10. Error Log (Append-Only)
+> Every error reported via error-tracing MUST be logged here.
+
+```yaml
+ErrorLog:
+  - timestamp: "2026-04-29T10:00:00Z"
+    traceId: "arch-dec-0042-ERR-001-20260429100000"
+    errorCode: "ARCH-XML-001"
+    status: pending          # [pending | fixed | ignored]
+    location: "devforge-architecture-design → Step 5 → architecture.xml:42"
+    fixCommit: ""           # Populated when status becomes fixed
+  - timestamp: "2026-04-29T10:05:00Z"
+    traceId: "arch-dec-0042-ERR-001-20260429100000"
+    errorCode: "ARCH-XML-001"
+    status: fixed
+    location: "devforge-architecture-design → Step 5 → architecture.xml:42"
+    fixCommit: "abc1234"
+```
+
+## 11. Intervention Log (Append-Only)
+> Every human intervention via intervention-checkpoint MUST be logged here.
+
+```yaml
+InterventionLog:
+  - timestamp: "2026-04-29T11:00:00Z"
+    type: "ROLLBACK"         # [PAUSE | ROLLBACK | EXPLAIN | EDIT | SKIP | INJECT]
+    stepId: "phase3-step5"
+    reason: "架构设计走偏，需重新评估单体 vs 微服务"
+    outcome: "重新评估后选择单体架构"
+  - timestamp: "2026-04-29T11:30:00Z"
+    type: "INJECT"
+    stepId: "phase1-step4"
+    reason: "补充技术约束：团队规模=2人"
+    outcome: "PRD 更新为适合小团队的简化方案"
+```

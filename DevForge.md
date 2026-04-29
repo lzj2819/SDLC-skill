@@ -43,7 +43,22 @@ v1.2 新增能力：数据库Schema生成（DDL/SQL）、OpenAPI 3.0接口规范
 
 请严格按照以下阶段循序渐进地与用户交互并执行任务。
 
-**🛑 人类审核门控 (Human-in-the-loop Gate)**：在每一个阶段完成时，必须停止输出，并向用户发送指令："**请确认当前阶段输出。回复 [APPROVE] 进入下一阶段，或提出修改意见。**" 未经授权，绝对禁止自动跳跃到下一阶段。
+**🛑 人类审核门控 (Human-in-the-loop Gate)**：
+
+在每一个阶段完成时，必须停止输出，并向用户发送：
+
+"**请确认当前阶段输出。回复 [APPROVE] 进入下一阶段，[PAUSE] 暂停讨论，[ROLLBACK] 回滚当前步骤，或提出修改意见。**"
+
+可用命令：
+- `[APPROVE]` - 确认并继续
+- `[PAUSE]` - 暂停，保持上下文
+- `[ROLLBACK {step_id}]` - 回滚到指定步骤
+- `[EXPLAIN {TraceID}]` - 展开解释
+- `[EDIT {file_path}]` - 编辑文件后继续
+- `[SKIP]` - 跳过可选步骤
+- `[INJECT {context}]` - 补充上下文
+
+未经授权，绝对禁止自动跳跃到下一阶段。
 
 ---
 
@@ -58,6 +73,10 @@ v1.2 新增能力：数据库Schema生成（DDL/SQL）、OpenAPI 3.0接口规范
 3. **负面场景前置分析 (Edge-case 防脑残设计)**：引导用户提前思考极端情况，例如："如果遭遇恶意高频刷新怎么办？"、"如果核心依赖的第三方API宕机怎么办？"。
 4. **上下文补全**：提出 3-5 个针对性的问题，要求用户提供具体的用户画像、痛点场景和预期业务价值。
 5. **领域标签提取**：从用户描述中提取项目特征标签（如 `ai_agent`、`frontend_heavy`、`event_driven`、`high_read_write_ratio`），用于后续动态架构模式筛选。
+6. **竞品与技术调研**：
+   * 根据产品想法，调用 WebSearch 进行竞品分析和技术可行性验证
+   * 遵循 `skill/references/search-integration.md` 的调用点和引用规范
+   * 结果存入 DECISION_LOG.md 的 Evidence 字段
 
 *(等待用户回复 [APPROVE])*
 
@@ -126,8 +145,17 @@ v1.2 新增能力：数据库Schema生成（DDL/SQL）、OpenAPI 3.0接口规范
      - `ModuleDetail/@ref` 和 `ComponentDetail/@ref` 必须指向存在的文件。
      - 系统级 `StateModel` 必须回答：where stored, who writes, who reads, lifecycle。
      - `architecture.xml` 必须包含 `DecisionTrace` 节点，记录每个架构决策的 Question、Answer、Risk。
-   * **技术栈验证**：推荐任何第三方库/框架前，执行主动搜索（WebSearch/WebFetch）检查其维护状态、CVE 和弃用通知。禁止推荐黑名单工具（VM2、已知 RCE 漏洞库）。
+   * **技术栈验证**：推荐任何第三方库/框架前，必须：
+     - **主动搜索**（优先）：使用 WebSearch/WebFetch 搜索 "{tool_name} deprecated"、"{tool_name} CVE"、"{tool_name} maintenance status"
+     - 遵循 `skill/references/search-integration.md` 的搜索缓存规则
+     - 搜索结果作为 DECISION_LOG.md 的 Evidence
+     - 禁止推荐黑名单工具（VM2、已知 RCE 漏洞库）
    * **自校验**：生成 `schema.sql` 后执行自校验（括号闭合、外键语法、VARCHAR 长度、主键非空）；生成 `openapi.yaml` 后执行自校验（$ref 前缀、响应定义、Schema 名称匹配、YAML 缩进）。
+
+4. **安全扫描（可选）**：
+   * 调用 `sdlc-security-audit` 对 `architecture.xml` 进行架构层安全检查
+   * 扫描 `<Security>` 节点完整性、`<Authentication>` 配置、`<Encryption>` 策略
+   * 产物：`SECURITY_AUDIT_REPORT.md`（架构层）
 
 *(等待用户回复 [APPROVE])*
 
@@ -151,7 +179,10 @@ v1.2 新增能力：数据库Schema生成（DDL/SQL）、OpenAPI 3.0接口规范
 4. **增量验证报告 (VALIDATION_DELTA)**：
    * 如果存在上次验证报告，对比本次结果，只报告新增或已解决的问题。
    * 存储于 `docs/architecture/validation/VALIDATION_DELTA_{YYYYMMDD}.md`。
-5. **自修复循环 (Self-Healing Loop)**：若发现流程断点、数据格式冲突、或安全校验失败等问题，则必须报错退回阶段三修改 XML，直到跑通。
+5. **自修复循环 (Self-Healing Loop)**：若发现流程断点、数据格式冲突、或安全校验失败等问题，则必须：
+   - 使用 error-tracing 格式生成错误报告（含 TraceID 和修复建议）
+   - 更新 STATE.md 的 ErrorLog
+   - 报错退回阶段三修改 XML，直到跑通。
 
 *(等待用户回复 [APPROVE])*
 
@@ -163,7 +194,13 @@ v1.2 新增能力：数据库Schema生成（DDL/SQL）、OpenAPI 3.0接口规范
 
 **执行动作**：不再停留在"清单"层面，直接生成落地级别的工程资源：
 
-1. **工程脚手架与拓扑 (Scaffolding & Topology)**：
+1. **产物幂等更新**：在写入任何产物前，调用 artifact-manager 的 CRUD-Append 逻辑：
+   * 读取现有产物（如果存在）
+   * 计算差异，只更新变更部分
+   * 检测手动修改标记，生成冲突报告（如有）
+   * 写入产物并更新版本标记
+
+2. **工程脚手架与拓扑 (Scaffolding & Topology)**：
    * 输出完整的项目基础目录树（Directory Tree）。
    * 生成核心的依赖配置文件（如 package.json / pom.xml / requirements.txt）。
    * 输出物理部署拓扑描述及对应的 docker-compose.yml 或基础 K8s 部署清单，明确容器化策略。
@@ -185,6 +222,12 @@ v1.2 新增能力：数据库Schema生成（DDL/SQL）、OpenAPI 3.0接口规范
    * **单元与集成测试**：输出特定语言的测试代码（如 Pytest / Jest），并将阶段三的 Mock 数据硬编码或文件化写入测试夹具（Fixtures）中。
    * **NFR 验证脚本**：输出基础的压测配置（如 k6 或 JMeter 脚本片段）或安全扫描指令验证。
    * **透明可视规范**：在代码中植入强日志记录，确保每个断言前后打印完整的入参/出参及堆栈信息，生成高度可审计的测试报告。
+
+5. **安全扫描**：
+   * 调用 `sdlc-security-audit` 对生成的代码骨架进行安全扫描
+   * 扫描硬编码密钥、SQL 注入、XSS、不安全依赖等
+   * 产物：`SECURITY_AUDIT_REPORT.md`（代码层）
+   * Must Fix 问题自动转为内联 TODO
 
 *(等待用户回复 [APPROVE])*
 
@@ -289,3 +332,7 @@ v1.2 新增能力：数据库Schema生成（DDL/SQL）、OpenAPI 3.0接口规范
 * **语言自适应**：系统指令使用英文；用户门控消息、摘要和解释自动适配用户输入语言（中文/英文）。
 * **技术栈验证**：推荐工具前必须主动搜索其维护状态和 CVE；禁止推荐黑名单工具（VM2、已知 RCE 漏洞库）。
 * **隐私管理**：所有 API keys 和 tokens 必须仅存放在 `.env` 文件中。
+* **搜索集成**：技术选型和安全检查时必须遵循 `skill/references/search-integration.md`，主动搜索验证依赖状态和 CVE。
+* **安全扫描**：代码生成后必须执行 `sdlc-security-audit`，Critical 级别问题必须修复后方可进入下一阶段。
+* **错误追踪规范**：所有报错遵循 `skill/tools/error-tracing.md` 格式，包含 TraceID 和 DecisionID 关联。
+* **产物管理规范**：所有产物生成遵循 `skill/tools/artifact-manager.md` 的 CRUD-Append 模式，避免覆盖已有内容。

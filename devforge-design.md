@@ -499,16 +499,21 @@ skill/
 ├── devforge-state.md
 ├── 软件开发全流程智能体技能(DevForge).md
 ├── references/
-│   ├── architecture-patterns.md      # 10-pattern library with evaluation dimensions
-│   ├── xml-schemas.md                # Three-layer XML schema definitions
-│   ├── system-prompt-template.md     # Global role definition + VCMF constraints
-│   ├── context-management-protocol.md # Layered summary + artifact loading rules
-│   └── validation-scripts-manifest.md # Script capability mapping + known gaps
+│   ├── architecture-patterns.md       # 10-pattern library with evaluation dimensions
+│   ├── xml-schemas.md                 # Three-layer XML schema definitions
+│   ├── system-prompt-template.md      # Global role definition + VCMF constraints
+│   ├── context-management-protocol.md  # Layered summary + artifact loading rules
+│   ├── validation-scripts-manifest.md  # Script capability mapping + known gaps
+│   └── search-integration.md          # Phase-based search triggers + citation rules
+├── tools/
+│   ├── error-tracing.md               # Error format spec with TraceID + DecisionID linkage
+│   ├── artifact-manager.md            # CRUD-Append + conflict detection rules
+│   └── intervention-checkpoint.md     # Human-in-the-loop commands (PAUSE/ROLLBACK/EXPLAIN/EDIT/SKIP/INJECT)
 ├── scripts/
-│   ├── architecture-ci.sh            # CI health check script
-│   ├── xml-sync.py                   # XML sync and validation script
-│   └── package-plugin.py             # Packaging script for distribution
-├── artifacts/                        # Generated artifacts (or docs/architecture/ in iteration mode)
+│   ├── architecture-ci.sh             # CI health check script (6 checks incl. security)
+│   ├── xml-sync.py                    # XML sync and validation script
+│   └── package-plugin.py              # Packaging script for distribution
+├── artifacts/                         # Generated artifacts (or docs/architecture/ in iteration mode)
 │   ├── STATE.md
 │   ├── PRD.md
 │   ├── DECISION_LOG.md
@@ -518,6 +523,7 @@ skill/
 │   ├── VALIDATION_REPORT.md
 │   ├── VALIDATION_DELTA.md
 │   ├── DESIGN_REVIEW.md
+│   ├── SECURITY_AUDIT_REPORT.md
 │   ├── ITERATION_PRD.md
 │   ├── ITERATION_PLAN.md
 │   ├── health-check.sh
@@ -545,6 +551,8 @@ skill/
 │   └── SKILL.md
 ├── devforge-debug-assistant/
 │   └── SKILL.md
+├── devforge-security-audit/
+│   └── SKILL.md                         # Code-level security scanning (8 dimensions + CVE check)
 ├── context-compression/
 │   └── SKILL.md
 └── extensions/
@@ -788,6 +796,11 @@ description: Internal utility skill used by other DevForges to compress session 
 - **Self-validation**: Every artifact-producing skill runs automated checks before the human gate (syntax, schema, traceability, cross-reference integrity).
 - **Language Adaptation**: System instructions in English; user-facing messages in the user's input language.
 - **Technology Stack Validation**: Active search before recommending tools; never recommend blacklisted libraries (VM2, known RCE) without explicit approval.
+- **Error Tracing**: All errors MUST follow `tools/error-tracing.md` format (TraceID, DecisionID linkage, fix suggestions).
+- **Artifact Management**: All artifacts MUST follow `tools/artifact-manager.md` CRUD-Append rules (read existing → compute diff → update delta → preserve manual edits).
+- **Intervention Checkpoint**: Human gate MUST support `[PAUSE]`, `[ROLLBACK]`, `[EXPLAIN]`, `[EDIT]`, `[SKIP]`, `[INJECT]` per `tools/intervention-checkpoint.md`.
+- **Security Audit**: Code generation MUST trigger `devforge-security-audit` scan; Critical issues MUST be fixed before proceeding.
+- **Search Integration**: Tool recommendations MUST follow `references/search-integration.md` (WebSearch for CVE, deprecation, benchmarks; cache 24h).
 
 ---
 

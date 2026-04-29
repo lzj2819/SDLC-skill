@@ -24,7 +24,7 @@ if [ ! -d "$ARCH_DIR" ]; then
 fi
 
 # 1. Check XML well-formedness
-echo "[1/5] Checking XML well-formedness..."
+echo "[1/6] Checking XML well-formedness..."
 while IFS= read -r -d '' xmlfile; do
     if ! xmllint --noout "$xmlfile" 2>/dev/null; then
         echo "  FAIL: XML parse error in $xmlfile"
@@ -36,7 +36,7 @@ done < <(find "$ARCH_DIR" -name "*.xml" -print0)
 
 # 2. Check ref attributes point to existing files
 echo ""
-echo "[2/5] Checking ref attribute integrity..."
+echo "[2/6] Checking ref attribute integrity..."
 while IFS= read -r -d '' xmlfile; do
     grep -oP '(?<=ref=")[^"]+' "$xmlfile" 2>/dev/null | while read -r ref; do
         # Resolve relative to the XML file's directory
@@ -53,7 +53,7 @@ done < <(find "$ARCH_DIR" -name "*.xml" -print0)
 
 # 3. Check Coupling targets exist as Module names
 echo ""
-echo "[3/5] Checking Coupling target consistency..."
+echo "[3/6] Checking Coupling target consistency..."
 SYSTEM_XML="$ARCH_DIR/system/architecture.xml"
 if [ -f "$SYSTEM_XML" ]; then
     MODULES=$(grep -oP '(?<=id=")[^"]+' "$SYSTEM_XML" | grep -v '^arch-dec' | sort -u)
@@ -72,7 +72,7 @@ fi
 
 # 4. Check StateModel entries have required attributes
 echo ""
-echo "[4/5] Checking StateModel attribute completeness..."
+echo "[4/6] Checking StateModel attribute completeness..."
 while IFS= read -r -r -d '' xmlfile; do
     python3 -c "
 import xml.etree.ElementTree as ET
@@ -95,7 +95,7 @@ done < <(find "$ARCH_DIR" -name "*.xml" -print0)
 
 # 5. Check ModuleDetail refs exist
 echo ""
-echo "[5/5] Checking ModuleDetail references..."
+echo "[5/6] Checking ModuleDetail references..."
 if [ -f "$SYSTEM_XML" ]; then
     python3 -c "
 import xml.etree.ElementTree as ET
@@ -124,6 +124,20 @@ except Exception as e:
 else
     echo "  SKIP: system/architecture.xml not found"
 fi
+
+# 6. Security checks
+echo ""
+echo "[6/6] Checking security best practices..."
+while IFS= read -r -d '' codefile; do
+    # Check for hardcoded secrets
+    if grep -Ei "password|secret|token|key.*=.*\"" "$codefile" 2>/dev/null | grep -v "^#"; then
+        echo "  WARN: Potential hardcoded secret in $codefile"
+    fi
+    # Check for SQL injection patterns
+    if grep -Ei "SELECT|INSERT|UPDATE|DELETE.*\+" "$codefile" 2>/dev/null | grep -v "^#"; then
+        echo "  WARN: Potential SQL injection in $codefile"
+    fi
+done < <(find "$ARCH_DIR" -type f \( -name "*.py" -o -name "*.js" -o -name "*.ts" -o -name "*.java" \) -print0)
 
 echo ""
 echo "=== Architecture CI Check Complete ==="

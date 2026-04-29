@@ -1,308 +1,346 @@
-# DevForge Chain v1.2
+# DevForge SDLC Skill Chain v1.2
 
-A standalone, composable set of Claude Code skills for the full software development lifecycle. Built on the VCMF (Vibe Coding Maturity Framework) and the DIVE (Design-Implement-Verify-Evolve) cycle.
+> 基于 **VCMF**（Vibe Coding Maturity Framework）与 **DIVE**（Design-Implement-Verify-Evolve）方法论的 AI 驱动软件开发生命周期工具链
 
-[GitHub Repository](https://github.com/lzj2819/DevForge) | [License: MIT](LICENSE)
+[GitHub 仓库](https://github.com/lzj2819/DevForge) | [License: MIT](LICENSE)
 
-The original monolithic Chinese design document is preserved at `DevForge.md` for reference.
+---
 
-## Skills
+## 一句话介绍
 
-| Skill | DIVE Stage | VCMF Principles | Purpose |
-|-------|------------|-----------------|---------|
-| `devforge-requirement-analysis` | Design | Design as Contract, Interface as Boundary | Turn an idea into a structured PRD with user stories, acceptance criteria, and cross-module interaction points |
-| `devforge-architecture-design` | Design | Design as Contract, Interface as Boundary, State as Responsibility | Evaluate architecture patterns dynamically (10-pattern library), design interface contracts, model three-layer XML architecture (System/Module/Component), and define test cases |
-| `devforge-architecture-validation` | Verify | Interface as Boundary, Reality as Baseline | Technical validation via mock simulation, real-LLM format checks, consistency audits, and incremental delta reports |
-| `devforge-design-review` | Verify | Design as Contract, Interface as Boundary, Reality as Baseline, State as Responsibility | Adversarial inspection (Attacker/Operator/Extender lenses) to find design flaws; produces problem list, not PASS/FAIL |
-| `devforge-project-scaffolding` | Implement + Evolve | Reality as Baseline, State as Responsibility, Design as Contract, XML as Authority | Generate runnable project scaffolding with XML-driven code generation, CI/CD, transparent test fixtures, ADR, and evolution infrastructure |
-| `devforge-module-design` | Design (Module) | Design as Contract, Interface as Boundary, State as Responsibility | Deep-dive design for a single module: component decomposition, component interfaces, module-level XML, and component-spec templates |
-| `devforge-iteration-planning` | Evolve | Design as Contract, Interface as Boundary, Reality as Baseline, State as Responsibility | Incremental planning for new requirements: impact analysis, incremental PRD, interface versioning, XML sync, and iteration plan generation |
-| `devforge-visualization` | Visualize | Design as Contract, Reality as Baseline | Generate Mermaid diagrams (system-context, module-interaction, data-flow, ER) from `architecture.xml` |
-| `devforge-ops-ready` | Operate | Design as Contract, Interface as Boundary, Reality as Baseline, State as Responsibility | Production infrastructure: Terraform, K8s manifests, Prometheus/Grafana monitoring, blue-green + canary progressive deployment, operational runbook |
-| `devforge-debug-assistant` | Debug | Design as Contract, Interface as Boundary, Reality as Baseline, State as Responsibility | Bug diagnosis with root cause analysis + refactoring suggestions with code health scan |
+**DevForge** 是一套面向全栈软件工程的 Claude Code Skill 链，将"产品灵感 → 需求文档 → 架构设计 → 代码脚手架 → 生产部署"的完整 SDLC 流程标准化为 10 个可迭代阶段。每个阶段由独立的 Skill 驱动，通过 XML 权威架构、人类门控审核和自动化自校验，确保 AI 生成的每一行代码都可追溯、可验证、可演进。
 
-### Internal Utilities
+---
 
-| Skill | Purpose |
-|-------|---------|
-| `context-compression` | Automatically invoked by other skills after completion. Compresses session context into a 200-word digest stored in `STATE.md` for fast session recovery. |
+## 3 分钟 QuickStart
 
-### Domain Extensions
+想快速体验？参考完整示例：
 
-Located in `extensions/`. Dynamically loaded by `devforge-architecture-design` when PRD characteristic tags match.
+**[examples/quickstart-todo-app.md](examples/quickstart-todo-app.md)** —— 从"我想做一个 Todo 应用"到生成可运行的全栈项目脚手架，只需 10 分钟。
 
-| Extension | Trigger Tags | Purpose |
-|-----------|--------------|---------|
-| `ai-agent-design` | `ai_agent`, `llm_orchestration`, `tool_use` | Additional evaluation dimensions (Tool Latency, Context Window Efficiency, Memory Integration), AI-specific anti-patterns, mandatory modules (Orchestrator, LLMGateway, ToolRegistry, MemoryStore, SecurityJudge) |
-| `data-pipeline-design` | `data_pipeline`, `etl`, `streaming` | Schema Evolution, Idempotency, Backpressure, Data Lineage dimensions |
-| `mobile-app-design` | `mobile_app`, `ios`, `android` | Offline Support, Battery Efficiency, Push Delivery dimensions |
-
-## VCMF Principles
-
-- **Design as Contract** — Code must obey documents, not the other way around. Every artifact must be traceable back to a requirement or design decision.
-- **Interface as Boundary** — Any cross-module or cross-layer call must have an explicitly defined input/output schema and error contract before implementation begins.
-- **Reality as Baseline** — Mock tests validate flow; real environments validate function. Semantic-sensitive points must be tested against real LLMs when possible.
-- **State as Responsibility** — Who creates a state, who persists it, who reads it, and who cleans it up must be documented and enforced in both architecture and code.
-- **XML as Authority** — `component-spec.xml` is the single source of truth for code generation. Function signatures, error handling, and file paths must match the XML specification. CI enforces this.
-
-## Context Management
-
-DevForge handles large codebases through a layered context management protocol (`references/context-management-protocol.md`):
-
-- **Layered summaries**: 200-word global digest → 50-word module micro-digest → 1-line decision index
-- **Token thresholds**: >50,000 tokens loads Optional artifacts as summaries only; >150,000 tokens loads only 2 critical Required artifacts in full
-- **Repo index**: `devforge-project-scaffolding` generates `repo-index.md` for rapid file location in large projects
-- **Module registry digests**: `STATE.md` Module Registry includes a `digest` field (50-word max) for quick module identification without loading full XMLs
-
-## Self-Validation
-
-Every artifact-producing skill includes an automated self-validation step before the human gate:
-
-- **Syntax validation**: Generated code, YAML, JSON, and shell scripts are checked for syntactic validity
-- **Schema compliance**: XML files are validated against `xml-schemas.md` definitions
-- **Traceability coverage**: Every artifact must trace back to a PRD requirement or architecture decision
-- **Cross-reference integrity**: All `ref` attributes must resolve to existing files; all DECISION_LOG citations must be valid
-
-## Language Adaptation
-
-System instructions and internal constraints are in English for maximum model compliance. All user-facing gate messages, summaries, and explanations automatically adapt to the user's input language (Chinese or English).
-
-## Three-Layer XML Architecture
-
-```
-system-architecture.xml          ← System level: modules, cross-module interfaces, state ownership, security
-├── modules/
-│   ├── UserService/
-│   │   └── module-architecture.xml   ← Module level: component decomposition, component interfaces, module state
-│   │       └── components/
-│   │           ├── AuthController/
-│   │           │   └── component-spec.xml  ← Component level: function signatures, logic steps, error handling, tests
-│   │           └── UserRepository/
-│   │               └── component-spec.xml
-│   └── OrderService/
-│       └── module-architecture.xml
-└── shared/
-    └── common-types.xml
-```
-
-## Shared State
-
-All skills read from and write to `skill/artifacts/STATE.md` (or `docs/architecture/system/STATE.md` in iteration mode). Artifacts are stored in `skill/artifacts/`.
-
-Key state sections:
-- **Immutable Goal** — Never overwritten; prevents drift
-- **Completed Steps** — Append-only reasoning chain
-- **Current State** — Phase, DIVE progress, NextAction
-- **Module Registry** — Tracks status of every module
-- **Iteration History** — All iterations after initial scaffolding
-- **Compressed Context** — 200-word digest for fast session recovery
-- **Artifact Index** — Quick reference to all artifacts
-
-## Usage Flow
-
-### Initial Development
-
-1. Invoke `devforge-requirement-analysis` with your product idea.
-2. After approving the PRD, invoke `devforge-architecture-design`.
-3. After approving the architecture, optionally invoke `devforge-architecture-validation` for technical consistency checks.
-4. (Recommended) Invoke `devforge-design-review` for adversarial inspection.
-5. After reviewing the issue list, invoke `devforge-project-scaffolding`.
-6. (Optional) For each module, invoke `devforge-module-design` with `[MODULE {module_id}]`.
-
-### Incremental Development (After Initial Scaffolding)
-
-1. Invoke `devforge-iteration-planning` with new requirements.
-2. After approving the iteration plan, invoke `devforge-module-design` for new modules or `devforge-architecture-design` for architectural changes.
-3. Invoke `devforge-project-scaffolding` to generate/update code for affected modules.
-
-## Artifact Index
-
-| Artifact | Path | Produced By |
-|----------|------|-------------|
-| PRD | `skill/artifacts/PRD.md` | `devforge-requirement-analysis` |
-| Decision Log | `skill/artifacts/DECISION_LOG.md` | All skills (appended) |
-| Interface Contract | `skill/artifacts/INTERFACE_CONTRACT.md` | `devforge-architecture-design` |
-| Architecture Design | `skill/artifacts/ARCHITECTURE.md` | `devforge-architecture-design` |
-| Architecture XML (System) | `skill/artifacts/architecture.xml` | `devforge-architecture-design` |
-| Module Architecture XML | `skill/artifacts/modules/{id}/module-architecture.xml` | `devforge-module-design` |
-| Component Spec XML | `skill/artifacts/modules/{id}/components/{cid}/component-spec.xml` | `devforge-module-design` |
-| Validation Report | `skill/artifacts/VALIDATION_REPORT.md` | `devforge-architecture-validation` |
-| Validation Delta | `docs/architecture/validation/VALIDATION_DELTA_*.md` | `devforge-architecture-validation` |
-| Design Review | `skill/artifacts/DESIGN_REVIEW.md` | `devforge-design-review` |
-| Health Check Script | `skill/artifacts/health-check.sh` | `devforge-architecture-validation` |
-| Iteration PRD | `skill/artifacts/ITERATION_PRD.md` | `devforge-iteration-planning` |
-| Iteration Plan | `skill/artifacts/ITERATION_PLAN.md` | `devforge-iteration-planning` |
-| Scaffolding | `skill/artifacts/PROJECT_SCAFFOLD/` | `devforge-project-scaffolding` |
-| RTM | `skill/artifacts/RTM.md` | `devforge-requirement-analysis` |
-| Database Schema | `skill/artifacts/schema.sql` | `devforge-architecture-design` |
-| OpenAPI Spec | `skill/artifacts/openapi.yaml` | `devforge-architecture-design` |
-| ERD | `skill/artifacts/ERD.md` | `devforge-architecture-design` |
-| Debug Report | `skill/artifacts/DEBUG_REPORT.md` | `devforge-debug-assistant` |
-| Refactor Report | `skill/artifacts/REFACTOR_REPORT.md` | `devforge-debug-assistant` |
-
-## Installation
-
-### Option 1: Clone and Copy (Recommended for Personal Use)
+### 极简安装
 
 ```bash
-# Clone this repository
+# 1. 克隆仓库
 git clone https://github.com/lzj2819/DevForge.git
 cd DevForge
 
-# Copy all skills to Claude Code user skills directory (macOS/Linux)
-cp -r devforge-requirement-analysis devforge-architecture-design devforge-architecture-validation \
-  devforge-design-review devforge-project-scaffolding devforge-module-design \
-  devforge-iteration-planning devforge-visualization devforge-ops-ready \
-  devforge-debug-assistant context-compression extensions \
+# 2. 复制所有 Skill 到 Claude Code 用户目录（macOS/Linux）
+cp -r devforge-requirement-analysis devforge-architecture-design \
+  devforge-architecture-validation devforge-design-review \
+  devforge-project-scaffolding devforge-module-design \
+  devforge-iteration-planning devforge-visualization \
+  devforge-ops-ready devforge-debug-assistant \
+  context-compression extensions \
   ~/.claude/skills/
+
+# 3. 重启 Claude Code 或运行 /reload
 ```
 
 **Windows (PowerShell):**
+
 ```powershell
-# Clone this repository
-git clone https://github.com/lzj2819/DevForge.git
-cd DevForge
-
-# Copy all skill directories
 $target = "$env:USERPROFILE\.claude\skills"
-
-@("devforge-requirement-analysis", "devforge-architecture-design", "devforge-architecture-validation",
-  "devforge-design-review", "devforge-project-scaffolding", "devforge-module-design",
-  "devforge-iteration-planning", "devforge-visualization", "devforge-ops-ready",
-  "devforge-debug-assistant", "context-compression", "extensions") | ForEach-Object {
+@("devforge-requirement-analysis", "devforge-architecture-design",
+  "devforge-architecture-validation", "devforge-design-review",
+  "devforge-project-scaffolding", "devforge-module-design",
+  "devforge-iteration-planning", "devforge-visualization",
+  "devforge-ops-ready", "devforge-debug-assistant",
+  "context-compression", "extensions") | ForEach-Object {
     Copy-Item -Path "$_" -Destination $target -Recurse -Force
 }
 ```
 
-After copying, restart Claude Code or run `/reload` to pick up the new skills.
+### 第一步：启动需求分析
 
-### Option 2: Install via Plugin Marketplace
-
-Add this marketplace to your Claude Code configuration:
-
-```json
-// ~/.claude/config.json
-{
-  "pluginMarketplaces": [
-    {
-      "name": "vclaw-devforge",
-      "url": "https://raw.githubusercontent.com/lzj2819/DevForge/main/.claude-plugin/marketplace.json"
-    }
-  ]
-}
-```
-
-Then install the plugin:
-```
-/plugin install DevForge-chain@vclaw-devforge
-```
-
-### Option 3: Manual Per-Skill Installation
-
-Install only the skills you need:
-
-```bash
-git clone https://github.com/lzj2819/DevForge.git
-cd DevForge
-
-# Example: Install only requirement analysis and architecture design
-cp -r devforge-requirement-analysis ~/.claude/skills/
-cp -r devforge-architecture-design ~/.claude/skills/
-```
-
-## Verification
-
-After installation, verify the skills are loaded:
+在 Claude Code 中输入：
 
 ```
-/skills
+我想做一个 [你的产品想法]
 ```
 
-You should see all 10 core skills plus context-compression and domain extensions listed.
-
-## Environment Configuration
-
-> **No configuration required to get started.** DevForge skills are pure Markdown files interpreted by Claude Code. Install, invoke, and they work immediately.
->
-> However, **certain stages need external API credentials to unlock their full capability**. If these are not configured, the skill degrades gracefully instead of failing.
-
-### What Requires Configuration
-
-| Stage | What You Need | Without It |
-|-------|--------------|------------|
-| **Architecture Validation** (`devforge-architecture-validation`) | LLM API Key + Base URL | Falls back to mock-data simulation + consistency checks |
-| **Project Scaffolding** (`devforge-project-scaffolding`) | Database / cache connection strings | Generates `.env.template` placeholders for the target project |
-| **Ops Ready** (`devforge-ops-ready`) | Cloud platform credentials (AWS/Azure/GCP) | Terraform configs are generated; `terraform apply` is deferred until you configure credentials |
-
-### Recommended Setup
-
-Copy the provided template and fill in only the sections you need:
-
-```bash
-cp .env.example .env
-```
-
-Key sections in `.env.example`:
-- **LLM API** — `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, or `OPENROUTER_API_KEY` (pick one provider)
-- **Database** — `DATABASE_URL`, `REDIS_URL` (for the generated project's runtime)
-- **Cloud** — `AWS_*`, `AZURE_*`, or `GOOGLE_*` (for infrastructure deployment)
-- **Monitoring** — `GRAFANA_ADMIN_PASSWORD`, `PROMETHEUS_RETENTION`
-
-All variables are **optional**. The skill chain never crashes due to missing env vars; it simply operates in a reduced-capability mode and tells you what it's skipping.
+Claude 会自动调用 `devforge-requirement-analysis`，引导你完成 PRD 构建。
 
 ---
 
-## Directory Structure
+## 10 个阶段速查表
+
+| 阶段 | Skill 名称 | 触发条件 | 核心产物 |
+|:---:|:---|:---|:---|
+| 1 | `devforge-requirement-analysis` | 用户输入产品想法 | `PRD.md` + `DECISION_LOG.md` + 需求追溯矩阵(RTM) |
+| 2 | `devforge-architecture-design` | PRD 已批准 `[APPROVE]` | `ARCHITECTURE.md` + `INTERFACE_CONTRACT.md` + `architecture.xml` + `schema.sql` + `openapi.yaml` |
+| 3 | `devforge-architecture-validation` | 架构已批准 | `VALIDATION_REPORT.md` + `VALIDATION_DELTA.md` + `health-check.sh` |
+| 4 | `devforge-design-review` | 架构已批准（可选） | `DESIGN_REVIEW.md`（问题清单，非 PASS/FAIL） |
+| 5 | `devforge-project-scaffolding` | 架构/验证已批准 | `PROJECT_SCAFFOLD/`（完整工程目录 + CI/CD + 测试夹具 + `.env.template`） |
+| 6 | `devforge-module-design` | 输入 `[MODULE {module_id}]` | `module-architecture.xml` + `component-spec.xml` + 模块级 PRD |
+| 7 | `devforge-iteration-planning` | 初始脚手架完成后有新需求 | `ITERATION_PRD.md` + `ITERATION_PLAN.md` + 增量架构更新 |
+| 8 | `devforge-visualization` | 输入 `[VISUALIZE]` | Mermaid 架构图（系统上下文、模块交互、数据流、ER 图） |
+| 9 | `devforge-ops-ready` | 输入 `[OPS]` | Terraform + K8s manifests + Prometheus/Grafana + 蓝绿/金丝雀发布 + 运维手册 |
+| 10 | `devforge-debug-assistant` | 输入 `[DEBUG]` 或测试失败 | `DEBUG_REPORT.md`（根因分析 + 修复方案）或 `REFACTOR_REPORT.md`（重构建议） |
+
+### DIVE 循环映射
+
+```
+Design（设计）
+  ├── 阶段 1: 需求分析 —— 锁定目标与边界
+  ├── 阶段 2: 架构设计 —— 动态模式评估 + 三层 XML 建模
+  └── 阶段 6: 模块细化 —— 组件分解与接口契约
+
+Implement（实现）
+  └── 阶段 5: 项目脚手架 —— XML 驱动代码生成 + CI/CD + 透明测试
+
+Verify（验证）
+  ├── 阶段 3: 架构验证 —— LLM 沙盘模拟 + 一致性审计
+  └── 阶段 4: 设计审查 —— 对抗性审查（攻击者/运维/扩展者视角）
+
+Evolve（演进）
+  └── 阶段 7: 增量迭代 —— 影响分析 + 接口版本控制 + XML 同步
+
+Visualize / Operate / Debug（可视化/运维/调试）
+  ├── 阶段 8: 架构可视化
+  ├── 阶段 9: 生产就绪基础设施
+  └── 阶段 10: 调试与重构助手
+```
+
+---
+
+## 目录结构
 
 ```
 DevForge/
-├── .claude-plugin/
-│   ├── plugin.json          # Plugin metadata for Claude Code
-│   └── marketplace.json     # Marketplace entry for distribution
-├── LICENSE                  # MIT License
-├── README.md                # This file
-├── devforge-design.md           # Skill chain design document
-├── devforge-state.md            # STATE.md template specification
-├── references/              # Shared reference documents
-│   ├── architecture-patterns.md
-│   ├── xml-schemas.md
-│   ├── system-prompt-template.md     # Global role definition + VCMF constraints
-│   ├── context-management-protocol.md # Layered summary + artifact loading rules
-│   └── validation-scripts-manifest.md # Script capability mapping + known gaps
-├── scripts/                 # Utility scripts
-│   ├── architecture-ci.sh
-│   ├── package-plugin.py    # Packaging script for distribution
-│   └── xml-sync.py
-├── devforge-requirement-analysis/   # Core skill 1
-├── devforge-architecture-design/    # Core skill 2
-├── devforge-architecture-validation/ # Core skill 3
-├── devforge-design-review/          # Core skill 4
-├── devforge-project-scaffolding/    # Core skill 5
-├── devforge-module-design/          # Core skill 6
-├── devforge-iteration-planning/     # Core skill 7
-├── devforge-visualization/          # Core skill 8 (v1.2)
-├── devforge-ops-ready/              # Core skill 9 (v1.2)
-├── devforge-debug-assistant/        # Core skill 10 (v1.2)
-├── context-compression/         # Internal utility
-└── extensions/                  # Domain-specific extensions
+├── .claude-plugin/                  # Claude Code 插件元数据
+│   ├── plugin.json
+│   └── marketplace.json
+├── .env.example                     # 环境变量模板（API Key、数据库、云凭证）
+├── LICENSE                          # MIT 许可证
+├── README.md                        # 本文件
+├── DevForge.md                      # 原始单体中文设计文档（参考用）
+├── devforge-design.md               # Skill 链分解设计文档 v1.2
+├── devforge-state.md                # STATE.md 模板规范
+│
+├── references/                      # 共享参考文档
+│   ├── architecture-patterns.md     # 10 种架构模式库
+│   ├── xml-schemas.md               # 三层 XML Schema 定义
+│   ├── system-prompt-template.md    # 全局角色定义 + VCMF 约束
+│   ├── context-management-protocol.md # 分层摘要 + 产物加载规则
+│   ├── validation-scripts-manifest.md # 脚本能力映射
+│   └── search-integration.md        # 搜索集成规范
+│
+├── tools/                           # 工具规范
+│   ├── error-tracing.md             # 错误追踪规范
+│   ├── artifact-manager.md          # 产物管理规范
+│   └── intervention-checkpoint.md   # 介入机制规范
+│
+├── scripts/                         # 实用脚本
+│   ├── architecture-ci.sh           # 架构一致性 CI 检查（含安全检查）
+│   ├── xml-sync.py                  # XML 同步与验证
+│   └── package-plugin.py            # 打包分发脚本
+│
+├── devforge-requirement-analysis/   # 阶段 1: 需求分析
+│   └── SKILL.md
+├── devforge-architecture-design/    # 阶段 2: 架构设计
+│   └── SKILL.md
+├── devforge-architecture-validation/ # 阶段 3: 架构验证
+│   └── SKILL.md
+├── devforge-design-review/          # 阶段 4: 设计审查
+│   └── SKILL.md
+├── devforge-project-scaffolding/    # 阶段 5: 项目脚手架
+│   └── SKILL.md
+├── devforge-module-design/          # 阶段 6: 模块细化
+│   └── SKILL.md
+├── devforge-iteration-planning/     # 阶段 7: 增量迭代
+│   └── SKILL.md
+├── devforge-visualization/          # 阶段 8: 架构可视化
+│   └── SKILL.md
+├── devforge-ops-ready/              # 阶段 9: 生产就绪
+│   └── SKILL.md
+├── devforge-debug-assistant/        # 阶段 10: 调试助手
+│   └── SKILL.md
+├── devforge-security-audit/         # 安全扫描 Skill
+│   └── SKILL.md
+│
+├── context-compression/             # 内部工具: 上下文压缩
+│   └── SKILL.md
+│
+└── extensions/                      # 领域扩展（动态加载）
     ├── ai-agent-design/
+    │   ├── SKILL.md
+    │   └── references/
+    │       ├── dimensions.md
+    │       └── anti-patterns.md
     ├── data-pipeline-design/
+    │   └── SKILL.md
     └── mobile-app-design/
+        └── SKILL.md
 ```
 
-## Packaging
+---
 
-To create distributable packages:
+## 人类门控命令
+
+在每个阶段完成时，系统会暂停并等待人类审核。支持以下指令：
+
+| 指令 | 作用 | 使用场景 |
+|:---|:---|:---|
+| `[APPROVE]` | 批准当前阶段输出，进入下一阶段 | 确认产物无误，继续推进 |
+| `[PAUSE]` | 暂停当前流程，保留状态 | 需要中断思考或等待外部确认 |
+| `[ROLLBACK]` | 回退到上一阶段重新执行 | 发现前一阶段产物存在根本性问题 |
+| `[EXPLAIN]` | 要求系统解释当前产物的某个部分 | 不理解某段设计或代码的意图 |
+| `[EDIT]` | 要求修改当前产物的特定部分 | 需要调整需求、接口或实现细节 |
+| `[SKIP]` | 跳过当前可选阶段 | 对可选阶段（如可视化、运维）暂时不需要 |
+| `[INJECT]` | 注入额外上下文或约束 | 临时补充业务规则或技术约束 |
+| `[SECURITY_AUDIT]` | 触发安全专项审查 | 对敏感模块或整体架构进行安全加固检查 |
+
+### 模块级专用指令
+
+| 指令 | 作用 |
+|:---|:---|
+| `[MODULE {module_id}]` | 对指定模块进行详细设计 |
+| `[NEXT MODULE]` | 完成当前模块，进入下一个模块设计 |
+| `[VISUALIZE]` | 生成架构可视化图表 |
+| `[OPS]` | 生成生产就绪基础设施配置 |
+| `[DEBUG]` | 启动调试与诊断模式 |
+
+---
+
+## VCMF 五大核心原则
+
+- **Design as Contract（设计即契约）** —— 代码必须服从文档，每个产物必须可追溯至需求或架构决策
+- **Interface as Boundary（接口即边界）** —— 任何跨模块调用必须有显式输入/输出 Schema 和错误契约
+- **Reality as Baseline（现实为基线）** —— Mock 测试验证流程，真实环境验证功能
+- **State as Responsibility（状态即责任）** —— 谁创建、谁持久化、谁读取、谁清理必须文档化并强制执行
+- **XML as Authority（XML 为权威）** —— `component-spec.xml` 是代码生成的唯一真相源，CI 自动检查一致性
+
+---
+
+## 环境配置
+
+> **零配置即可启动。** DevForge 的 Skill 是纯 Markdown 文件，安装后即可使用。
+>
+> 但部分阶段需要外部 API 凭证才能发挥全部能力。未配置时，Skill 会优雅降级而非报错。
+
+| 阶段 | 需要什么 | 无配置时的行为 |
+|:---|:---|:---|
+| 架构验证 | LLM API Key + Base URL | 回退到 Mock 数据模拟 + 一致性检查 |
+| 项目脚手架 | 数据库/缓存连接字符串 | 生成 `.env.template` 占位符 |
+| 生产就绪 | 云平台凭证 (AWS/Azure/GCP) | 生成 Terraform 配置，`terraform apply` 延后执行 |
+
+快速配置：
 
 ```bash
-# Package all skills individually + full plugin zip
+cp .env.example .env
+# 按需填写 LLM API、数据库、云凭证等
+```
+
+---
+
+## 常见问题 FAQ
+
+### Q1: DevForge 和普通的 AI 代码生成有什么区别？
+
+**A:** 普通 AI 代码生成是"一次性提示 → 一次性输出"，缺乏架构一致性和可追溯性。DevForge 的核心差异在于：
+
+1. **分阶段门控** —— 每个阶段必须人类 `[APPROVE]` 后才能进入下一阶段，防止 AI "自说自话跑完全程"
+2. **XML 权威架构** —— 三层 XML（系统/模块/组件）作为代码生成的唯一真相源，CI 自动检查代码与 XML 的一致性
+3. **状态持久化** —— `STATE.md` 跨会话保存完整推理链，新会话读取 200 字压缩摘要即可快速恢复上下文
+4. **自校验机制** —— 每个产物在提交人类审核前，自动检查语法有效性、Schema 合规性、可追溯性和交叉引用完整性
+
+### Q2: 我的项目已经在进行中，还能用 DevForge 吗？
+
+**A:** 可以。DevForge 支持**增量迭代模式**：
+
+1. 将现有项目的 PRD、架构文档放入 `skill/artifacts/` 目录
+2. 手动创建 `STATE.md`，填写 `Immutable Goal` 和 `Module Registry`
+3. 直接调用 `devforge-iteration-planning` 输入新需求
+4. Skill 会自动进行影响分析，只修改受影响的模块，保持现有代码不动
+
+对于已有代码库，也可以调用 `devforge-debug-assistant` 进行代码健康扫描和重构建议，无需从头走完整流程。
+
+### Q3: 10 个阶段都必须走一遍吗？会不会太慢？
+
+**A:** 不是必须的。DevForge 采用**强制 + 可选**的混合模式：
+
+- **强制阶段（1→2→5）**：需求分析 → 架构设计 → 项目脚手架，这是最小可行路径
+- **推荐阶段（3、4）**：架构验证和设计审查，对关键系统强烈建议
+- **可选阶段（6-10）**：模块细化、迭代规划、可视化、运维、调试，按需触发
+
+实际使用中，一个简单的 CRUD 应用可能 30 分钟完成（阶段 1→2→5），一个复杂微服务系统可能需要数小时（完整 10 阶段 + 多轮迭代）。
+
+### Q4: 支持哪些编程语言和技术栈？
+
+**A:** DevForge 是**语言无关**的架构方法论。架构设计阶段生成的 XML、接口契约、测试用例是通用的；脚手架阶段根据你的选择生成对应语言的代码：
+
+- **后端**: Python/FastAPI、Node.js/Express、Java/Spring Boot、Go/Gin、Rust/Actix
+- **前端**: React/Vue/Angular、Next.js、Flutter
+- **数据库**: PostgreSQL、MySQL、MongoDB、Redis
+- **基础设施**: Docker、Kubernetes、Terraform、AWS/Azure/GCP
+
+技术栈选择通过 PRD 阶段的领域标签自动推断，也可在架构设计阶段手动指定。
+
+### Q5: 如何确保 AI 不会"遗忘"最初的需求？
+
+**A:** DevForge 通过三重机制防止需求漂移：
+
+1. **Immutable Goal** —— `STATE.md` 中的原始目标和成功指标**永远不可覆盖**，每个 Skill 启动时必须先读取
+2. **可追溯性矩阵（RTM）** —— 每个架构决策、接口定义、测试用例都标注关联的 PRD 需求编号
+3. **决策日志（DECISION_LOG）** —— 所有关键决策按时间戳追加记录，包含问题、答案、风险和拒绝的替代方案
+
+如果某个阶段的输出偏离了原始目标，你可以在门控时使用 `[ROLLBACK]` 回退，系统会保留完整的历史推理链。
+
+### Q6: DevForge 如何保障生成代码的安全性？
+
+**A:** DevForge 内置了多层安全机制：
+
+1. **安全扫描 Skill** —— `devforge-security-audit` 自动检测硬编码密钥、SQL 注入、XSS、不安全依赖等 8 类漏洞
+2. **依赖 CVE 检查** —— 推荐任何第三方库前，自动搜索其 CVE 和维护状态
+3. **黑名单机制** —— 禁止推荐已知漏洞库（如 VM2、有 RCE 漏洞的库）
+4. **架构层安全审查** —— `devforge-design-review` 从攻击者视角审查加密、鉴权、输入验证等设计缺陷
+
+### Q7: 如果 AI 生成错误，如何追踪根因？
+
+**A:** DevForge 的错误追踪机制（`tools/error-tracing.md`）确保每个报错都包含：
+
+1. **TraceID** —— 唯一标识，关联到具体决策和需求
+2. **决策上下文** —— 报错关联到哪个架构决策（DecisionID）
+3. **修复建议** —— 具体步骤指导如何修复
+4. **相关产物链路** —— 从 PRD → 架构 → 代码的完整追溯链
+
+开发者可以回复 `[EXPLAIN {TraceID}]` 要求 AI 展开完整推理链。
+
+### Q8: 多次迭代后产物会不会越来越混乱？
+
+**A:** DevForge 的产物管理遵循 CRUD-Append 模式（`tools/artifact-manager.md`）：
+
+1. **幂等更新** —— 已有内容不会被覆盖，只增量更新变更部分
+2. **冲突检测** —— 如果 AI 要更新的区域包含手动修改标记，会生成冲突报告等待人工解决
+3. **版本标记** —— 每个产物头部自动注入生成时间和更新规则
+4. **Artifact Index** —— `STATE.md` 维护所有产物的快速索引，避免遗漏
+
+---
+
+## 相关文档
+
+| 文档 | 路径 | 说明 |
+|:---|:---|:---|
+| 原始单体设计文档 | `DevForge.md` | 完整的中文设计文档，含 10 阶段详细工作流 |
+| Skill 分解设计文档 | `devforge-design.md` | v1.2 分解设计，含 DIVE 映射和 VCMF 集成 |
+| STATE 模板规范 | `devforge-state.md` | `STATE.md` 的 8 大字段定义和示例 |
+| 架构模式库 | `references/architecture-patterns.md` | 10 种架构模式的评估维度 |
+| XML Schema 定义 | `references/xml-schemas.md` | 三层 XML 的 Schema 规范 |
+| 上下文管理协议 | `references/context-management-protocol.md` | 分层摘要 + Token 阈值 + 产物加载规则 |
+
+---
+
+## 贡献与生态
+
+DevForge 是 [VClaw](https://github.com/lzj2819/vclaw) 项目的一部分。欢迎提交 Issue 和 PR。
+
+如需打包分发：
+
+```bash
 python scripts/package-plugin.py --mode all --output ./dist
 ```
 
-Outputs:
-- `dist/DevForge-chain-v1.1.0.zip` — Full plugin package
-- `dist/skills/*.skill` — Individual skill packages
+---
 
-## Contributing
-
-This skill chain is part of the [VClaw](https://github.com/lzj2819/vclaw) project. For the full 6-layer AI Agent system, see the main repository.
+*Version: v1.2 | Last Updated: 2026-04-29*
