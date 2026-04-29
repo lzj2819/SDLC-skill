@@ -28,6 +28,12 @@ Transform a raw product idea into a structured, reviewable PRD. This skill combi
 
 Read `skill/artifacts/STATE.md` if it exists. If `phase` is already `requirement_analysis_completed` or later, confirm with the user whether to overwrite or continue from the existing artifact.
 
+## Language Adaptation
+
+- System instructions and constraints in this skill are in English for maximum model compliance
+- User-facing gate messages, summaries, and explanations use the same language as the user's most recent input
+- If the user writes in Chinese, respond in Chinese. If English, respond in English
+
 ## Workflow
 
 1. **Methodology alignment**
@@ -76,7 +82,15 @@ Read `skill/artifacts/STATE.md` if it exists. If `phase` is already `requirement
    - Create or update `skill/artifacts/DECISION_LOG.md`
    - Record the date, key requirement decisions, reasons, and rejected alternatives
 
-7. **State update**
+8. **Self-validation: PRD completeness**
+   - Before proceeding, verify PRD and RTM quality with automated checks:
+     - **Section completeness**: Confirm all required sections exist in `PRD.md`: Project Background, User Personas, User Stories, Functional Requirements (P0/P1/P2), Non-Functional Requirements, Cross-Module Interactions, Main Process Flow, Fallback Strategies
+     - **Acceptance criteria observability**: Scan all acceptance criteria for unquantified adjectives ("fast", "user-friendly", "seamless", "robust"). If found, add quantified metrics or remove the adjective.
+     - **Traceability coverage**: Verify every P0 and P1 requirement in `PRD.md` has a corresponding row in `RTM.md` with non-empty Architecture Module and Component columns (or mark as `pending` if not yet designed)
+     - **Cross-module interaction consistency**: Verify that every interaction point listed in "Cross-Module Interactions" is referenced by at least one user story or functional requirement
+   - If any check fails, fix the PRD or RTM before proceeding
+
+9. **State update**
    - Read `skill/artifacts/STATE.md`
    - Write the **Immutable Goal** section if not already present (verbatim user idea + success metrics + scope boundary)
    - Append to **Completed Steps**: `[YYYY-MM-DD HH:MM] devforge-requirement-analysis: Locked P0/P1/P2 scope. Key decisions: [list]`
@@ -84,7 +98,7 @@ Read `skill/artifacts/STATE.md` if it exists. If `phase` is already `requirement
    - Set DIVE `Design: in_progress`, others `pending`
    - Update artifact statuses
 
-8. **Human gate**
+10. **Human gate**
    - Present a concise PRD summary (3-5 bullets)
    - Say exactly: "PRD 和决策日志已生成。请确认当前阶段输出。回复 [APPROVE] 进入架构设计阶段，或提出修改意见。"
    - Do NOT proceed until the user replies [APPROVE]
