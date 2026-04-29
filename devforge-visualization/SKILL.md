@@ -29,6 +29,12 @@ Read `skill/artifacts/STATE.md`. Acceptable phases: `architecture_design_complet
 
 If `architecture.xml` is missing, stop and instruct the user to complete `devforge-architecture-design` first.
 
+## Language Adaptation
+
+- System instructions and constraints in this skill are in English for maximum model compliance
+- User-facing gate messages, summaries, and explanations use the same language as the user's most recent input
+- If the user writes in Chinese, respond in Chinese. If English, respond in English
+
 ## Workflow
 
 1. **Parse architecture XML**
