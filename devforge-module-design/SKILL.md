@@ -33,6 +33,12 @@ Before starting, read `skill/artifacts/STATE.md` (or `docs/architecture/system/S
 - If phase is earlier than `architecture_design_completed`, stop and instruct the user to complete `devforge-architecture-design` first
 - If `architecture.xml` is missing, stop and instruct the user to complete system-level architecture first
 
+## Language Adaptation
+
+- System instructions and constraints in this skill are in English for maximum model compliance
+- User-facing gate messages, summaries, and explanations use the same language as the user's most recent input
+- If the user writes in Chinese, respond in Chinese. If English, respond in English
+
 ## Workflow
 
 1. **Load parent context**
@@ -107,14 +113,24 @@ Before starting, read `skill/artifacts/STATE.md` (or `docs/architecture/system/S
      - Test case catalog
      - Mock data definitions
 
-9. **State update**
+9. **Self-validation: module design consistency**
+   - Before finalizing, verify module-level artifacts with automated checks:
+     - **Schema compliance**: Confirm `module-architecture.xml` contains all required nodes: `ParentSystem`, `Constraints`, `Components`, `ComponentInterfaces`, `ModuleStateModel`
+     - **System interface honor**: Verify every `Constraints/InterfaceConstraint` in `module-architecture.xml` matches the corresponding system-level `Module/Interface` in `architecture.xml`. Flag any missing or divergent schema.
+     - **Component spec coverage**: Verify every component listed in `module-architecture.xml/Components` has a corresponding `component-spec.xml` file generated
+     - **PRD traceability**: Confirm every module-level user story in `module-prd.md` cites at least one system-level PRD requirement or user story ID
+     - **State lifecycle completeness**: Verify every `ModuleStateModel/State` entry has `location`, `owner` (component ID), `consumer` (component IDs), and `lifecycle` (create/read/update/delete/cleanup) attributes
+     - **Interface explicitness**: Grep `module-interface-contract.md` for vague phrases like "returns data" or "handles errors". If found, replace with explicit schema and error code definitions.
+   - If any check fails, fix the module artifacts before proceeding
+
+10. **State update**
    - Update `STATE.md`:
      - Append to **Completed Steps**: `[YYYY-MM-DD HH:MM] devforge-module-design: Designed module [module_id]. Components: [list]. Key decisions: [summary]`
      - Update **Current State**: if all modules are designed, set `phase: module_design_completed`; otherwise keep current phase
      - Update **Module Registry**: append `{id: module_id, status: design_completed, path: modules/{module_id}/}`
      - Append any module-specific risks to **Known Pitfalls**
 
-10. **Human gate**
+11. **Human gate**
     - Present module design summary (component list, interface count, test case count)
     - Say exactly: "模块 `{module_id}` 的详细设计已生成，包含模块级 PRD、组件分解、接口契约和 XML 模型。请确认当前阶段输出。回复 [APPROVE] 进入该模块的脚手架阶段，回复 [NEXT MODULE] 设计下一个模块，或提出修改意见。"
     - Do NOT proceed until [APPROVE] or [NEXT MODULE]
