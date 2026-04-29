@@ -29,6 +29,12 @@ Generate hard deliverables by grounding all historical conclusions into runnable
 
 Read `skill/artifacts/STATE.md`. Acceptable phases: `architecture_design_completed`, `architecture_validated`, `design_review_completed`, `module_design_completed`, `iteration_planning_completed`. If phase is not in this list, stop and instruct the user to complete prior phases.
 
+## Language Adaptation
+
+- System instructions and constraints in this skill are in English for maximum model compliance
+- User-facing gate messages, summaries, and explanations use the same language as the user's most recent input
+- If the user writes in Chinese, respond in Chinese. If English, respond in English
+
 ## Workflow
 
 1. **Read all artifacts**
@@ -58,6 +64,11 @@ Read `skill/artifacts/STATE.md`. Acceptable phases: `architecture_design_complet
      - Module-level artifacts → `docs/architecture/modules/{module_id}/`
      - Generate `.gitattributes` marking `*.xml` as `diff=text`
    - Generate dependency config files (package.json, requirements.txt, pom.xml, Cargo.toml, etc.) based on the chosen tech stack
+   - **Repository index generation**: Generate `repo-index.md` at project root with structure:
+     - Hierarchical file tree (max depth 3, exclude `node_modules/`, `.git/`, `__pycache__/`, `*.lock`)
+     - Per-directory summary: purpose, key files, approximate LOC
+     - Module-to-directory mapping cross-reference
+     - This index is consumed by `devforge-debug-assistant` and `devforge-ops-ready` for rapid context recovery
 
 4. **Core code skeleton**
    - Generate core module files with class/function signatures that match `INTERFACE_CONTRACT.md`
@@ -134,14 +145,27 @@ Read `skill/artifacts/STATE.md`. Acceptable phases: `architecture_design_complet
     - Append scaffolding decisions to `skill/artifacts/DECISION_LOG.md`
     - Generate `skill/artifacts/PROJECT_SCAFFOLD/CHANGELOG.md` with an initial entry
 
-13. **Internal verification**
+13. **Self-validation: generated artifacts**
+    - Run automated checks on all generated files BEFORE proceeding:
+      - **Syntax validation**: For each generated code file, verify syntactic validity:
+        - Python: `python -m py_compile <file>` must pass
+        - JavaScript/TypeScript: `npx tsc --noEmit` (if tsconfig exists) or `node --check` for JS
+        - Java: `javac -d /tmp/compiled <file>` must compile (stub main if needed)
+        - Go: `go build ./...` must pass
+        - YAML: `python -c "import yaml; yaml.safe_load(open('<file>'))"` must pass
+        - JSON: `python -m json.tool <file>` must pass
+      - **XML validation**: Run `scripts/architecture-ci.sh` on all `*.xml` files
+      - **Traceability check**: Grep every generated code file for at least one PRD requirement reference or DecisionTrace ID; any file without a traceability link is flagged
+    - If any check fails, regenerate the failing file before proceeding
+
+14. **Internal verification**
     - Verify that:
       - All generated file paths match the planned structure
       - All interface signatures in generated code match `INTERFACE_CONTRACT.md`
       - `.env.template` covers all external dependencies mentioned in architecture
       - CI config references existing test directories
 
-14. **Traceability audit**
+15. **Traceability audit**
     - Randomly sample 3-5 generated files
     - For each file, answer:
       - What PRD requirement does this file trace back to?
@@ -149,12 +173,12 @@ Read `skill/artifacts/STATE.md`. Acceptable phases: `architecture_design_complet
       - Does its state management match the XML StateModel?
     - If any answer is untraceable, mark as traceability gap and append to STATE.md Known Pitfalls
 
-15. **State update**
+16. **State update**
     - Update `STATE.md`:
       - Append to **Completed Steps**: `[YYYY-MM-DD HH:MM] devforge-project-scaffolding: Generated PROJECT_SCAFFOLD with [N] files`
       - Update **Current State**: `phase: scaffolding_completed`, DIVE `Implement: completed`, `Verify: completed`, `Evolve: in_progress`
 
-16. **Human gate**
+17. **Human gate**
     - Present a summary of generated files (bullet list)
     - Say exactly: "项目脚手架已生成，包含工程目录、CI/CD 配置、测试脚本、文档同步规则和环境变量模板。请确认当前阶段输出。回复 [APPROVE] 完成全流程，或提出修改意见。"
     - Do NOT mark complete without [APPROVE]
