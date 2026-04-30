@@ -63,6 +63,100 @@ Claude 会自动调用 `devforge-requirement-analysis`，引导你完成 PRD 构
 
 ---
 
+## 安装与使用指南
+
+### Skill 加载机制
+
+Claude Code 通过扫描特定目录下的 `SKILL.md` 文件自动识别 Skill。每个 `devforge-*/` 目录下的 `SKILL.md` 即为一个独立 Skill，Claude 会根据文件内容自动解析触发条件和行为指令。
+
+**安装路径（二选一）：**
+
+| 级别 | 路径 | 适用场景 |
+|:---|:---|:---|
+| **全局** | `~/.claude/skills/` (macOS/Linux)<br>`%USERPROFILE%\.claude\skills` (Windows) | 所有项目共用 DevForge |
+| **项目级** | `{project}/.claude/skills/` | 仅当前项目使用，便于版本控制 |
+
+> **推荐**：个人开发者用全局路径；团队协作时建议放入项目级路径并提交到 Git，确保团队成员使用相同版本。
+
+### 验证安装
+
+重启 Claude Code 后，输入以下任一命令验证 Skill 是否加载成功：
+
+```
+/skill list
+```
+
+或直接在对话中输入：
+
+```
+帮我分析一下这个产品的需求
+```
+
+如果 Claude 回复中出现了 "我将使用 `devforge-requirement-analysis` 为你进行需求分析" 等类似提示，说明 Skill 已正确加载。
+
+### 各阶段调用方式
+
+**自动触发（无需记忆 Skill 名称）：**
+
+| 你的输入 | Claude 调用的 Skill |
+|:---|:---|
+| `我想做一个 [产品想法]` | `devforge-requirement-analysis` |
+| `[APPROVE]`（在阶段完成后） | 进入下一阶段 |
+
+**手动触发（按需调用）：**
+
+| 指令 | 调用的 Skill | 示例 |
+|:---|:---|:---|
+| `[MODULE {module_id}]` | `devforge-module-design` | `[MODULE UserService]` |
+| `[NEXT MODULE]` | `devforge-module-design` | 完成当前模块，进入下一个 |
+| `[VISUALIZE]` | `devforge-visualization` | 生成当前架构的 Mermaid 图 |
+| `[OPS]` | `devforge-ops-ready` | 生成 Terraform + K8s 配置 |
+| `[DEBUG]` | `devforge-debug-assistant` | 启动调试模式 |
+| `[SECURITY_AUDIT]` | `devforge-security-audit` | 触发安全专项扫描 |
+
+**增量迭代模式（已有项目）：**
+
+```
+我需要新增 [功能描述]
+```
+
+Claude 会自动调用 `devforge-iteration-planning` 进行影响分析。
+
+### 更新与卸载
+
+**更新到新版：**
+
+```bash
+# 1. 拉取最新代码
+git pull origin main
+
+# 2. 重新复制（覆盖旧版本）
+cp -r devforge-* context-compression extensions ~/.claude/skills/
+
+# 3. 重启 Claude Code
+```
+
+**卸载：**
+
+```bash
+# 删除 Skill 目录即可
+rm -rf ~/.claude/skills/devforge-*
+rm -rf ~/.claude/skills/context-compression
+rm -rf ~/.claude/skills/extensions
+```
+
+### 故障排查
+
+| 现象 | 可能原因 | 解决方案 |
+|:---|:---|:---|
+| Claude 没有自动调用 DevForge Skill | Skill 未放入正确路径 | 确认路径为 `~/.claude/skills/` 而非 `~/.claude/` 子目录 |
+| 提示 "找不到 Skill" | 目录名或文件名不正确 | 确认目录名为 `devforge-requirement-analysis` 等，内部有 `SKILL.md` |
+| `[MODULE]` 命令无效 | 尚未完成阶段 2 架构设计 | 先完成需求分析和架构设计，确保 `STATE.md` 存在 |
+| 产物文件没有生成 | 权限问题或路径错误 | 检查当前目录是否有写权限，确认 `skill/artifacts/` 或 `docs/architecture/` 存在 |
+| Skill 行为与文档不符 | 版本不匹配 | 运行 `git log --oneline -1` 确认版本为 v1.2+ |
+
+---
+
 ## 10 个阶段速查表
 
 | 阶段 | Skill 名称 | 触发条件 | 核心产物 |
