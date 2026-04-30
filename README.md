@@ -51,6 +51,33 @@ $target = "$env:USERPROFILE\.claude\skills"
 }
 ```
 
+### 通过 Claude Code 对话自动安装（推荐）
+
+如果你已经打开了 Claude Code，可以直接粘贴以下提示词，让 Claude 自动完成克隆、复制和验证：
+
+````markdown
+请帮我安装 DevForge SDLC Skill Chain。按以下步骤执行：
+
+1. **克隆仓库**（如果当前目录没有 DevForge 文件则克隆，否则跳过）：
+   ```bash
+   if [ ! -d "DevForge" ]; then git clone https://github.com/lzj2819/DevForge-skill.git DevForge; fi
+   ```
+
+2. **复制 Skill 到 Claude Code 用户目录**：
+   - macOS/Linux: 复制 `DevForge/` 下所有 `devforge-*`、`context-compression`、`extensions` 目录到 `~/.claude/skills/`
+   - Windows: 复制到 `%USERPROFILE%\.claude\skills\`
+
+   请自动检测当前操作系统并执行对应命令。如果目标目录已存在同名 Skill，覆盖即可。
+
+3. **验证安装**：列出 `~/.claude/skills/` 下的 `devforge-*` 目录，确认至少有 10 个 Skill 目录。
+
+4. **提示我重启 Claude Code**：告诉我安装完成，需要运行 `/reload` 或重启 Claude Code 使 Skill 生效。
+
+执行前请向我确认操作系统类型和安装路径。
+````
+
+> **注意**：Claude Code 执行 Bash 命令时可能弹出权限确认框，请点击"允许"。安装完成后必须运行 `/reload` 或重启 Claude Code 才能加载新 Skill。
+
 ### 第一步：启动需求分析
 
 在 Claude Code 中输入：
