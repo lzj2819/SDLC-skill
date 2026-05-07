@@ -598,6 +598,20 @@ AI: 检测到文件变更：
 
 ---
 
+## Extended Commands (v1.2)
+
+| Command | Behavior | Applicable Stage | Preconditions |
+|---------|----------|------------------|---------------|
+| `[FIX <issue_id>]` | Enter fix sub-mode: reads source file, generates diff, asks for apply/edit/ignore | design-review | DESIGN_REVIEW.md exists with matching issue_id |
+| `[APPLY]` | Apply the generated diff and trigger re-validation | design-review fix sub-mode | diff file exists and is valid |
+| `[FORCE_APPROVE]` | Skip blocking validation failures and proceed to design-review | architecture-validation | All failures are non-blocking (warning level) |
+| `[SKIP_REVIEW]` | Skip design-review and proceed directly to scaffolding | architecture-validation | Validation has passed |
+| `[DESIGN_REVIEW]` | Trigger design-review after validation passes | architecture-validation | Validation has passed |
+| `[VALIDATE]` | Re-run architecture-validation after iteration implementation | iteration-planning | Iteration contains breaking changes |
+| `[TEST]` | Trigger test-execution skill | Any post-scaffolding stage | Tests exist in PROJECT_SCAFFOLD/tests/ |
+
+---
+
 ## 8. 附录
 
 ### 8.1 命令速查表
