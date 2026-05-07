@@ -63,6 +63,10 @@ Read `skill/artifacts/STATE.md`. Acceptable phases: `architecture_design_complet
      - System-level artifacts → `docs/architecture/system/`
      - Module-level artifacts → `docs/architecture/modules/{module_id}/`
      - Generate `.gitattributes` marking `*.xml` as `diff=text`
+   - Generate `docs/architecture/INDEX.md` with:
+     - System-level artifact links
+     - Module table (Module | PRD | XML | Interface Contract | Components) — initially empty module rows, to be filled by module-design
+     - Generated artifact links (validation reports, diagrams)
    - Generate dependency config files (package.json, requirements.txt, pom.xml, Cargo.toml, etc.) based on the chosen tech stack
    - **Repository index generation**: Generate `repo-index.md` at project root with structure:
      - Hierarchical file tree (max depth 3, exclude `node_modules/`, `.git/`, `__pycache__/`, `*.lock`)
@@ -79,6 +83,19 @@ Read `skill/artifacts/STATE.md`. Acceptable phases: `architecture_design_complet
      - Add inline comments referencing the XML node ID (e.g., `# Implements component-spec.xml::AuthController::login`)
    - Implement infrastructure code (routing, config loading, error handling)
    - Leave business logic as well-documented placeholders or minimal implementations
+   - **P0/P1/P2 code generation rules**:
+     - **P0 modules**: Generate complete business logic skeleton with minimal working implementation (not empty placeholders)
+     - **P1 modules**: Generate complete interface stubs with TODO comments. Function body: `raise NotImplementedError("P1: implement per module-prd")` (or language equivalent)
+     - **P2 modules**: Generate directory structure and empty files with module header comments only
+   - **Module header comment template** (add to every generated module file):
+     ```python
+     # Module: {module_id}
+     # Priority: {P0/P1/P2}
+     # PRD Reference: PRD.md::Functional Requirements::{req_id}
+     # Status: {placeholder/minimal-implemented/full-implemented}
+     # Architecture Decision: {DecisionTrace ID}
+     # Known Risk: {DESIGN_REVIEW issue IDs if applicable}
+     ```
 
 5. **Code reasoning comments**
    - Every core module MUST include a header comment linking it to architecture decisions:
@@ -177,10 +194,11 @@ Read `skill/artifacts/STATE.md`. Acceptable phases: `architecture_design_complet
     - Update `STATE.md`:
       - Append to **Completed Steps**: `[YYYY-MM-DD HH:MM] devforge-project-scaffolding: Generated PROJECT_SCAFFOLD with [N] files`
       - Update **Current State**: `phase: scaffolding_completed`, DIVE `Implement: completed`, `Verify: completed`, `Evolve: in_progress`
+   - Update `docs/architecture/INDEX.md` with generated artifact links
 
 17. **Human gate**
     - Present a summary of generated files (bullet list)
-    - Say exactly: "项目脚手架已生成，包含工程目录、CI/CD 配置、测试脚本、文档同步规则和环境变量模板。请确认当前阶段输出。回复 [APPROVE] 完成全流程，或提出修改意见。"
+    - Say exactly: "项目脚手架已生成，包含工程目录、CI/CD 配置、测试脚本、文档同步规则和环境变量模板。请确认当前阶段输出。回复 [APPROVE] 进入模块详细设计阶段，或提出修改意见。"
     - Do NOT mark complete without [APPROVE]
 
 <HARD-GATE>
