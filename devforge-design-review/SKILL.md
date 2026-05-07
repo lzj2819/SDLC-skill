@@ -97,16 +97,47 @@ Read `skill/artifacts/STATE.md`. Acceptable phases: `architecture_design_complet
 
 9. **Human gate**
    - Present issue summary (count by severity)
-   - Say exactly: "设计审查报告已生成。这不是'通过/不通过'的检查，而是一份问题清单。请审阅上述问题，决定哪些需要修复、哪些可以接受。回复 [APPROVE] 进入项目脚手架阶段，回复 [FIX <issue_id>] 要求修复特定问题，或提出修改意见。"
+   - Say exactly: "设计审查报告已生成。这不是'通过/不通过'的检查，而是一份问题清单。请审阅上述问题，决定哪些需要修复、哪些可以接受。回复 [APPROVE] 进入项目脚手架阶段，回复 [FIX <issue_id>] 进入修复模式，回复 [PAUSE] 暂停，或提出修改意见。"
    - Do NOT proceed until [APPROVE]
 
 <HARD-GATE>
 Do NOT proceed to project-scaffolding until the user replies [APPROVE]. This skill does NOT produce a PASS/FAIL conclusion.
 </HARD-GATE>
 
+## FIX Sub-Flow
+
+When the user replies `[FIX <issue_id>]` at the human gate:
+
+1. **Lookup issue**: Read `DESIGN_REVIEW.md`, locate the issue by ID. If not found, ask user to re-enter.
+2. **Classify severity**: Check issue severity:
+   - `Must Fix` / `Should Fix` -> Fix Mode A
+   - `Nice to Fix` -> Fix Mode B
+3. **Fix Mode A** (Architecture/document modification):
+   - Read the source file pointed to by the issue (`architecture.xml`, `INTERFACE_CONTRACT.md`, or `DECISION_LOG.md`)
+   - Generate a diff based on the issue's `suggested fix`
+   - Write diff to `DESIGN_REVIEW_FIX_{issue_id}.md`
+   - Ask user: "已生成 issue {id} 的修复方案。回复 [APPLY] 应用修改并重新验证，回复 [EDIT] 手动调整，回复 [IGNORE] 接受风险。"
+   - If `[APPLY]`:
+     - Apply diff to source file
+     - **Automatically trigger architecture-validation re-run** (because document changed)
+     - After validation passes, **return to design-review**, letting user confirm remaining issues
+   - If `[EDIT]`:
+     - Present the diff and allow user to provide corrections
+     - Re-generate diff and ask again
+   - If `[IGNORE]`:
+     - Mark issue as `ignored` in `DESIGN_REVIEW.md`
+     - Return to design-review gate
+4. **Fix Mode B** (Mark TODO):
+   - Mark issue as `deferred` in `DESIGN_REVIEW.md`
+   - During scaffolding, these deferred issues become inline `TODO` comments in code
+   - Return to design-review gate
+5. **Completion check**: After each fix, check if all `Must Fix` / `Should Fix` issues are resolved. If yes, update `DESIGN_REVIEW.md` to mark them `resolved` and allow `[APPROVE]`.
+
 ## Output Specification
 
 - `skill/artifacts/DESIGN_REVIEW.md`
+- `DESIGN_REVIEW_FIX_{issue_id}.md` (generated during FIX sub-flow)
+- Issues marked `resolved`, `deferred`, or `ignored` in `DESIGN_REVIEW.md`
 - Must include: Must Fix / Should Fix / Nice to Fix / Documented Risks sections
 - Must cross-reference issues to `DECISION_LOG.md` entries
 - Must NOT contain a "PASS" or "FAIL" summary
