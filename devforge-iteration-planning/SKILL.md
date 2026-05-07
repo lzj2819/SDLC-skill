@@ -127,6 +127,18 @@ Before starting, read `skill/artifacts/STATE.md` (or `docs/architecture/system/S
      - Human gate points
      - Risk summary (breaking changes, backward compatibility concerns)
      - Rollback criteria (when to abort the iteration)
+     - **verification_gate**:
+       ```yaml
+       verification_gate:
+         required: true  # If any impact type is breaking or modify_coupling
+         skills_to_rerun: [architecture-validation, design-review]
+         trigger_condition: "any breaking change or coupling modification"
+       ```
+
+8.5. **Post-iteration validation prompt**
+   - After the iteration's scaffolding is complete, if `ITERATION_PLAN.md::verification_gate::required` is true:
+     - Prompt user: "迭代实施涉及架构变更。回复 `[VALIDATE]` 重新运行架构验证，回复 `[SKIP]` 跳过（不推荐）。"
+     - If user replies `[VALIDATE]`, trigger `devforge-architecture-validation`
 
 9. **Self-validation: iteration plan consistency**
    - Before finalizing, verify iteration artifacts with automated checks:
@@ -147,13 +159,16 @@ Before starting, read `skill/artifacts/STATE.md` (or `docs/architecture/system/S
      - Update **Iteration History**: append new iteration entry with date, scope, and affected modules
      - Update **Module Registry**: add new modules with status `pending`; update affected modules' status if they change
      - Append iteration-specific risks to **Known Pitfalls**
+   - Update `RTM.md`:
+     - Append new requirements from iteration with Status=`pending`
+     - For affected modules with breaking interface changes, downgrade existing requirement Status from `verified` to `implemented`
 
 11. **Human gate**
     - Present iteration summary:
       - Number of new requirements
       - Impact matrix (modules affected, severity)
       - Execution order and estimated skill flow
-    - Say exactly: "迭代计划已生成。本次迭代涉及 [N] 个模块，其中 [X] 个新增、[Y] 个修改。请确认当前阶段输出。回复 [APPROVE] 按迭代计划逐个模块实施，回复 [MODIFY] 调整迭代范围，回复 [REJECT] 放弃本次迭代。"
+    - Say exactly: "迭代计划已生成。本次迭代涉及 [N] 个模块，其中 [X] 个新增、[Y] 个修改。请确认当前阶段输出。回复 [APPROVE] 按迭代计划逐个模块实施。**如果本次迭代包含 breaking changes，实施后将自动触发重新验证。** 回复 [MODIFY] 调整迭代范围，回复 [REJECT] 放弃本次迭代。"
     - Do NOT proceed until [APPROVE]
 
 ## Output Specification
