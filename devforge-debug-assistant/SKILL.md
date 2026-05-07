@@ -28,7 +28,7 @@ Analyze failing tests, error logs, or existing code to provide actionable bug fi
 
 ## Precondition Check
 
-Read `skill/artifacts/STATE.md`. Acceptable phases: `scaffolding_completed`, `module_design_completed`, `iteration_planning_completed`.
+Read `skill/artifacts/STATE.md`. Acceptable phases: `scaffolding_completed`, `module_design_completed`, `iteration_planning_completed`, `test_execution_completed`.
 
 If no code exists, stop and instruct the user to complete scaffolding first.
 
@@ -55,6 +55,7 @@ If no code exists, stop and instruct the user to complete scaffolding first.
    - Read relevant source code files
    - Read `component-spec.xml` for the affected component
    - Read error stack traces and log excerpts
+   - Read `docs/architecture/validation/TEST_REPORT.md` (if entering from test-execution)
 
 2. **Root cause analysis**
    - Trace the failure from symptom to cause:
