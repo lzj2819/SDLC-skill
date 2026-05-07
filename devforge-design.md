@@ -36,19 +36,15 @@ User inputs a raw idea
 +-----------------------------------------------------------+
 |  devforge-requirement-analysis                                |
 |  DIVE: Design                                             |
-|  1st Unfold: Lock goal and boundaries                     |
-|  Outputs: PRD.md + DECISION_LOG.md                        |
+|  Outputs: PRD.md + RTM.md + DECISION_LOG.md               |
 +-----------------------------------------------------------+
     | [APPROVE]
     v
 +-----------------------------------------------------------+
 |  devforge-architecture-design                                 |
 |  DIVE: Design (deepen)                                    |
-|  2nd Unfold: Dynamic pattern exploration + synthesis      |
-|  Internal: orchestrator-worker + domain extension overlay |
 |  Outputs: ARCHITECTURE.md + INTERFACE_CONTRACT.md         |
-|           + architecture.xml (System Level)               |
-|           + module-architecture.xml templates             |
+|           + architecture.xml + module XML templates       |
 +-----------------------------------------------------------+
     | [APPROVE]
     v
@@ -69,22 +65,29 @@ User inputs a raw idea
 +-----------------------------------------------------------+
 |  devforge-project-scaffolding                                 |
 |  DIVE: Implement + Evolve                                 |
-|  4th Unfold: Ground with full context                     |
-|  Reads ALL historical artifacts + XML specs               |
 |  Outputs: PROJECT_SCAFFOLD/ + .env.template               |
 |           + docs/sync-rules.md + docs/ADR.md + CHANGELOG  |
-|           + XML-driven code skeletons                     |
+|           + XML-driven code skeletons + docs/architecture/INDEX.md |
 +-----------------------------------------------------------+
     | [APPROVE]
     v
 +-----------------------------------------------------------+
 |  (Optional) devforge-module-design                            |
 |  DIVE: Design (module-level)                              |
-|  Trigger: [MODULE {id}]                                   |
+|  Trigger: [MODULE {id}] / [MODULE_BATCH {ids}]           |
 |  Outputs: module-prd.md + module-architecture.xml         |
-|           + component-spec.xml templates                  |
+|           + component-spec.xml + test code                |
 +-----------------------------------------------------------+
     | [APPROVE / NEXT MODULE]
+    v
++-----------------------------------------------------------+
+|  devforge-test-execution  [NEW]                             |
+|  DIVE: Verify                                             |
+|  Trigger: [TEST]                                          |
+|  Outputs: TEST_REPORT.md + TEST_COVERAGE_GAP.md         |
+|           + Updated RTM.md                                |
++-----------------------------------------------------------+
+    | [APPROVE / DEBUG]
     v
 +-----------------------------------------------------------+
 |  (Iteration) devforge-iteration-planning                      |
@@ -92,36 +95,11 @@ User inputs a raw idea
 |  Trigger: New requirements after scaffolding              |
 |  Outputs: ITERATION_PRD.md + ITERATION_PLAN.md            |
 |           + Updated architecture.xml + VALIDATION_DELTA   |
+|  Post-iteration: loops back to validation if breaking     |
 +-----------------------------------------------------------+
     | [APPROVE]
     v
-+-----------------------------------------------------------+
-|  (Optional) devforge-visualization                            |
-|  Trigger: [VISUALIZE]                                     |
-|  Outputs: Mermaid diagrams (system-context,               |
-|           module-interaction, data-flow, ER)              |
-|           → docs/architecture/diagrams/                   |
-+-----------------------------------------------------------+
-    | [APPROVE]
-    v
-+-----------------------------------------------------------+
-|  (Optional) devforge-ops-ready                                |
-|  Trigger: [OPS]                                           |
-|  Outputs: Terraform + K8s manifests + monitoring          |
-|           + multi-env configs + progressive deployment    |
-|           + operational runbook                           |
-+-----------------------------------------------------------+
-    | [APPROVE]
-    v
-+-----------------------------------------------------------+
-|  (Optional) devforge-debug-assistant                          |
-|  Trigger: [DEBUG] or test failure                         |
-|  Mode A: Bug diagnosis → DEBUG_REPORT.md                  |
-|  Mode B: Refactoring → REFACTOR_REPORT.md                 |
-+-----------------------------------------------------------+
-    | [APPROVE FIX / APPROVE REFACTOR]
-    v
-   Done (or loop back to module-design / architecture-design)
+(Optional stages 8-10: visualization, ops-ready, debug-assistant)
 ```
 
 **Core Design Principles**:
@@ -596,13 +574,13 @@ skill/
 
 | DIVE Stage | Skills | Key Activity |
 |------------|--------|--------------|
-| **Design** | `devforge-requirement-analysis` + `devforge-architecture-design` + `devforge-module-design` | Lock the "things that should not change": requirements, interfaces, state ownership, architecture, component decomposition |
-| **Implement** | `devforge-project-scaffolding` | Generate runnable project skeleton with infrastructure code and XML-driven code generation |
-| **Verify** | `devforge-architecture-validation` + `devforge-design-review` | Mock flow validation + real-LLM semantic checks + consistency audits + adversarial inspection |
-| **Evolve** | `devforge-iteration-planning` | Impact analysis, incremental PRD, interface versioning, XML sync, iteration plan generation |
-| **Visualize** | `devforge-visualization` | System context, module interaction, data flow, ER diagrams from `architecture.xml` |
-| **Operate** | `devforge-ops-ready` | Terraform, K8s, monitoring, progressive deployment (blue-green + canary), runbook |
-| **Debug** | `devforge-debug-assistant` | Bug diagnosis (root cause + fix proposal) + refactoring suggestions (code smells + architecture alignment) |
+| **Design** | `devforge-requirement-analysis` + `devforge-architecture-design` + `devforge-module-design` | Lock requirements, interfaces, state ownership, architecture, component decomposition |
+| **Implement** | `devforge-project-scaffolding` | Generate runnable skeleton with infrastructure and XML-driven code |
+| **Verify** | `devforge-architecture-validation` + `devforge-design-review` + **devforge-test-execution** | Mock flow validation + adversarial inspection + test execution + coverage |
+| **Evolve** | `devforge-iteration-planning` | Impact analysis, incremental PRD, interface versioning, XML sync, with post-iteration validation loop |
+| **Visualize** | `devforge-visualization` | Mermaid diagrams from `architecture.xml` |
+| **Operate** | `devforge-ops-ready` | Terraform, K8s, monitoring, progressive deployment |
+| **Debug** | `devforge-debug-assistant` | Bug diagnosis + refactoring, accepts `test_execution_completed` as entry point |
 
 ---
 
@@ -767,6 +745,20 @@ description: Internal utility skill used by other DevForges to compress session 
 - [x] Technology stack validation rule — active search (WebSearch/WebFetch) before recommending tools; blacklist enforcement (VM2, RCE libs)
 - [x] `references/system-prompt-template.md` — global VCMF constraints + output quality standards
 - [x] `references/validation-scripts-manifest.md` — script capability mapping + gap documentation
+
+### v1.3 Planned (from optimization design)
+
+- [x] PRD web research integration
+- [x] Verification phase continuity (both validation + design-review run)
+- [x] FIX sub-flow with diff generation and auto re-validation
+- [x] devforge-test-execution skill
+- [x] Module-design strictly after scaffolding
+- [x] Module-design subagent batch mode
+- [x] Cross-module interface compatibility check
+- [x] Iteration post-implementation validation loop
+- [x] P0/P1/P2 placeholder generation strategy
+- [x] docs/architecture/INDEX.md generation
+- [x] RTM real-time updates across all skills
 
 ### Completed in v1.1
 
