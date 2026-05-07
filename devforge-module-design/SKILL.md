@@ -24,6 +24,7 @@ This is the "same thinker" facing the module-level view of the same problem.
 
 - The user has approved system-level architecture and wants to design a specific module in detail
 - The user types `[MODULE {module_id}]` or says "design the {module} module"
+- The user types `[MODULE_BATCH {id1},{id2},...]` to design multiple modules in parallel
 - Do NOT use if system-level `architecture.xml` has not been approved
 
 ## Precondition Check
@@ -135,6 +136,7 @@ Before starting, read `skill/artifacts/STATE.md` (or `docs/architecture/system/S
      - **PRD traceability**: Confirm every module-level user story in `module-prd.md` cites at least one system-level PRD requirement or user story ID
      - **State lifecycle completeness**: Verify every `ModuleStateModel/State` entry has `location`, `owner` (component ID), `consumer` (component IDs), and `lifecycle` (create/read/update/delete/cleanup) attributes
      - **Interface explicitness**: Grep `module-interface-contract.md` for vague phrases like "returns data" or "handles errors". If found, replace with explicit schema and error code definitions.
+     - **Cross-module interface compatibility**: Verify every system-level output interface schema in the current module matches the corresponding input schema of all downstream modules (per `Coupling/DependsOn` in `architecture.xml`). Flag any `interface_mismatch` and prevent marking `design_completed` until resolved.
    - If any check fails, fix the module artifacts before proceeding
 
 10. **State update**
@@ -143,11 +145,24 @@ Before starting, read `skill/artifacts/STATE.md` (or `docs/architecture/system/S
      - Update **Current State**: if all modules are designed, set `phase: module_design_completed`; otherwise keep current phase
      - Update **Module Registry**: append `{id: module_id, status: design_completed, path: modules/{module_id}/}`
      - Append any module-specific risks to **Known Pitfalls**
+   - Update `docs/architecture/INDEX.md`: append module row with links to generated artifacts
 
 11. **Human gate**
     - Present module design summary (component list, interface count, test case count)
     - Say exactly: "模块 `{module_id}` 的详细设计已生成，包含模块级 PRD、组件分解、接口契约和 XML 模型。请确认当前阶段输出。回复 [APPROVE] 进入该模块的脚手架阶段，回复 [NEXT MODULE] 设计下一个模块，或提出修改意见。"
     - Do NOT proceed until [APPROVE] or [NEXT MODULE]
+
+## Parallel Batch Mode
+
+When triggered by `[MODULE_BATCH {id1},{id2},...]`:
+
+1. **Coupling analysis**: Read `architecture.xml`, analyze inter-module `Coupling` relationships. If circular dependencies exist between requested modules, fall back to serial mode and warn user.
+2. **Parallel dispatch**: If no circular dependencies, dispatch one subagent per module using `superpowers:dispatching-parallel-agents`. Each subagent executes the 11-step workflow for one module independently.
+3. **Consistency check** (after all subagents complete):
+   - Cross-module interface compatibility: Verify each module's system-level output matches downstream module's system-level input schema
+   - Shared StateModel conflicts: Flag any state entries with same `id` but different definitions across modules
+4. **Conflict resolution**: If conflicts found, enter coordination mode — present conflicts to user and fix sequentially.
+5. **Fallback**: If subagent dispatch is unavailable, fall back to serial `[MODULE {id}]` -> `[NEXT MODULE]`.
 
 ## Output Specification
 
