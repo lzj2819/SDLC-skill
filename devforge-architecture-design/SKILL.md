@@ -83,7 +83,13 @@ Before starting, read `skill/artifacts/STATE.md`. Acceptable entry phases: `requ
      - `Constraints` section pre-populated with the module's system-level interface obligations (Input/Output schemas copied from system `Module/Interface`)
      - `Components` placeholder with at least one example `Component` node showing the expected structure
      - `ComponentInterfaces` placeholder
-     - `ModuleStateModel` placeholder pre-populated with any system-level `State` entries owned by this module
+     - `ModuleStateModel` skeleton pre-filled as follows:
+       - For each stateful entity mentioned in the module's `Responsibility`, add a `State` entry with:
+         - `id` (derived from entity name)
+         - `location="system"`
+         - `owner` (empty, to be filled by module-design)
+         - `lifecycle` (empty, to be filled by module-design)
+       - Also copy any system-level `State` entries owned by this module from the system `StateModel`
    - **Reference integrity**: Ensure all `ModuleDetail/@ref` attributes use relative paths that resolve correctly from the system XML location
 
 6. **Database Schema (DDL) Generation**
