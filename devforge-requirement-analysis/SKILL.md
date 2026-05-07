@@ -60,6 +60,26 @@ Apply these throughout steps 3–5:
    - For each question, provide your recommended answer with reasoning so the user can confirm or correct rather than answer from scratch
    - Cover at minimum: user personas, primary pain points, business value, and scope boundaries — follow conditional branches when an answer reveals them
 
+3.5. **Web Research (conditional)**
+   - After Step 3 completes, determine if web search is needed:
+     - Search IF: the user's domain/product type has insufficient information in training data (emerging tech, niche industries), OR user requests competitor analysis, industry standards, or compliance requirements
+   - **Search scope** (strictly limited):
+     - Industry background: `{domain} industry standards 2025`, `{domain} common user pain points`
+     - Competitor reference: `{product type} competitors features comparison`
+     - Terminology standardization: `{ambiguous term} definition standard`
+     - Compliance requirements: `{domain} compliance requirements GDPR/SOC2`
+   - **Forbidden searches**: Technology selection (databases, frameworks, cloud services), specific code implementations
+   - **Result processing**:
+     - Write search result summary to `DECISION_LOG.md`:
+       ```
+       [YYYY-MM-DD] [RESEARCH-{id}]: Web search on "{query}"
+       - Source: {URL}
+       - Key finding: {1-sentence summary}
+       - Relevance to PRD: {which section}
+       ```
+     - PRD only cites conclusions, not raw data
+     - Cache results for 24h (reuse `references/search-integration.md` cache rules)
+
 4. **Cross-module interaction mapping**
    - Based on the gathered context, identify all cross-module or cross-system interactions
    - List them in a dedicated section of the PRD
@@ -116,7 +136,7 @@ Apply these throughout steps 3–5:
 
 10. **Human gate**
    - Present a concise PRD summary (3-5 bullets)
-   - Say exactly: "PRD 和决策日志已生成。请确认当前阶段输出。回复 [APPROVE] 进入架构设计阶段，或提出修改意见。"
+   - Say exactly: "PRD 和决策日志已生成。本次 PRD 基于 {N} 条外部研究结论，详细引用见 DECISION_LOG.md。请确认当前阶段输出。回复 [APPROVE] 进入架构设计阶段，或提出修改意见。"
    - Do NOT proceed until the user replies [APPROVE]
 
 <HARD-GATE>
@@ -133,6 +153,7 @@ Do NOT proceed to architecture-design, write any code, or scaffold any project u
 - Must include at least one abnormal-path fallback
 - Must include a "Cross-Module Interactions" section
 - Must include a "Terminology" section capturing canonical definitions resolved during elicitation
+- Search result references in `DECISION_LOG.md` (if web research was performed)
 - PRD describes **what users perceive and accept** — do NOT specify implementation choices (database, framework, caching, deployment topology); those belong to architecture-design
 
 ## Red Flags
