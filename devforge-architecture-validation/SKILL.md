@@ -72,10 +72,13 @@ Read `skill/artifacts/STATE.md`. Acceptable phases: `architecture_design_complet
      ```
 
 8. **Self-healing loop**
-   - If any validation fails:
+   - Classify each failure as `blocking` (would cause system failure) or `non-blocking` (warning/observation)
+   - If any `blocking` validation fails:
      - Document the failure in the report
-     - Tell the user: "架构校验未通过。请回复 [RETRY] 退回架构设计阶段修改 XML，或提出修改意见。"
+     - Tell the user: "架构校验未通过，存在阻塞性问题。请回复 [RETRY] 退回架构设计阶段修改 XML，或提出修改意见。"
      - Do NOT proceed to scaffolding
+   - If all failures are `non-blocking`:
+     - Tell the user: "架构校验发现 {N} 个非阻塞性警告。回复 [FORCE_APPROVE] 跳过警告继续到设计审查阶段，或回复 [RETRY] 修改。"
    - If all pass:
      - Write `skill/artifacts/VALIDATION_REPORT.md` (or `docs/architecture/system/VALIDATION_REPORT.md`) with full trace and pass summary
      - **Generate `VALIDATION_DELTA.md`**: Read the previous validation report (if any). Compare current results with previous results. Produce a delta report containing ONLY newly introduced issues or newly resolved issues. Store at `docs/architecture/validation/VALIDATION_DELTA_{YYYYMMDD}.md`. If this is the first validation, the delta report states "Initial validation — all issues are new."
@@ -102,7 +105,7 @@ Read `skill/artifacts/STATE.md`. Acceptable phases: `architecture_design_complet
 
 12. **Human gate**
     - Present validation summary
-    - Say exactly: "架构验证报告和健康检查脚本已生成。请确认当前阶段输出。回复 [APPROVE] 进入项目脚手架阶段，或提出修改意见。"
+    - Say exactly: "架构验证报告和健康检查脚本已生成。请确认当前阶段输出。回复 [APPROVE] 进入设计审查阶段（推荐），回复 [SKIP_REVIEW] 跳过审查直接进入项目脚手架阶段，或提出修改意见。"
     - Do NOT proceed until [APPROVE]
 
 <HARD-GATE>
@@ -117,6 +120,7 @@ Do NOT proceed to project-scaffolding if validation failed. If validation passed
 - Must include the full simulation trace
 - Must clearly state PASS or FAIL per module
 - Must note whether real-LLM validation was run or skipped
+- `VALIDATION_REPORT.md` must mark each failure as `blocking: true/false`
 - `VALIDATION_DELTA.md` must identify only new or resolved issues compared to the previous validation
 
 ## Red Flags
