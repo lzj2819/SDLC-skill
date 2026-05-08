@@ -5,8 +5,8 @@
   "plugins": [
     {
       "name": "DevForge-chain",
-      "description": "DevForge Chain v1.1: 7 core skills (requirement-analysis, architecture-design, architecture-validation, design-review, project-scaffolding, module-design, iteration-planning) + context-compression utility + 3 domain extensions (ai-agent, data-pipeline, mobile-app). Built on VCMF framework with DIVE cycle.",
-      "version": "1.1.0",
+      "description": "DevForge Chain v1.3: 10 core skills covering full SDLC (requirement-analysis, architecture-design, validation, design-review, project-scaffolding, module-design, test-execution, iteration-planning, visualization, ops-ready, debug-assistant) + context-compression utility + 3 domain extensions. Built on VCMF framework with DIVE cycle. Features: web research in PRD, test-execution skill, FIX sub-flow with diff generation, batch module design, unified project directory structure, symlink-based installer.",
+      "version": "1.3.0",
       "source": "./",
       "author": { "name": "lzj", "email": "lzj2819@gmail.com" }
     }

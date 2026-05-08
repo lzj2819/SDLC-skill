@@ -50,10 +50,42 @@ Apply these throughout steps 3–5:
    - State the five PRD quality standards (clear logic, closed loop, visuals, traceability, prioritization)
    - Surface edge-case questions (malicious traffic, third-party downtime, data consistency)
 
-2. **State initialization**
+2. **State initialization + Project directory initialization**
    - Read `skill/artifacts/STATE.md` if it exists
-   - If starting fresh, create `STATE.md` and populate the **Immutable Goal** section with the user's product idea, success metrics, and scope boundary
-   - If `STATE.md` exists and `phase` is already `requirement_analysis_completed` or later, confirm with user whether to overwrite or continue
+   - If starting fresh:
+     a. **Ask for project name**: "请为这个项目命名（如 my-todo-app）："
+     b. **Determine project root**: Default to `./{project-name}/`. If a directory with that name already exists, prompt for confirmation to continue inside it or choose a different name.
+     c. **Confirm with user**: "项目产物将保存在 `{project-root}` 目录下。确认继续？回复 [YES] 开始，或提供其他路径。"
+     d. **Create directory structure**:
+        ```
+        {project-root}/
+        ├── skill/
+        │   └── artifacts/              # Temporary workspace during skill execution
+        │       ├── STATE.md
+        │       ├── PRD.md
+        │       ├── DECISION_LOG.md
+        │       ├── RTM.md
+        │       ├── ARCHITECTURE.md
+        │       ├── INTERFACE_CONTRACT.md
+        │       ├── architecture.xml
+        │       ├── VALIDATION_REPORT.md
+        │       ├── VALIDATION_DELTA.md
+        │       ├── DESIGN_REVIEW.md
+        │       ├── SECURITY_AUDIT_REPORT.md
+        │       ├── ITERATION_PRD.md
+        │       ├── ITERATION_PLAN.md
+        │       └── PROJECT_SCAFFOLD/   # Final runnable project code
+        └── docs/
+            └── architecture/
+                ├── system/             # System-level architecture documents (final authoritative location)
+                ├── modules/            # Module-level architecture documents
+                ├── validation/         # Validation reports and test reports
+                ├── diagrams/           # Mermaid architecture diagrams
+                └── INDEX.md            # Unified architecture document index
+        ```
+     e. **Create `STATE.md`** at `skill/artifacts/STATE.md` and populate the **Immutable Goal** section with the user's product idea, success metrics, and scope boundary
+     f. Write the project root path to `STATE.md` under a **Project Metadata** section: `project_root: {project-root}`
+   - If `STATE.md` exists and `phase` is already `requirement_analysis_completed` or later, confirm with user whether to overwrite or continue from existing artifact
 
 3. **Context gathering**
    - Following the Elicitation Principles, ask targeted questions about user personas, pain points, and business value — one at a time
@@ -133,6 +165,7 @@ Apply these throughout steps 3–5:
    - Set `phase: requirement_analysis_completed`
    - Set DIVE `Design: in_progress`, others `pending`
    - Update artifact statuses
+   - Record **Project Metadata** in STATE.md: `project_root`, `project_name`, `created_at`
 
 10. **Human gate**
    - Present a concise PRD summary (3-5 bullets)
@@ -144,6 +177,8 @@ Do NOT proceed to architecture-design, write any code, or scaffold any project u
 </HARD-GATE>
 
 ## Output Specification
+
+All outputs are written relative to the **project root** (`{project-root}/`):
 
 - `skill/artifacts/PRD.md`
 - `skill/artifacts/RTM.md` (Requirement Traceability Matrix)

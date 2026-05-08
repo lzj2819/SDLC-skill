@@ -23,7 +23,8 @@
       "Bash(git -C \"E:/pythonproject/vclaw/SDLC-skill\" diff HEAD~1 --name-only)",
       "Bash(git check-ignore *)",
       "Bash(git worktree *)",
-      "Bash(python scripts/package-plugin.py --mode all --output ./dist)"
+      "Bash(python scripts/package-plugin.py --mode all --output ./dist)",
+      "Bash(chmod +x update.sh)"
     ]
   }
 }
