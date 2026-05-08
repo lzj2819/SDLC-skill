@@ -15,10 +15,11 @@ This is the "same thinker" facing the module-level view of the same problem.
 
 | Principle | Checkpoint in this Skill |
 |-----------|--------------------------|
-| Design as Contract | Module design must trace back to the system-level PRD and architecture; no new requirements invented outside the module's system-level scope |
-| Interface as Boundary | Every cross-component call must have explicit Input/Output types and error codes in `module-interface-contract.md` |
+| Design as Contract | Module design must trace back to the system-level PRD and architecture; generated code skeletons must trace back to `component-spec.xml` |
+| Interface as Boundary | Every cross-component call must have explicit Input/Output types and error codes in `module-interface-contract.md`; generated code signatures must match |
 | Reality as Baseline | Module-level test cases must cover happy path, abnormal path, and state lifecycle edge cases |
 | State as Responsibility | `ModuleStateModel` must answer: where stored, which component writes, which components read, lifecycle |
+| XML as Authority | Generated code skeletons must strictly match `component-spec.xml` signatures and error handling |
 
 ## When to Use
 
@@ -118,7 +119,28 @@ Before starting, read `skill/artifacts/STATE.md` (or `docs/architecture/system/S
    - If `tests/end_to_end/` lacks module-related end-to-end tests, generate a basic version with PRD user story reference
    - Write all test files to `PROJECT_SCAFFOLD/tests/...`
 
-8. **Module documentation**
+8. **Component code skeleton generation**
+   - Read the freshly generated `component-spec.xml` for each component
+   - Generate precise code skeletons that strictly match:
+     - Function signatures must match `ComponentSpec/Functions/Function/Signature`
+     - Error handling must cover all `ComponentSpec/Functions/Function/ErrorHandling/Error` entries
+     - File paths must match `ComponentSpec/Metadata/FilePath`
+     - Add inline comments referencing the XML node ID (e.g., `# Implements component-spec.xml::AuthController::login`)
+   - Generate code skeletons by component priority:
+     - **P0 components**: Generate complete interface stubs with minimal working implementation (non-empty function bodies returning reasonable defaults)
+     - **P1 components**: Generate interface stubs with `raise NotImplementedError("P1: implement per module-prd")` (or language equivalent)
+     - **P2 components**: Generate file header comments + empty function/class definitions only
+   - Write generated files to `PROJECT_SCAFFOLD/{FilePath}` (overwriting scaffolding-generated `__init__.py` or creating new files as needed)
+   - Add module header comment to every generated file:
+     ```python
+     # Module: {module_id}
+     # Component: {component_id}
+     # Priority: {P0/P1/P2}
+     # Source: component-spec.xml::{component_id}
+     # Status: {placeholder/minimal-implemented}
+     ```
+
+9. **Module documentation**
    - Write `module-prd.md` containing:
      - Module background and scope (within system context)
      - Module-level user stories with acceptance criteria
@@ -128,28 +150,33 @@ Before starting, read `skill/artifacts/STATE.md` (or `docs/architecture/system/S
      - Test case catalog
      - Mock data definitions
 
-9. **Self-validation: module design consistency**
-   - Before finalizing, verify module-level artifacts with automated checks:
-     - **Schema compliance**: Confirm `module-architecture.xml` contains all required nodes: `ParentSystem`, `Constraints`, `Components`, `ComponentInterfaces`, `ModuleStateModel`
-     - **System interface honor**: Verify every `Constraints/InterfaceConstraint` in `module-architecture.xml` matches the corresponding system-level `Module/Interface` in `architecture.xml`. Flag any missing or divergent schema.
-     - **Component spec coverage**: Verify every component listed in `module-architecture.xml/Components` has a corresponding `component-spec.xml` file generated
-     - **PRD traceability**: Confirm every module-level user story in `module-prd.md` cites at least one system-level PRD requirement or user story ID
-     - **State lifecycle completeness**: Verify every `ModuleStateModel/State` entry has `location`, `owner` (component ID), `consumer` (component IDs), and `lifecycle` (create/read/update/delete/cleanup) attributes
-     - **Interface explicitness**: Grep `module-interface-contract.md` for vague phrases like "returns data" or "handles errors". If found, replace with explicit schema and error code definitions.
-     - **Cross-module interface compatibility**: Verify every system-level output interface schema in the current module matches the corresponding input schema of all downstream modules (per `Coupling/DependsOn` in `architecture.xml`). Flag any `interface_mismatch` and prevent marking `design_completed` until resolved.
-   - If any check fails, fix the module artifacts before proceeding
+10. **Self-validation: module design consistency**
+    - Before finalizing, verify module-level artifacts with automated checks:
+      - **Schema compliance**: Confirm `module-architecture.xml` contains all required nodes: `ParentSystem`, `Constraints`, `Components`, `ComponentInterfaces`, `ModuleStateModel`
+      - **System interface honor**: Verify every `Constraints/InterfaceConstraint` in `module-architecture.xml` matches the corresponding system-level `Module/Interface` in `architecture.xml`. Flag any missing or divergent schema.
+      - **Component spec coverage**: Verify every component listed in `module-architecture.xml/Components` has a corresponding `component-spec.xml` file generated
+      - **PRD traceability**: Confirm every module-level user story in `module-prd.md` cites at least one system-level PRD requirement or user story ID
+      - **State lifecycle completeness**: Verify every `ModuleStateModel/State` entry has `location`, `owner` (component ID), `consumer` (component IDs), and `lifecycle` (create/read/update/delete/cleanup) attributes
+      - **Interface explicitness**: Grep `module-interface-contract.md` for vague phrases like "returns data" or "handles errors". If found, replace with explicit schema and error code definitions.
+      - **Cross-module interface compatibility**: Verify every system-level output interface schema in the current module matches the corresponding input schema of all downstream modules (per `Coupling/DependsOn` in `architecture.xml`). Flag any `interface_mismatch` and prevent marking `design_completed` until resolved.
+      - **Code skeleton compliance**: For each generated code file, verify:
+        - Function signatures match the corresponding `component-spec.xml` entries
+        - All `ErrorHandling/Error` entries have corresponding error handling code
+        - File paths match `ComponentSpec/Metadata/FilePath`
+        - Every file has a traceability comment linking to component-spec.xml
+    - If any check fails, fix the module artifacts before proceeding
 
-10. **State update**
-   - Update `STATE.md`:
-     - Append to **Completed Steps**: `[YYYY-MM-DD HH:MM] devforge-module-design: Designed module [module_id]. Components: [list]. Key decisions: [summary]`
-     - Update **Current State**: if all modules are designed, set `phase: module_design_completed`; otherwise keep current phase
-     - Update **Module Registry**: append `{id: module_id, status: design_completed, path: modules/{module_id}/}`
-     - Append any module-specific risks to **Known Pitfalls**
-   - Update `docs/architecture/INDEX.md`: append module row with links to generated artifacts
+11. **State update**
+    - Update `STATE.md`:
+      - Append to **Completed Steps**: `[YYYY-MM-DD HH:MM] devforge-module-design: Designed module [module_id]. Components: [list]. Key decisions: [summary]`
+      - Update **Current State**: if all modules are designed, set `phase: module_design_completed`; otherwise keep current phase
+      - Update **Module Registry**: append `{id: module_id, status: design_completed, path: modules/{module_id}/}`
+      - Append any module-specific risks to **Known Pitfalls**
+    - Update `docs/architecture/INDEX.md`: append module row with links to generated artifacts
 
-11. **Human gate**
+12. **Human gate**
     - Present module design summary (component list, interface count, test case count)
-    - Say exactly: "模块 `{module_id}` 的详细设计已生成，包含模块级 PRD、组件分解、接口契约和 XML 模型。请确认当前阶段输出。回复 [APPROVE] 进入该模块的脚手架阶段，回复 [NEXT MODULE] 设计下一个模块，或提出修改意见。"
+    - Say exactly: "模块 `{module_id}` 的详细设计已生成，包含模块级 PRD、组件分解、接口契约、XML 模型和精确代码骨架。请确认当前阶段输出。回复 [APPROVE] 进入该模块的脚手架阶段，回复 [NEXT MODULE] 设计下一个模块，或提出修改意见。"
     - Do NOT proceed until [APPROVE] or [NEXT MODULE]
 
 ## Parallel Batch Mode
@@ -157,7 +184,7 @@ Before starting, read `skill/artifacts/STATE.md` (or `docs/architecture/system/S
 When triggered by `[MODULE_BATCH {id1},{id2},...]`:
 
 1. **Coupling analysis**: Read `architecture.xml`, analyze inter-module `Coupling` relationships. If circular dependencies exist between requested modules, fall back to serial mode and warn user.
-2. **Parallel dispatch**: If no circular dependencies, dispatch one subagent per module using `superpowers:dispatching-parallel-agents`. Each subagent executes the 11-step workflow for one module independently.
+2. **Parallel dispatch**: If no circular dependencies, dispatch one subagent per module using `superpowers:dispatching-parallel-agents`. Each subagent executes the 12-step workflow for one module independently.
 3. **Consistency check** (after all subagents complete):
    - Cross-module interface compatibility: Verify each module's system-level output matches downstream module's system-level input schema
    - Shared StateModel conflicts: Flag any state entries with same `id` but different definitions across modules
@@ -171,6 +198,7 @@ When triggered by `[MODULE_BATCH {id1},{id2},...]`:
 - `PROJECT_SCAFFOLD/modules/{module_id}/module-interface-contract.md`
 - `PROJECT_SCAFFOLD/modules/{module_id}/components/{component_id}/component-spec.xml` (template for each component)
 - `PROJECT_SCAFFOLD/tests/mock/{module_id}/{component_id}_test.*`
+- `PROJECT_SCAFFOLD/{component_file_path}` — precise code skeletons for each component (generated from `component-spec.xml`)
 
 ## Red Flags
 
