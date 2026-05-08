@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"E:\\\\pythonproject\\\\vclaw\\\\SDLC-skill\" -Recurse -Directory)",
+      "Bash(Select-Object FullName)",
+      "Bash(Sort-Object FullName)",
+      "Bash(git -C \"E:/pythonproject/vclaw/SDLC-skill\" diff HEAD~1 -- devforge-requirement-analysis/SKILL.md)",
+      "Bash(git -C \"E:/pythonproject/vclaw/SDLC-skill\" diff HEAD~2 --name-only)",
+      "Bash(git -C \"E:/pythonproject/vclaw/SDLC-skill\" diff HEAD~3 --name-only)",
+      "Bash(git -C \"E:/pythonproject/vclaw/SDLC-skill\" diff HEAD~5 --name-only)",
+      "Bash(git -C \"E:/pythonproject/vclaw/SDLC-skill\" diff HEAD~10 --name-only)",
+      "Bash(git -C \"E:/pythonproject/vclaw/SDLC-skill\" status)",
+      "Bash(git -C \"E:/pythonproject/vclaw/SDLC-skill\" log --oneline --all --decorate -15)",
+      "Bash(git -C \"E:/pythonproject/vclaw/SDLC-skill\" log --oneline --all --graph --decorate -40)",
+      "Bash(git -C \"E:/pythonproject/vclaw/SDLC-skill\" log --all --oneline --grep=\"RTM\" -5)",
+      "Bash(git -C \"E:/pythonproject/vclaw/SDLC-skill\" log --all --oneline --grep=\"trace\" -5)",
+      "Bash(git -C \"E:/pythonproject/vclaw/SDLC-skill\" show 655a259 --stat)",
+      "Bash(git -C \"E:/pythonproject/vclaw/SDLC-skill\" show 655a259 -- devforge-requirement-analysis/SKILL.md)",
+      "Bash(git -C \"E:/pythonproject/vclaw/SDLC-skill\" show 655a259 -- sdlc-requirement-analysis/SKILL.md)",
+      "Bash(git -C \"E:/pythonproject/vclaw/SDLC-skill\" show e5ac919 --stat)",
+      "Bash(git -C \"E:/pythonproject/vclaw/SDLC-skill\" log --all --oneline --grep=\"rename\" -5)",
+      "Bash(git -C \"E:/pythonproject/vclaw/SDLC-skill\" show 4e166c1 --stat)",
+      "Bash(git -C \"E:/pythonproject/vclaw/SDLC-skill\" diff HEAD~1 --name-only)",
+      "Bash(git check-ignore *)",
+      "Bash(git worktree *)",
+      "Bash(python scripts/package-plugin.py --mode all --output ./dist)"
+    ]
+  }
+}
