@@ -10,25 +10,45 @@ The chain covers 10 core stages from product ideation to production deployment, 
 - **VCMF** (Vibe Coding Maturity Framework) — 5 core principles: Design as Contract, Interface as Boundary, Reality as Baseline, State as Responsibility, XML as Authority
 - **DIVE** (Design-Implement-Verify-Evolve) — the cyclic workflow mapped across the stages
 
-## Validation & Distribution Commands
+## Development Commands
 
-The project has no traditional build, lint, or test suite. Validation is done via scripts:
+This project has no traditional build system. Validation and packaging are done via scripts:
+
+### Validation
 
 ```bash
-# Validate SKILL.md frontmatter across all skills (15 skills as of v1.3)
+# Validate all SKILL.md frontmatter (fails if any skill lacks proper YAML frontmatter)
 python scripts/package-plugin.py --mode all --output ./dist
-# (Fails early if any SKILL.md lacks proper YAML frontmatter with name/description fields)
 
-# Validate XML architecture artifacts for well-formedness, ref integrity, coupling consistency
+# Validate XML artifacts for well-formedness and reference integrity
 ./scripts/architecture-ci.sh [docs/architecture/]
-# Requires: xmllint, bash. Default arch dir is docs/architecture.
+# Requires: xmllint, bash.
 
-# Deep XML cross-reference verification (ModuleDetail refs, Coupling targets, StateModel, Interface Consistency)
+# Deep XML cross-reference verification
 python scripts/xml-sync.py --verify-only [ARCH_DIR]
 
 # Propagate system-level interface changes down to module Constraints
 python scripts/xml-sync.py --sync [ARCH_DIR]
 ```
+
+### Packaging & Distribution
+
+```bash
+# Package as plugin ZIP + individual .skill files
+python scripts/package-plugin.py --mode all --output ./dist
+
+# Output:
+#   ./dist/DevForge-chain-v{version}.zip   (full plugin)
+#   ./dist/skills/{name}.skill              (individual skill packages)
+```
+
+### Installer Maintenance
+
+When adding or renaming a skill directory, update all four installer scripts:
+- `install.sh` — `coreSkills` array
+- `install.ps1` — `$coreSkills` array
+- `uninstall.sh` — `skills` array
+- `uninstall.ps1` — `$skills` array
 
 ## Skill Chain Architecture
 
@@ -123,6 +143,29 @@ Every skill pauses for explicit human approval before proceeding. The supported 
 **Module-level commands:**
 - `[MODULE {id}]`, `[MODULE_BATCH {ids}]`, `[NEXT MODULE]`, `[VISUALIZE]`, `[OPS]`, `[DEBUG]`
 
+## Skill Maintenance Rules
+
+When modifying any skill, check for cross-file dependencies:
+
+| If you change... | You must also update... |
+|:---|:---|
+| Add/remove a skill directory | `install.sh`, `install.ps1`, `uninstall.sh`, `uninstall.ps1` (skill arrays); `README.md` (stage table); `.claude-plugin/marketplace.json` (plugin count) |
+| Add a new human gate command | `skill/tools/intervention-checkpoint.md` (canonical command spec) + all skills that use the command |
+| Add a new artifact type | `skill/tools/artifact-manager.md` (update strategy table) + `devforge-state.md` (artifact index section) |
+| Modify STATE.md structure | `devforge-state.md` (template) + all skills that read/write STATE.md |
+| Change stage flow or precondition | All downstream skills' precondition checks + `devforge-design.md` (flow diagram) + `README.md` (stage table) |
+| Add a new VCMF checkpoint column | All existing skills' VCMF tables + `references/system-prompt-template.md` |
+
+### Adding a New Skill
+
+1. Create `{skill-name}/SKILL.md` with valid YAML frontmatter (`name`, `description`)
+2. Add VCMF checkpoints table (align with existing skills)
+3. Define precondition check reading `STATE.md` phase
+4. Add to `devforge-design.md` flow diagram and stage table
+5. Update `README.md` stage table
+6. Update all four installer scripts
+7. Run `python scripts/package-plugin.py --mode all` to validate frontmatter
+
 ### Skill File Structure
 
 Every skill directory contains a single `SKILL.md` with:
@@ -152,3 +195,14 @@ Every skill directory contains a single `SKILL.md` with:
 ### Environment Configuration
 
 `.env.example` defines optional API keys and credentials for enhanced capabilities (LLM validation, database scaffolding, cloud deployment). Skills degrade gracefully when these are absent. No configuration is required for basic operation.
+
+## Version Bump Checklist
+
+When releasing a new version (e.g., v1.2 → v1.3):
+
+1. Update `.claude-plugin/plugin.json` → `version`
+2. Update `.claude-plugin/marketplace.json` → `version` and `description`
+3. Update `README.md` → version header and footer
+4. Update `CLAUDE.md` → version references in stage tables
+5. Run `python scripts/package-plugin.py --mode all --output ./dist` (must pass)
+6. Tag the release: `git tag v1.3.0`
