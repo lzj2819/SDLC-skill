@@ -1,11 +1,12 @@
 ---
-title: DevForge State
-description: Template for the file-based state used by the DevForge chain
+title: DevForge State v1.3
+description: Template for the file-based state used by the DevForge chain (12 sections, v1.3)
 ---
 
 # DevForge State
 
 > **File path**: `PROJECT_SCAFFOLD/docs/architecture/system/STATE.md`
+> **Version**: v1.3 — 12 sections including Quality Gates, Error Log, and Intervention Log
 
 ## 1. Immutable Goal (Never Overwritten)
 > Read at the start of every skill invocation to prevent drift.
@@ -21,10 +22,14 @@ description: Template for the file-based state used by the DevForge chain
 - [YYYY-MM-DD HH:MM] devforge-architecture-design: [key decision summary]
 - [YYYY-MM-DD HH:MM] devforge-architecture-validation: [key decision summary]
 - [YYYY-MM-DD HH:MM] devforge-design-review: [key decision summary]
+- [YYYY-MM-DD HH:MM] devforge-security-audit: [security scan summary]
 - [YYYY-MM-DD HH:MM] devforge-project-scaffolding: [key decision summary]
 - [YYYY-MM-DD HH:MM] devforge-module-design: [module_id] - [key decision summary]
 - [YYYY-MM-DD HH:MM] devforge-test-execution: [test summary + coverage]
 - [YYYY-MM-DD HH:MM] devforge-iteration-planning: [iteration scope summary]
+- [YYYY-MM-DD HH:MM] devforge-visualization: [diagram summary]
+- [YYYY-MM-DD HH:MM] devforge-ops-ready: [infrastructure summary]
+- [YYYY-MM-DD HH:MM] devforge-debug-assistant: [debug/refactor summary]
 
 ## 3. DecisionDigest (Append-Only, Last 20 Entries)
 > Quick-reference digest of key architectural and product decisions. Truncate older entries to keep the list at 20 items max.
@@ -35,7 +40,7 @@ description: Template for the file-based state used by the DevForge chain
 ## 4. Current State (Overwritten)
 > Reflects the latest progress.
 
-- phase: [requirement_analysis_completed | architecture_design_completed | architecture_validated | design_review_completed | scaffolding_completed | module_design_completed | test_execution_completed | iteration_planning_completed | visualization_completed | ops_ready_completed | evolution_completed]
+- phase: [requirement_analysis_completed | architecture_design_completed | architecture_validated | design_review_completed | security_audit_completed | scaffolding_completed | module_design_completed | test_execution_completed | iteration_planning_completed | visualization_completed | ops_ready_completed | evolution_completed]
 - DIVE:
   - Design: [pending | in_progress | completed]
   - Implement: [pending | in_progress | completed]
@@ -46,7 +51,7 @@ description: Template for the file-based state used by the DevForge chain
   - `refactor`: Run devforge-architecture-design for architectural changes
   - `module`: Run devforge-module-design for the next un-designed module
   - `none`: No pending action; project is in steady state
-- Next skill: [devforge-architecture-design | devforge-architecture-validation | devforge-design-review | devforge-project-scaffolding | devforge-module-design | devforge-test-execution | devforge-iteration-planning | devforge-visualization | devforge-ops-ready | devforge-debug-assistant]
+- Next skill: [devforge-architecture-design | devforge-architecture-validation | devforge-design-review | devforge-security-audit | devforge-project-scaffolding | devforge-module-design | devforge-test-execution | devforge-iteration-planning | devforge-visualization | devforge-ops-ready | devforge-debug-assistant]
 
 ## 5. Quality Gates (Configured at project start, updated by iteration-planning)
 > Configurable thresholds for test, performance, and security validation. Skills read these values instead of using hardcoded defaults.
@@ -141,8 +146,10 @@ iteration_history:
 | ERD | PROJECT_SCAFFOLD/docs/architecture/system/ERD.md | 2026-04-24 | Entity relationship diagram |
 | Test Report | PROJECT_SCAFFOLD/docs/architecture/validation/TEST_REPORT.md | 2026-04-24 | Unit/integration/e2e results + coverage |
 | Test Coverage Gap | PROJECT_SCAFFOLD/docs/architecture/validation/TEST_COVERAGE_GAP.md | 2026-04-24 | Missing test coverage list |
-| Debug Report | PROJECT_SCAFFOLD/docs/architecture/system/DEBUG_REPORT.md | 2026-04-24 | Bug diagnosis result |
-| Refactor Report | PROJECT_SCAFFOLD/docs/architecture/system/REFACTOR_REPORT.md | 2026-04-24 | Code health scan result |
+| Security Audit | PROJECT_SCAFFOLD/docs/architecture/validation/SECURITY_AUDIT_REPORT.md | 2026-04-24 | 8-dimension scan + CVE check |
+| Debug Report | PROJECT_SCAFFOLD/docs/architecture/validation/DEBUG_REPORT.md | 2026-04-24 | Bug diagnosis result |
+| Refactor Report | PROJECT_SCAFFOLD/docs/architecture/validation/REFACTOR_REPORT.md | 2026-04-24 | Code health scan result |
+| Production Incident | PROJECT_SCAFFOLD/docs/architecture/validation/PRODUCTION_INCIDENT_REPORT.md | 2026-04-24 | Production incident analysis |
 | Architecture Index | docs/architecture/INDEX.md | 2026-04-24 | Document registry + module table |
 | System Prompt | references/system-prompt-template.md | 2026-04-29 | Global role definition + VCMF constraints |
 | Context Protocol | references/context-management-protocol.md | 2026-04-29 | Layered summary + artifact loading rules |

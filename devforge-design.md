@@ -1,10 +1,12 @@
-# DevForge Decomposition Design v1.2
+# DevForge Decomposition Design v1.3
 
 > **Design Objective**: Decompose the original monolithic skill `DevForge.md` into composable skills that embed VCMF principles and the DIVE cycle. The skill chain models a "single thinker's iterative drafts" rather than a "role relay race": each skill is the same thinker unfolding the same complex problem from a different dimension, always holding the complete intent.
 >
 > **v1.1 Additions**: Three-layer XML architecture (System/Module/Component), dynamic pattern selection (10 patterns), module-level design skill, iteration planning skill, domain extensions (overlay mechanism), context compression utility, and XML-driven code generation.
 >
 > **v1.2 Additions**: Database schema (DDL) generation, OpenAPI 3.0 spec generation, test coverage integration, architecture visualization (Mermaid diagrams), production-ready infrastructure (Terraform/K8s/monitoring), progressive deployment (blue-green + canary), bug diagnosis & refactoring assistant, requirement traceability matrix (RTM), **context-management protocol** (layered summary + repo-index.md), **self-validation checkpoints** (syntax/schema/traceability), **language adaptation** (user-input language detection), and **technology stack validation** (active search before tool recommendation).
+>
+> **v1.3 Additions**: **Triple Verification Mechanism** (3a architecture-validation + 3b design-review + 3c security-audit), **`devforge-test-execution` skill** (unit/integration/e2e test execution + coverage reporting + RTM sync), **FIX sub-flow** with diff generation and auto re-validation in design-review, **verification phase continuity** (both validation and design-review run by default), **module-design strictly after scaffolding** (precondition enforcement), **native agent-based parallel batch mode** for module design (`[MODULE_BATCH]`), **cross-module interface compatibility check** in module-design self-validation, **iteration post-implementation validation loop** (breaking changes trigger re-validation), **P0/P1/P2 placeholder generation strategy** in scaffolding and module-design, **`docs/architecture/INDEX.md`** generation, **RTM real-time updates** across all skills, and **web research integration** in requirement-analysis.
 
 ---
 
@@ -34,48 +36,50 @@ User inputs a raw idea
     |
     v
 +-----------------------------------------------------------+
-|  devforge-requirement-analysis                                |
+|  1. devforge-requirement-analysis                             |
 |  DIVE: Design                                             |
 |  Outputs: PRD.md + RTM.md + DECISION_LOG.md               |
 +-----------------------------------------------------------+
     | [APPROVE]
     v
 +-----------------------------------------------------------+
-|  devforge-architecture-design                                 |
+|  2. devforge-architecture-design                              |
 |  DIVE: Design (deepen)                                    |
 |  Outputs: ARCHITECTURE.md + INTERFACE_CONTRACT.md         |
-|           + architecture.xml + module XML templates       |
+|           + architecture.xml + schema.sql + openapi.yaml  |
+|           + module XML templates                          |
 +-----------------------------------------------------------+
     | [APPROVE]
     v
-    +-------------------------+-------------------------+
-    |                         |
-    v                         v
-+------------------+   +---------------------------+
-| devforge-architecture|   | devforge-design-review         |
-| -validation      |   | DIVE: Verify               |
-| (Optional)       |   | 3rd Unfold: Skeptical      |
-| Technical        |   |    examination (NOT gate)  |
-| consistency +    |   | Output: DESIGN_REVIEW.md   |
-| XML delta report |   | (problem list, no PASS/FAIL)|
-+------------------+   +---------------------------+
-    |                         | [APPROVE / FIX]
-    +-------------------------+
+    +-------------------------+-------------------------+-------------------------+
+    |                         |                         | (Optional but recommended)
+    v                         v                         v
++------------------+   +--------------------+   +----------------------+
+| 3a. devforge-    |   | 3b. devforge-      |   | 3c. devforge-        |
+| architecture-    |   | design-review      |   | security-audit       |
+| validation       |   | DIVE: Verify       |   | DIVE: Verify         |
+| Technical        |   | Adversarial        |   | Security scan        |
+| consistency +    |   | inspection         |   | (8 dimensions + CVE) |
+| XML delta report |   | (problem list)     |   |                      |
++------------------+   +--------------------+   +----------------------+
+    | [APPROVE]            | [APPROVE / FIX]          | [APPROVE / SKIP]
+    +----------------------+--------------------------+
                               v
 +-----------------------------------------------------------+
-|  devforge-project-scaffolding                                 |
+|  4. devforge-project-scaffolding                              |
 |  DIVE: Implement (infrastructure)                         |
 |  Outputs: PROJECT_SCAFFOLD/ directory tree + .env.template|
 |           + docs/sync-rules.md + docs/ADR.md + CHANGELOG  |
 |           + CI/CD + deployment topology + test framework  |
-|           + docs/architecture/INDEX.md                    |
+|           + docs/architecture/INDEX.md + repo-index.md    |
 +-----------------------------------------------------------+
     | [APPROVE]
     v
 +-----------------------------------------------------------+
-|  (Optional) devforge-module-design                            |
+|  5. devforge-module-design                                    |
 |  DIVE: Design (module-level) + Implement (code skeleton)  |
-|  Trigger: [MODULE {id}] / [MODULE_BATCH {ids}]           |
+|  Trigger: [MODULE {id}] / [MODULE_BATCH {ids}]            |
+|  Strictly after scaffolding                               |
 |  Outputs: module-prd.md + module-architecture.xml         |
 |           + component-spec.xml + test code                |
 |           + precise code skeletons (from component-spec)  |
@@ -83,7 +87,7 @@ User inputs a raw idea
     | [APPROVE / NEXT MODULE]
     v
 +-----------------------------------------------------------+
-|  devforge-test-execution  [NEW]                             |
+|  6. devforge-test-execution                                   |
 |  DIVE: Verify                                             |
 |  Trigger: [TEST]                                          |
 |  Outputs: TEST_REPORT.md + TEST_COVERAGE_GAP.md         |
@@ -92,12 +96,12 @@ User inputs a raw idea
     | [APPROVE / DEBUG]
     v
 +-----------------------------------------------------------+
-|  (Iteration) devforge-iteration-planning                      |
+|  7. devforge-iteration-planning                               |
 |  DIVE: Evolve                                             |
 |  Trigger: New requirements after scaffolding              |
 |  Outputs: ITERATION_PRD.md + ITERATION_PLAN.md            |
 |           + Updated architecture.xml + VALIDATION_DELTA   |
-|  Post-iteration: loops back to validation if breaking     |
+|  Post-iteration: loops back to 3a/3b if breaking changes  |
 +-----------------------------------------------------------+
     | [APPROVE]
     v
@@ -106,17 +110,21 @@ User inputs a raw idea
 
 **Core Design Principles**:
 1. **Composable**: Each skill has an independent trigger and can be invoked alone or in a chain.
-2. **File-based State**: Global state is persisted via `STATE.md`, not LLM context. STATE.md is a reasoning chain anchor (8 categories: Immutable Goal, Completed Steps, Current State, Module Registry, Iteration History, Compressed Context, Artifact Index, Known Pitfalls).
+2. **File-based State**: Global state is persisted via `STATE.md`, not LLM context. STATE.md is a reasoning chain anchor (12 sections: Immutable Goal, Completed Steps, DecisionDigest, Current State, Quality Gates, Module Registry, Iteration History, Compressed Context, Artifact Index, Known Pitfalls, Error Log, Intervention Log).
 3. **Human-in-the-loop**: Every skill halts at `[APPROVE]`. Auto-jumping is forbidden.
 4. **Subagent Ready**: Complex subtasks are executed via internal subagent dispatch, but the skill itself remains self-contained.
 5. **Single Thinker Model**: All skills = same thinker unfolding the same problem from different dimensions, not workers passing documents. Each skill reads ALL historical artifacts, not just the previous phase's output.
-6. **Adversarial Inspection**: Validation checks technical consistency; design-review finds flaws. The reviewer is a skeptic, not a successor.
+6. **Adversarial Inspection**: Validation checks technical consistency; design-review finds flaws; security-audit scans vulnerabilities. The three complement each other and cannot substitute.
 7. **XML as Authority**: `component-spec.xml` is the single source of truth for code generation. CI enforces consistency between code and XML.
 8. **Incremental Evolution**: The existing framework stays; only additions and targeted modifications are allowed in iterations.
-9. **Context Management**: Follow `references/context-management-protocol.md` for artifact loading priority. Use layered summaries (200-word global, 50-word module digest, 1-line decision index) and `repo-index.md` for rapid codebase navigation. Load only relevant artifacts to stay within context window limits (8k/12k token thresholds).
-10. **Self-validation**: Every skill that produces artifacts includes an automated self-validation step before the human gate. Checks include: syntax validity, schema compliance, traceability coverage, and cross-reference integrity.
+9. **Context Management**: Follow `references/context-management-protocol.md` for artifact loading priority. Use layered summaries (200-word global, 50-word module digest, 1-line decision index) and `repo-index.md` for rapid codebase navigation. Load only relevant artifacts to stay within context window limits (>50k / >150k token thresholds).
+10. **Self-validation**: Every skill that produces artifacts includes an automated self-validation step before the human gate. Checks include: syntax validity, schema compliance, traceability coverage, cross-reference integrity, and cross-module interface compatibility.
 11. **Language Adaptation**: Skill system instructions remain in English for maximum model compliance. All user-facing gate messages, summaries, and explanations adapt to the user's input language (Chinese/English/auto-detected).
 12. **Technology Stack Validation**: Before recommending any third-party library, framework, or tool, perform active search (WebSearch/WebFetch) for deprecation notices, CVEs, and maintenance status. Blacklist known-vulnerable tools (e.g., VM2) without explicit user approval.
+13. **Error Tracing**: All errors MUST follow `tools/error-tracing.md` format (TraceID, DecisionID linkage, fix suggestions).
+14. **Artifact Management**: All artifacts MUST follow `tools/artifact-manager.md` CRUD-Append rules (read existing → compute diff → update delta → preserve manual edits).
+15. **Intervention Checkpoint**: Human gate MUST support `[PAUSE]`, `[ROLLBACK]`, `[EXPLAIN]`, `[EDIT]`, `[SKIP]`, `[INJECT]`, `[FIX]`, `[APPLY]`, `[FORCE_APPROVE]`, `[SKIP_REVIEW]`, `[DESIGN_REVIEW]`, `[VALIDATE]`, `[TEST]`, `[MODULE_BATCH]` per `tools/intervention-checkpoint.md`.
+16. **Security Audit**: Code generation MUST trigger `devforge-security-audit` scan; Critical issues MUST be fixed before proceeding.
 
 ---
 
@@ -295,7 +303,7 @@ description: Use when architecture design (and optional validation) is approved 
 ---
 ```
 
-**Scope**: Original Phase 5 (scaffolding + transparent test engineering). v1.1 adds XML-driven code generation, architecture CI checks, and `docs/architecture/` output. **v1.3 refactor**: XML-driven code generation moved to `devforge-module-design`; scaffolding now generates infrastructure only.
+**Scope**: Original Phase 5 (scaffolding + transparent test engineering). **v1.3 refactor**: XML-driven code generation moved to `devforge-module-design`; scaffolding now generates infrastructure only. Module directory structure initialized with header comments only (no business logic placeholders).
 
 **Input**: All prior artifacts + XML schemas.
 
@@ -304,12 +312,15 @@ description: Use when architecture design (and optional validation) is approved 
 - `PROJECT_SCAFFOLD/docs/architecture/system/` and `PROJECT_SCAFFOLD/docs/architecture/modules/{id}/`
 - `PROJECT_SCAFFOLD/.env.template`
 - `PROJECT_SCAFFOLD/docs/sync-rules.md`
+- `PROJECT_SCAFFOLD/docs/ADR.md`
 - `PROJECT_SCAFFOLD/CHANGELOG.md`
+- `PROJECT_SCAFFOLD/docs/architecture/INDEX.md`
+- `PROJECT_SCAFFOLD/repo-index.md`
 
 **VCMF Checkpoints**:
 - Design as Contract: Every generated infrastructure file traceable to PRD or Architecture
 - Interface as Boundary: CI/CD pipeline includes architecture consistency check job
-- Reality as Baseline: Tests directory structure supports both mock and real-LLM tests with `skipif`
+- Reality as Baseline: Tests directory structure supports both mock and real-LLM tests with `skipif`; coverage threshold 80%
 - State as Responsibility: Generated infrastructure matches `StateModel` ownership
 - XML as Authority: `docs/architecture/INDEX.md` correctly indexes all XML artifacts; CI enforces XML consistency
 
@@ -318,63 +329,116 @@ description: Use when architecture design (and optional validation) is approved 
 2. Internal lightweight planning (files, tests, directories)
 3. Generate directory tree and dependency configs
 4. Copy architecture artifacts to `docs/architecture/`; generate `.gitattributes`
-5. Generate module directory structure (empty directories + `__init__.py` with header comments only)
-6. **No code skeletons generated** — business logic code is generated by `devforge-module-design` after `component-spec.xml` is created
-7. Generate deployment topology (`docker-compose.yml` or K8s manifests)
-8. Generate CI/CD config with `architecture-check` job (runs `architecture-ci.sh` + `xml-sync.py --verify-only`)
-9. Generate `.env.template`
-10. Generate transparent test fixtures organized into `tests/mock/`, `tests/real/`, `tests/end_to_end/`
-11. Generate `docs/sync-rules.md`
-12. Update `DECISION_LOG.md` and generate `CHANGELOG.md`
-13. Internal verification (signatures match XML, paths correct, CI references valid)
-14. Update `STATE.md`: `phase: scaffolding_completed`
-15. Gate: "项目基础设施已生成，包含工程目录、CI/CD 配置、测试框架、文档同步规则和环境变量模板。业务代码将在模块详细设计阶段生成。请确认当前阶段输出。回复 [APPROVE] 进入模块详细设计阶段，或提出修改意见。"
+5. Generate `docs/architecture/INDEX.md` with system-level links, module table, and artifact registry
+6. Generate `repo-index.md` (max depth 3 file tree + directory summaries + module-to-directory cross-reference)
+7. Generate module directory structure — **only** `__init__.py` (or equivalent) with header comments; **NO function signatures or business logic placeholders**
+8. **No code skeletons generated** — business logic code is generated by `devforge-module-design` after `component-spec.xml` is created
+9. Generate deployment topology (`docker-compose.yml` or K8s manifests)
+10. Generate CI/CD config with `architecture-check` job (runs `architecture-ci.sh` + `xml-sync.py --verify-only`) and coverage check job (80% threshold)
+11. Generate `.env.template`
+12. Generate transparent test fixtures organized into `tests/mock/`, `tests/real/`, `tests/end_to_end/` — **test framework only, no specific test cases**
+13. Generate `docs/sync-rules.md` and `docs/ADR.md`
+14. Update `DECISION_LOG.md` and generate `CHANGELOG.md`
+15. Internal verification + traceability audit (sample 3-5 files)
+16. Update `STATE.md`: `phase: scaffolding_completed`
+17. Gate: "项目基础设施已生成，包含工程目录、CI/CD 配置、测试框架、文档同步规则和环境变量模板。业务代码将在模块详细设计阶段生成。请确认当前阶段输出。回复 [APPROVE] 进入模块详细设计阶段，或提出修改意见。"
 
 ---
 
-### 3.6 `devforge-module-design` (v1.1 New)
+### 3.6 `devforge-module-design` (v1.1 New, v1.3 Enhanced)
 
 ```yaml
 ---
 name: devforge-module-design
-description: Use when a system-level architecture has been approved and the user needs detailed design for a specific module, including module-level PRD, component decomposition, component interfaces, and module-level XML. Trigger when user says [MODULE {module_id}] or asks to design a specific module in detail.
+description: Use when a system-level architecture has been approved and scaffolding is complete, and the user needs detailed design for a specific module, including module-level PRD, component decomposition, component interfaces, module-level XML, test code, and precise code skeletons. Trigger when user says [MODULE {module_id}] or [MODULE_BATCH {ids}].
 ---
 ```
 
-**Scope**: Deep-dive design for a single module within an approved system architecture.
+**Scope**: Deep-dive design for a single module within an approved system architecture. **v1.3 strict precondition**: requires `scaffolding_completed`. Generates code skeletons with P0/P1/P2 placeholder strategy and cross-module interface compatibility check.
 
-**Input**: System-level PRD, `architecture.xml`, `INTERFACE_CONTRACT.md`, target `module_id`.
+**Input**: System-level PRD, `architecture.xml`, `INTERFACE_CONTRACT.md`, `STATE.md`, target `module_id`.
 
 **Output**:
 - `PROJECT_SCAFFOLD/docs/architecture/modules/{module_id}/module-prd.md`
 - `PROJECT_SCAFFOLD/docs/architecture/modules/{module_id}/module-architecture.xml`
 - `PROJECT_SCAFFOLD/docs/architecture/modules/{module_id}/module-interface-contract.md`
-- `PROJECT_SCAFFOLD/docs/architecture/modules/{module_id}/components/{component_id}/component-spec.xml` (templates)
+- `PROJECT_SCAFFOLD/docs/architecture/modules/{module_id}/components/{component_id}/component-spec.xml`
+- `PROJECT_SCAFFOLD/tests/mock/{module_id}/{component_id}_test.*`
 - `PROJECT_SCAFFOLD/{component_file_path}` — precise code skeletons for each component
 
 **VCMF Checkpoints**:
 - Design as Contract: Module design traces back to system-level PRD; no invented requirements
-- Interface as Boundary: Every cross-component call has explicit Input/Output and error codes
+- Interface as Boundary: Every cross-component call has explicit Input/Output and error codes; cross-module interfaces honor system-level contracts
 - Reality as Baseline: Module-level test cases cover happy path, abnormal path, and state lifecycle
 - State as Responsibility: `ModuleStateModel` answers where, which component writes, which reads, lifecycle
+- XML as Authority: Generated code skeletons strictly match `component-spec.xml` signatures and error handling
 
 **Key Workflow**:
-1. Load parent context (PRD, system XML, interface contracts)
+1. Load parent context (PRD, system XML, interface contracts, STATE.md Module Registry)
 2. Lock module boundaries (extract system-level module definition)
 3. Module-level requirement analysis (filter and decompose system user stories)
-4. Component decomposition (3-6 components: entry_point, domain_service, repository, utility)
+4. Component decomposition (3-6 components: entry_point, domain_service, repository, utility, gateway)
 5. Component interface design
-6. Fill `module-architecture.xml` with Constraints, Components, ComponentInterfaces, ModuleStateModel
+6. Fill `module-architecture.xml` with Constraints (copied from system-level interfaces), Components, ComponentInterfaces, ModuleStateModel
 7. Generate `component-spec.xml` templates for each component
-8. Generate precise code skeletons from `component-spec.xml` (function signatures, error handling, file paths)
-9. Generate module-level test cases
+8. **P0/P1/P2 code skeleton generation strategy**:
+   - P0 components: complete interface stubs with minimal working implementation (non-empty function bodies returning reasonable defaults)
+   - P1 components: interface stubs with `raise NotImplementedError` (or language equivalent)
+   - P2 components: file header comments + empty function/class definitions only
+9. Generate module-level test code
 10. Write `module-prd.md`
-11. Update `STATE.md` Module Registry
-12. Gate: "模块 `{module_id}` 的详细设计已生成，包含模块级 PRD、组件分解、接口契约、XML 模型和精确代码骨架。请确认当前阶段输出。回复 [APPROVE] 继续，回复 [NEXT MODULE] 设计下一个模块，或提出修改意见。"
+11. **Self-validation** (v1.3): cross-module interface compatibility check, schema compliance, PRD traceability, state lifecycle completeness, code skeleton compliance
+12. Update `STATE.md` Module Registry + `INDEX.md`
+13. Gate: "模块 `{module_id}` 的详细设计已生成，包含模块级 PRD、组件分解、接口契约、XML 模型和精确代码骨架。请确认当前阶段输出。回复 [APPROVE] 继续，回复 [NEXT MODULE] 设计下一个模块，回复 [MODULE_BATCH] 批量设计多个模块，或提出修改意见。"
+
+**Parallel Batch Mode** (`[MODULE_BATCH {id1},{id2},...]`):
+1. Coupling analysis: detect circular dependencies; if found, fall back to serial mode
+2. Parallel dispatch: construct independent subagent prompts per module, dispatch via native `Agent` tool
+3. Result collection: verify all output files exist and are non-empty
+4. Consistency check: cross-module interface compatibility, shared StateModel conflicts, dependency completeness
+5. Conflict resolution: present conflict matrix; user chooses `[FIX]`, `[DEFER]`, or `[ROLLBACK]`
+6. Batch human gate: summary of all modules + conflict resolution status
 
 ---
 
-### 3.7 `devforge-iteration-planning` (v1.1 New)
+### 3.7 `devforge-test-execution` (v1.3 New)
+
+```yaml
+---
+name: devforge-test-execution
+description: Use when tests have been generated and the user needs to execute them, analyze results, generate coverage reports, and update the Requirement Traceability Matrix. Trigger when user says [TEST].
+---
+```
+
+**Scope**: Execute all generated tests (unit, integration, end-to-end), analyze results, generate test reports, and synchronize the RTM.
+
+**Input**: `RTM.md`, `PRD.md`, `tests/` directory.
+
+**Output**:
+- `docs/architecture/validation/TEST_REPORT.md`
+- `docs/architecture/validation/TEST_COVERAGE_GAP.md`
+- Updated `RTM.md`
+
+**VCMF Checkpoints**:
+- Design as Contract: Every failing test must map back to a PRD requirement ID
+- Interface as Boundary: Test input/output must match `component-spec.xml` signatures
+- Reality as Baseline: Coverage report must be generated and compared against 80% threshold
+- State as Responsibility: State lifecycle tests must verify `StateModel` ownership
+- XML as Authority: Test assertions verify code behavior against `component-spec.xml` function contracts
+
+**Key Workflow**:
+1. Test checklist load from `RTM.md`
+2. Environment preparation (`.env` check, mock mode fallback)
+3. Unit test execution (`tests/mock/`) — coverage threshold 80%
+4. Integration test execution (`tests/real/` with `skipif`)
+5. End-to-end test execution (`tests/end_to_end/`) mapped to PRD User Stories
+6. Test report generation (pass rates, coverage trend, failure details)
+7. RTM synchronization: passed → `tested`, failed → `implemented`
+8. Gate: "测试报告已生成。单元测试通过率 X%，集成测试通过率 Y%，端到端测试通过率 Z%。回复 [APPROVE] 标记测试阶段完成，回复 [DEBUG] 进入调试模式，回复 [RETEST] 重新运行。"
+
+---
+
+### 3.8 `devforge-iteration-planning` (v1.1 New, v1.3 Enhanced)
 
 ```yaml
 ---
@@ -414,29 +478,6 @@ description: Use when a project has completed initial scaffolding and the user w
 
 ---
 
-### 3.8 `context-compression` (v1.1 Internal Utility)
-
-```yaml
----
-name: context-compression
-description: Internal utility skill used by other DevForges to compress session context into a persistent digest. NOT for direct user invocation.
----
-```
-
-**Scope**: Automatic context compression after each skill completes.
-
-**Input**: `STATE.md` + primary output artifact of completed skill + `DECISION_LOG.md`.
-
-**Output**: Updated `STATE.md` (Compressed Context, Artifact Index, DecisionDigest).
-
-**Key Workflow**:
-1. Read existing compressed context
-2. Extract top 3 decisions and top 2 risks from completed skill
-3. Generate 200-word digest
-4. Update Compressed Context section in STATE.md
-5. Append to Artifact Index
-6. Update DecisionDigest list (keep last 20 entries)
-
 ---
 
 ## 4. Global State Management (`STATE.md`)
@@ -445,20 +486,26 @@ All skills MUST read `STATE.md` at startup and MUST update it before the human g
 
 If a prerequisite artifact is missing or the phase does not match, the skill MUST stop and instruct the user to run the prerequisite skill.
 
-The `STATE.md` contains 8 sections:
+The `STATE.md` contains 12 sections:
 1. **Immutable Goal** — Never overwritten
 2. **Completed Steps** — Append-only reasoning chain
-3. **Current State** — Phase, DIVE progress, NextAction
-4. **Module Registry** — Status of every module (includes `digest` field: 50-word micro-summary for rapid context recovery)
-5. **Iteration History** — All iterations after initial scaffolding
-6. **Compressed Context** — 200-word digest for fast session recovery
-7. **Artifact Index** — Quick reference to all artifacts
-8. **Known Pitfalls & Risks** — Append-only
+3. **DecisionDigest** — Append-only, last 20 entries (1-line per decision)
+4. **Current State** — Phase, DIVE progress, NextAction, Next skill
+5. **Quality Gates** — Configurable thresholds (coverage, performance, security)
+6. **Module Registry** — Status of every module (includes `digest` field: 50-word micro-summary)
+7. **Iteration History** — All iterations after initial scaffolding
+8. **Compressed Context** — 200-word digest for fast session recovery
+9. **Artifact Index** — Quick reference to all artifacts
+10. **Known Pitfalls & Risks** — Append-only
+11. **Error Log** — Every error reported via error-tracing.md format
+12. **Intervention Log** — Every human intervention via intervention-checkpoint.md
 
 **Context Loading Protocol** (`references/context-management-protocol.md`):
 - Layered summary architecture: Level 1 (200-word global), Level 2 (50-word module digest), Level 3 (1-line decision index)
 - Artifact loading rules per skill: Required vs Optional artifacts with full/summary loading
-- Context truncation thresholds: >50,000 tokens (load Optional as summaries), >150,000 tokens (load only 2 critical Required in full)
+- Context truncation thresholds: 
+  - >50,000 tokens: load Optional artifacts as summaries only
+  - >150,000 tokens: load only 2 most critical Required artifacts in full
 - Cross-session recovery: New sessions read Compressed Context first, then Artifact Index, then Required artifacts
 
 The `Decisions Log` (`DECISION_LOG.md`) records key decisions with:
@@ -474,100 +521,65 @@ This prevents requirement drift across multi-turn conversations.
 ## 5. Directory Structure
 
 ```
-skill/
-├── README.md
-├── devforge-design.md
-├── devforge-plan.md
-├── devforge-state.md
-├── 软件开发全流程智能体技能(DevForge).md
-├── references/
-│   ├── architecture-patterns.md       # 10-pattern library with evaluation dimensions
-│   ├── xml-schemas.md                 # Three-layer XML schema definitions
-│   ├── system-prompt-template.md      # Global role definition + VCMF constraints
-│   ├── context-management-protocol.md  # Layered summary + artifact loading rules
-│   ├── validation-scripts-manifest.md  # Script capability mapping + known gaps
-│   └── search-integration.md          # Phase-based search triggers + citation rules
-├── tools/
-│   ├── error-tracing.md               # Error format spec with TraceID + DecisionID linkage
-│   ├── artifact-manager.md            # CRUD-Append + conflict detection rules
-│   └── intervention-checkpoint.md     # Human-in-the-loop commands (PAUSE/ROLLBACK/EXPLAIN/EDIT/SKIP/INJECT + v1.3: FIX/APPLY/FORCE_APPROVE/SKIP_REVIEW/DESIGN_REVIEW/VALIDATE/TEST)
-├── scripts/
-│   ├── architecture-ci.sh             # CI health check script (6 checks incl. security)
-│   ├── xml-sync.py                    # XML sync and validation script
-│   └── package-plugin.py              # Packaging script for distribution
-├── artifacts/                         # Generated artifacts
-│   └── PROJECT_SCAFFOLD/
-│       ├── docs/
-│       │   ├── architecture/
-│       │   │   ├── system/
-│       │   │   │   ├── STATE.md
-│       │   │   │   ├── PRD.md
-│       │   │   │   ├── DECISION_LOG.md
-│       │   │   │   ├── INTERFACE_CONTRACT.md
-│       │   │   │   ├── ARCHITECTURE.md
-│       │   │   │   ├── architecture.xml
-│       │   │   │   ├── ITERATION_PRD.md
-│       │   │   │   ├── ITERATION_PLAN.md
-│       │   │   │   ├── ADR.md
-│       │   │   │   ├── schema.sql
-│       │   │   │   ├── ERD.md
-│       │   │   │   └── openapi.yaml
-│       │   │   ├── validation/
-│       │   │   │   ├── VALIDATION_REPORT.md
-│       │   │   │   ├── VALIDATION_DELTA.md
-│       │   │   │   └── health-check.sh
-│       │   │   ├── modules/
-│       │   │   │   └── {module_id}/
-│       │   │   │       ├── module-prd.md
-│       │   │   │       ├── module-architecture.xml
-│       │   │   │       ├── module-interface-contract.md
-│       │   │   │       └── components/
-│       │   │   │           └── {component_id}/
-│       │   │   │               └── component-spec.xml
-│       │   │   └── diagrams/
-│       │   │       ├── system-context.md
-│       │   │       ├── module-interaction.md
-│       │   │       ├── data-flow.md
-│       │   │       └── er-diagram.md
-│       │   ├── sync-rules.md
-│       │   └── ops/
-│       │       └── runbook.md
-│       ├── infrastructure/
-│       │   ├── terraform/
-│       │   ├── kubernetes/
-│       │   ├── monitoring/
-│       │   └── multi-env/
-│       ├── tests/
-│       │   ├── mock/
-│       │   ├── real/
-│       │   └── end_to_end/
-│       ├── .env.template
-│       └── CHANGELOG.md
-├── devforge-requirement-analysis/
+DevForge/
+├── .claude-plugin/                  # Claude Code plugin metadata
+│   ├── plugin.json
+│   └── marketplace.json
+├── .env.example                     # Environment variable template
+├── LICENSE                          # MIT License
+├── README.md                        # Project overview
+├── DevForge.md                      # Original monolithic Chinese design document (reference)
+├── devforge-design.md               # Skill chain decomposition design (this document)
+├── devforge-state.md                # STATE.md template specification (12 sections)
+│
+├── references/                      # Shared reference documents
+│   ├── architecture-patterns.md     # 10-pattern library with evaluation dimensions
+│   ├── xml-schemas.md               # Three-layer XML schema definitions (System/Module/Component)
+│   ├── system-prompt-template.md    # Global role definition + VCMF constraints
+│   ├── context-management-protocol.md # Layered summary + artifact loading rules + token thresholds
+│   ├── validation-scripts-manifest.md # Script capability mapping + known gaps
+│   └── search-integration.md        # Phase-based search triggers + citation rules
+│
+├── skill/                           # Internal tools (invoked by other skills)
+│   └── tools/
+│       ├── context-compression.md   # Automatic context compression after each skill
+│       ├── error-tracing.md         # Error format spec with TraceID + DecisionID linkage
+│       ├── artifact-manager.md      # CRUD-Append + conflict detection rules
+│       ├── intervention-checkpoint.md # Human-in-the-loop commands + checkpoint mechanism
+│       ├── precondition-checker.md  # Phase precondition validation
+│       ├── state-updater.md         # STATE.md update protocol
+│       ├── language-adaptation.md   # User language detection rules
+│       └── validation-engine.md     # Common self-validation checks library
+│
+├── scripts/                         # Utility scripts
+│   ├── architecture-ci.sh           # Architecture consistency CI check (incl. security)
+│   ├── xml-sync.py                  # XML sync and validation (verify-only + sync modes)
+│   └── package-plugin.py            # Packaging script for distribution
+│
+├── devforge-requirement-analysis/   # Stage 1: Requirement Analysis
 │   └── SKILL.md
-├── devforge-architecture-design/
+├── devforge-architecture-design/    # Stage 2: Architecture Design
 │   └── SKILL.md
-├── devforge-architecture-validation/
+├── devforge-architecture-validation/ # Stage 3a: Architecture Validation
 │   └── SKILL.md
-├── devforge-design-review/
+├── devforge-design-review/          # Stage 3b: Design Review (adversarial inspection)
 │   └── SKILL.md
-├── devforge-project-scaffolding/
+├── devforge-project-scaffolding/    # Stage 4: Project Scaffolding
 │   └── SKILL.md
-├── devforge-module-design/
+├── devforge-module-design/          # Stage 5: Module Design (strictly after scaffolding)
 │   └── SKILL.md
-├── devforge-iteration-planning/
+├── devforge-test-execution/         # Stage 6: Test Execution (v1.3)
 │   └── SKILL.md
-├── devforge-visualization/
+├── devforge-iteration-planning/     # Stage 7: Iteration Planning
 │   └── SKILL.md
-├── devforge-ops-ready/
+├── devforge-visualization/          # Stage 8: Architecture Visualization
 │   └── SKILL.md
-├── devforge-debug-assistant/
+├── devforge-ops-ready/              # Stage 9: Production-Ready Infrastructure
 │   └── SKILL.md
-├── devforge-security-audit/
-│   └── SKILL.md                         # Code-level security scanning (8 dimensions + CVE check)
-├── context-compression/
+├── devforge-debug-assistant/        # Stage 10: Debug & Refactor Assistant
 │   └── SKILL.md
-└── extensions/
+│
+└── extensions/                      # Domain-specific overlays (dynamic loading)
     ├── ai-agent-design/
     │   ├── SKILL.md
     │   └── references/
@@ -591,16 +603,33 @@ skill/
 
 | Skill | Design as Contract | Interface as Boundary | Reality as Baseline | State as Responsibility | XML as Authority |
 |-------|-------------------|----------------------|---------------------|------------------------|-----------------|
-| `devforge-requirement-analysis` | PRD success metrics & scope boundaries | Cross-module interaction points | Observable acceptance criteria | State ownership documented | — |
+| `devforge-requirement-analysis` | PRD success metrics & scope boundaries | Cross-module interaction points | Observable acceptance criteria | State ownership documented | PRD references XML schema locations |
 | `devforge-architecture-design` | Traceability to PRD; no invented reqs | Interface contracts in markdown + XML | Test cases for all paths + NFRs | `<StateModel>` in XML | System + Module XML templates |
-| `devforge-architecture-validation` | XML modules traceable to PRD | `Coupling` matches Interface Contract | Real-LLM semantic validation (degraded OK) | `StateModel` consistency check | Reference integrity check |
-| `devforge-design-review` | Flag orphaned assumptions | Verify edge case handling | Verify mock data coverage | Verify complete lifecycle | — |
-| `devforge-project-scaffolding` | Every file traceable to artifact | Code signatures match contracts | Mock + real tests generated | Code matches `StateModel` | Code matches `component-spec.xml` |
-| `devforge-module-design` | Traces to system PRD scope | Component interface contracts | Module-level test cases | `ModuleStateModel` | Fills module + component XML |
-| `devforge-iteration-planning` | Scope validation against Immutable Goal | Versioned interface changes | Impact analysis identifies all affected modules | State migration strategy | XML sync across layers |
-| `devforge-visualization` | Diagrams reflect approved XML | Shows all cross-module interfaces | Data flow matches `<Coupling>` definitions | — | — |
-| `devforge-ops-ready` | Resources map 1:1 to `Module` nodes | K8s ports match `Interface` definitions | Metrics are collectable | Persistence policies match `StateModel` | — |
-| `devforge-debug-assistant` | Fixes respect `INTERFACE_CONTRACT.md` | Refactoring preserves public interfaces | Diagnosis based on actual test output/logs | State fixes respect `StateModel` ownership | Code signatures match `component-spec.xml` |
+| `devforge-architecture-validation` | XML modules traceable to PRD | `Coupling` matches Interface Contract | Real-LLM semantic validation (degraded OK) | `StateModel` consistency check | Reference integrity + schema compliance |
+| `devforge-design-review` | Flag orphaned assumptions | Verify edge case handling | Verify mock data coverage | Verify complete lifecycle | Verify XML artifacts are complete |
+| `devforge-project-scaffolding` | Every file traceable to artifact | CI/CD pipeline includes arch-check job | Mock + real tests generated; coverage 80% | Code matches `StateModel` | `INDEX.md` indexes all XML artifacts |
+| `devforge-module-design` | Traces to system PRD scope | Component interface contracts; cross-module compatibility | Module-level test cases | `ModuleStateModel` | Fills module + component XML; skeletons match spec |
+| `devforge-test-execution` | Failing tests map to PRD req IDs | Test I/O matches `component-spec.xml` | Coverage report vs 80% threshold | State lifecycle tests verify ownership | Test assertions verify XML function contracts |
+| `devforge-iteration-planning` | Scope validation against Immutable Goal | Versioned interface changes | Impact analysis identifies all affected modules | State migration strategy | XML sync across all three layers |
+| `devforge-visualization` | Diagrams reflect approved XML | Shows all cross-module interfaces | Data flow matches `<Coupling>` definitions | Shows state ownership (writes vs reads) | All elements verifiable by node ID |
+| `devforge-ops-ready` | Resources map 1:1 to `Module` nodes | K8s ports match `Interface` definitions | Monitoring metrics are collectable | Persistence policies match `StateModel` | Every resource traceable to `Module`/`StateModel` |
+| `devforge-debug-assistant` | Fixes respect `INTERFACE_CONTRACT.md` | Refactoring preserves public interfaces | Diagnosis based on actual test output/logs | State fixes respect `StateModel` ownership | Fixes update `component-spec.xml` if XML is source |
+
+## 6.1 Triple Verification Mechanism (v1.3)
+
+| Dimension | 3a. architecture-validation | 3b. design-review | 3c. security-audit |
+|-----------|---------------------------|-------------------|-------------------|
+| **Purpose** | Verify "design is correctly specified" | Verify "design has no gaps/errors" | Verify "design has no security flaws" |
+| **Perspective** | Technical consistency (engineer view) | Adversarial review (critic view) | Security scan (auditor view) |
+| **Input** | architecture.xml, INTERFACE_CONTRACT.md | PRD, architecture.xml, DECISION_LOG | architecture.xml, code, dependencies |
+| **Check items** | XML Schema compliance, interface consistency, PRD traceability | Security, operability, scalability | Vulnerabilities, secrets, compliance |
+| **Output** | VALIDATION_REPORT.md (PASS/FAIL) | DESIGN_REVIEW.md (issue list, no PASS/FAIL) | SECURITY_AUDIT_REPORT.md (risk levels) |
+| **Result** | Fail must be fixed before continuing | Issues can be accepted, deferred, or fixed | Critical issues must be fixed before deployment |
+| **Analogy** | Compiler type checking | Code review | Security penetration test |
+
+**Relationship**: validation ensures "design documents are self-consistent", design-review ensures "design decisions are correct", security-audit ensures "design is secure". The three complement each other and cannot substitute for one another.
+
+**Flow rules**: Stages 3a and 3b both run by default. Stage 3c (security-audit) is optional but recommended. User can `[SKIP_REVIEW]` or `[SKIP_VALIDATION]`.
 
 ---
 
@@ -608,13 +637,13 @@ skill/
 
 | DIVE Stage | Skills | Key Activity |
 |------------|--------|--------------|
-| **Design** | `devforge-requirement-analysis` + `devforge-architecture-design` + `devforge-module-design` | Lock requirements, interfaces, state ownership, architecture, component decomposition |
-| **Implement** | `devforge-project-scaffolding` | Generate runnable skeleton with infrastructure and XML-driven code |
-| **Verify** | `devforge-architecture-validation` + `devforge-design-review` + **devforge-test-execution** | Mock flow validation + adversarial inspection + test execution + coverage |
-| **Evolve** | `devforge-iteration-planning` | Impact analysis, incremental PRD, interface versioning, XML sync, with post-iteration validation loop |
+| **Design** | `devforge-requirement-analysis` + `devforge-architecture-design` + `devforge-module-design` | Lock requirements, interfaces, state ownership, architecture, component decomposition, code skeletons |
+| **Implement** | `devforge-project-scaffolding` | Generate infrastructure, CI/CD, test framework, deployment topology |
+| **Verify** | `devforge-architecture-validation` + `devforge-design-review` + `devforge-test-execution` | Technical consistency check + adversarial inspection + security scan + test execution + coverage |
+| **Evolve** | `devforge-iteration-planning` | Impact analysis, incremental PRD, interface versioning, XML sync; loops back to 3a/3b if breaking changes |
 | **Visualize** | `devforge-visualization` | Mermaid diagrams from `architecture.xml` |
 | **Operate** | `devforge-ops-ready` | Terraform, K8s, monitoring, progressive deployment |
-| **Debug** | `devforge-debug-assistant` | Bug diagnosis + refactoring, accepts `test_execution_completed` as entry point |
+| **Debug** | `devforge-debug-assistant` | Bug diagnosis + refactoring + production incident analysis; accepts `test_execution_completed` as entry point |
 
 ---
 
@@ -780,19 +809,23 @@ description: Internal utility skill used by other DevForges to compress session 
 - [x] `references/system-prompt-template.md` — global VCMF constraints + output quality standards
 - [x] `references/validation-scripts-manifest.md` — script capability mapping + gap documentation
 
-### v1.3 Planned (from optimization design)
+### Completed in v1.3
 
-- [x] PRD web research integration
-- [x] Verification phase continuity (both validation + design-review run)
-- [x] FIX sub-flow with diff generation and auto re-validation
-- [x] devforge-test-execution skill
-- [x] Module-design strictly after scaffolding
-- [x] Module-design subagent batch mode
-- [x] Cross-module interface compatibility check
-- [x] Iteration post-implementation validation loop
-- [x] P0/P1/P2 placeholder generation strategy
-- [x] docs/architecture/INDEX.md generation
-- [x] RTM real-time updates across all skills
+- [x] **Triple Verification Mechanism** — architecture-validation (3a) + design-review (3b) + security-audit (3c) with clear separation of concerns
+- [x] **`devforge-test-execution` skill** — unit/integration/e2e test execution, coverage reporting (80% threshold), RTM synchronization
+- [x] **Verification phase continuity** — both validation (3a) and design-review (3b) run by default; user can `[SKIP_REVIEW]`
+- [x] **FIX sub-flow** — `[FIX <issue_id>]` generates diff, `[APPLY]` triggers auto re-validation in design-review
+- [x] **Module-design strictly after scaffolding** — precondition check enforces `scaffolding_completed`
+- [x] **Native agent-based parallel batch mode** — `[MODULE_BATCH {ids}]` dispatches subagents in parallel with consistency check
+- [x] **Cross-module interface compatibility check** — module-design self-validation verifies output schemas match downstream input schemas
+- [x] **Iteration post-implementation validation loop** — breaking changes trigger `[VALIDATE]` prompt after iteration scaffolding
+- [x] **P0/P1/P2 placeholder generation strategy** — P0 stubs with working defaults, P1 with `NotImplementedError`, P2 with empty definitions
+- [x] **`docs/architecture/INDEX.md` generation** — unified document registry + module table in scaffolding
+- [x] **RTM real-time updates** — all skills update RTM columns progressively (Module → Component → Test Case → Status)
+- [x] **Web research integration** — requirement-analysis performs conditional WebSearch for competitor analysis and industry standards
+- [x] **Quality Gates** — configurable thresholds (coverage, performance, security) in STATE.md
+- [x] **12-section STATE.md** — added DecisionDigest, Quality Gates, Error Log, Intervention Log
+- [x] **Production incident diagnosis** (Mode C) — debug-assistant supports production log/metric/trace analysis
 
 ### Completed in v1.1
 
@@ -814,21 +847,22 @@ description: Internal utility skill used by other DevForges to compress session 
 
 - **Global memory first**: `STATE.md` and artifacts are the single source of truth
 - **Gate is absolute**: Must wait for human `[APPROVE]`; auto-jumping is forbidden
-- **Hard deliverables**: Phase 5 must produce actual code, YAML, CI configs, and test scripts with logging
+- **Hard deliverables**: Every phase must produce actual code, YAML, CI configs, and test scripts with logging — no abstract "advice"
 - **Privacy management**: All API keys and tokens must live in `.env` files only
 - **XML as Authority**: Code signatures must match `component-spec.xml`; CI enforces this
 - **Incremental Evolution**: Existing framework stays; only additions and targeted modifications allowed
-- **Context Management**: Follow `references/context-management-protocol.md` for artifact loading. Use layered summaries (200-word global, 50-word module digest, 1-line decision index). Respect 8k/12k token thresholds.
-- **Self-validation**: Every artifact-producing skill runs automated checks before the human gate (syntax, schema, traceability, cross-reference integrity).
+- **Context Management**: Follow `references/context-management-protocol.md` for artifact loading. Use layered summaries (200-word global, 50-word module digest, 1-line decision index). Respect >50k / >150k token thresholds.
+- **Self-validation**: Every artifact-producing skill runs automated checks before the human gate (syntax, schema, traceability, cross-reference integrity, cross-module interface compatibility).
 - **Language Adaptation**: System instructions in English; user-facing messages in the user's input language.
 - **Technology Stack Validation**: Active search before recommending tools; never recommend blacklisted libraries (VM2, known RCE) without explicit approval.
-- **Error Tracing**: All errors MUST follow `tools/error-tracing.md` format (TraceID, DecisionID linkage, fix suggestions).
-- **Artifact Management**: All artifacts MUST follow `tools/artifact-manager.md` CRUD-Append rules (read existing → compute diff → update delta → preserve manual edits).
-- **Intervention Checkpoint**: Human gate MUST support `[PAUSE]`, `[ROLLBACK]`, `[EXPLAIN]`, `[EDIT]`, `[SKIP]`, `[INJECT]`, `[FIX]`, `[APPLY]`, `[FORCE_APPROVE]`, `[SKIP_REVIEW]`, `[DESIGN_REVIEW]`, `[VALIDATE]`, `[TEST]` per `tools/intervention-checkpoint.md`.
+- **Error Tracing**: All errors MUST follow `skill/tools/error-tracing.md` format (TraceID, DecisionID linkage, fix suggestions).
+- **Artifact Management**: All artifacts MUST follow `skill/tools/artifact-manager.md` CRUD-Append rules (read existing → compute diff → update delta → preserve manual edits).
+- **Intervention Checkpoint**: Human gate MUST support `[PAUSE]`, `[ROLLBACK]`, `[EXPLAIN]`, `[EDIT]`, `[SKIP]`, `[INJECT]`, `[FIX]`, `[APPLY]`, `[FORCE_APPROVE]`, `[SKIP_REVIEW]`, `[DESIGN_REVIEW]`, `[VALIDATE]`, `[TEST]`, `[MODULE_BATCH]` per `skill/tools/intervention-checkpoint.md`.
 - **Security Audit**: Code generation MUST trigger `devforge-security-audit` scan; Critical issues MUST be fixed before proceeding.
 - **Search Integration**: Tool recommendations MUST follow `references/search-integration.md` (WebSearch for CVE, deprecation, benchmarks; cache 24h).
+- **Test Coverage**: All projects must maintain ≥80% unit test coverage; CI must fail if below threshold.
 
 ---
 
-*Design Document Version: v1.1*
-*Date: 2026-04-24*
+*Design Document Version: v1.3*
+*Date: 2026-05-08*

@@ -165,38 +165,69 @@ When modifying any skill, check for cross-file dependencies:
 | If you change... | You must also update... |
 |:---|:---|
 | Add/remove a skill directory | `install.sh`, `install.ps1`, `uninstall.sh`, `uninstall.ps1` (skill arrays); `README.md` (stage table); `.claude-plugin/marketplace.json` (plugin count) |
+| Add/remove/rename a tool spec in `skill/tools/` | All skills that reference the tool spec |
 | Add a new human gate command | `skill/tools/intervention-checkpoint.md` (canonical command spec) + all skills that use the command |
 | Add a new artifact type | `skill/tools/artifact-manager.md` (update strategy table) + `devforge-state.md` (artifact index section) |
 | Modify STATE.md structure | `devforge-state.md` (template) + all skills that read/write STATE.md |
-| Change stage flow or precondition | All downstream skills' precondition checks + `devforge-design.md` (flow diagram) + `README.md` (stage table) |
-| Add a new VCMF checkpoint column | All existing skills' VCMF tables + `references/system-prompt-template.md` |
+| Change stage flow or precondition | All downstream skills' precondition checks + `devforge-design.md` (flow diagram) + `README.md` (stage table) + `skill/tools/precondition-checker.md` (phase map) |
+| Add a new VCMF checkpoint column | All existing skills' VCMF tables + `references/system-prompt-template.md` + `skill/tools/validation-engine.md` (check library) |
 
 ### Adding a New Skill
 
 1. Create `{skill-name}/SKILL.md` with valid YAML frontmatter (`name`, `description`)
-2. Add VCMF checkpoints table (align with existing skills)
-3. Define precondition check reading `STATE.md` phase
-4. Add to `devforge-design.md` flow diagram and stage table
-5. Update `README.md` stage table
-6. Update all four installer scripts
-7. Run `python scripts/package-plugin.py --mode all` to validate frontmatter
+2. Add VCMF checkpoints table (align with existing skills, include `Inherited from` column)
+3. Add Precondition Check section (reference `skill/tools/precondition-checker.md` with acceptable phases)
+4. Add Language Adaptation section (reference `skill/tools/language-adaptation.md`)
+5. Define workflow steps
+6. Add Self-validation section (reference `skill/tools/validation-engine.md` for common checks, add skill-specific checks)
+7. Add State Update section (reference `skill/tools/state-updater.md`)
+8. Add Human gate with complete command list
+9. Add `<HARD-GATE>` if this is a required (non-optional) stage
+10. Add to `devforge-design.md` flow diagram and stage table
+11. Update `README.md` stage table
+12. Update all four installer scripts
+13. Update `skill/tools/precondition-checker.md` phase map if this skill introduces new phase transitions
+14. Run `python scripts/package-plugin.py --mode all` to validate frontmatter
+
+### Project Directory Structure
+
+```
+DevForge/
+├── devforge-*/           # Skill directories (each contains one SKILL.md)
+├── skill/tools/          # Shared tool specifications referenced by skills
+│   ├── precondition-checker.md
+│   ├── language-adaptation.md
+│   ├── validation-engine.md
+│   ├── state-updater.md
+│   ├── context-compression.md
+│   ├── artifact-manager.md
+│   ├── error-tracing.md
+│   └── intervention-checkpoint.md
+├── references/           # Shared reference documents (schemas, patterns, protocols)
+├── extensions/           # Domain-specific overlay skills (ai-agent-design, etc.)
+├── scripts/              # Validation and packaging scripts
+└── .claude-plugin/       # Plugin metadata
+```
 
 ### Skill File Structure
 
 Every skill directory contains a single `SKILL.md` with:
 1. YAML frontmatter (`name`, `description`)
-2. Overview and VCMF checkpoints table
-3. When to Use / Precondition Check
-4. Language Adaptation rules (English for system instructions, user's language for gate messages)
+2. Overview and VCMF checkpoints table (with `Inherited from` column)
+3. When to Use / Precondition Check (references `skill/tools/precondition-checker.md`)
+4. Language Adaptation (references `skill/tools/language-adaptation.md`)
 5. Workflow steps
-6. Human gate pause points
+6. Self-validation (references `skill/tools/validation-engine.md` for common checks)
+7. State Update (references `skill/tools/state-updater.md`)
+8. Human gate pause points
 
 ### Key Reference Documents
 
 | File | Purpose |
 |------|---------|
+| `DevForge.md` | Original monolithic Chinese design document (reference-only, pre-decomposition) |
 | `devforge-design.md` | Skill decomposition design v1.3 — the authoritative architecture of the chain itself |
-| `devforge-state.md` | STATE.md template with 11-section specification |
+| `devforge-state.md` | STATE.md template with 12-section specification (includes Quality Gates) |
 | `references/architecture-patterns.md` | 10 architecture patterns with evaluation dimensions and selection matrix |
 | `references/xml-schemas.md` | Three-layer XML schema definitions |
 | `references/context-management-protocol.md` | Token thresholds and artifact loading rules per skill |
@@ -206,6 +237,11 @@ Every skill directory contains a single `SKILL.md` with:
 | `skill/tools/artifact-manager.md` | CRUD-Append mode for generated artifacts |
 | `skill/tools/error-tracing.md` | TraceID format and error logging protocol |
 | `skill/tools/intervention-checkpoint.md` | Human intervention logging protocol + extended command definitions (v1.3) |
+| `skill/tools/precondition-checker.md` | Standardized precondition check template + phase transition map |
+| `skill/tools/language-adaptation.md` | Language handling rules (English system instructions, user language for gates) |
+| `skill/tools/validation-engine.md` | Self-validation framework + common checks library (9 check IDs) |
+| `skill/tools/state-updater.md` | Standardized STATE.md update template + phase transition map |
+| `skill/tools/context-compression.md` | Session context compression into STATE.md Compressed Context |
 
 ### Environment Configuration
 
