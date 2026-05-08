@@ -497,12 +497,14 @@ Add new section after "Workflow":
 When triggered by `[MODULE_BATCH {id1},{id2},...]`:
 
 1. **Coupling analysis**: Read `architecture.xml`, analyze inter-module `Coupling` relationships. If circular dependencies exist between requested modules, fall back to serial mode and warn user.
-2. **Parallel dispatch**: If no circular dependencies, dispatch one subagent per module using `superpowers:dispatching-parallel-agents`. Each subagent executes the 11-step workflow for one module independently.
+2. **Parallel dispatch**: If no circular dependencies, construct an independent subagent prompt per module (containing parent context + scoped 11-step workflow) and dispatch all subagents in parallel using the native `Agent` tool. Each subagent executes the 11-step workflow for one module independently and writes outputs to `PROJECT_SCAFFOLD/modules/{id}/`.
 3. **Consistency check** (after all subagents complete):
    - Cross-module interface compatibility: Verify each module's system-level output matches downstream module's system-level input schema
    - Shared StateModel conflicts: Flag any state entries with same `id` but different definitions across modules
 4. **Conflict resolution**: If conflicts found, enter coordination mode — present conflicts to user and fix sequentially.
-5. **Fallback**: If subagent dispatch is unavailable, fall back to serial `[MODULE {id}]` → `[NEXT MODULE]`.
+5. **Result collection**: After all subagents complete, read all generated `module-architecture.xml`, `module-interface-contract.md`, and `component-spec.xml` files. Verify each module's output files exist and are non-empty.
+6. **Human gate (batch)**: Present batch summary with each module's component count and status. List all available commands (`[APPROVE]`, `[NEXT MODULE]`, `[PAUSE]`, `[ROLLBACK]`, `[EDIT]`, `[INJECT]`, `[MODULE {id}]`).
+7. **Fallback**: If parallel `Agent` dispatch is unavailable (platform limitation or single-agent mode), fall back to serial `[MODULE {id}]` → `[NEXT MODULE]`.
 ```
 
 - [ ] **Step 3: Add cross-module compatibility to self-validation**

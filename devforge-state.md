@@ -160,7 +160,7 @@ ErrorLog:
 ```yaml
 InterventionLog:
   - timestamp: "2026-04-29T11:00:00Z"
-    type: "ROLLBACK"         # [PAUSE | ROLLBACK | EXPLAIN | EDIT | SKIP | INJECT | FIX | APPLY | FORCE_APPROVE | VALIDATE | TEST]
+    type: "ROLLBACK"         # [PAUSE | ROLLBACK | EXPLAIN | EDIT | SKIP | INJECT | FIX | APPLY | FORCE_APPROVE | VALIDATE | TEST | NATURAL_LANGUAGE]
     stepId: "phase3-step5"
     reason: "架构设计走偏，需重新评估单体 vs 微服务"
     outcome: "重新评估后选择单体架构"

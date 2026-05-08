@@ -194,10 +194,22 @@ Read `skill/artifacts/STATE.md`. Acceptable phases: `architecture_design_complet
 17. **Human gate**
     - Present a summary of generated files (bullet list)
     - Say exactly: "项目基础设施已生成，包含工程目录、CI/CD 配置、测试框架、文档同步规则和环境变量模板。业务代码将在模块详细设计阶段生成。请确认当前阶段输出。回复 [APPROVE] 进入模块详细设计阶段，或提出修改意见。"
-    - Do NOT mark complete without [APPROVE]
+    - Then list all available commands:
+      ```
+      可用命令：
+      - [APPROVE] — 批准并继续（进入模块详细设计阶段）
+      - [PAUSE] — 暂停当前阶段，保留上下文
+      - [ROLLBACK {step_id}] — 回滚到指定步骤重新执行
+      - [EDIT {file_path}] — 手动编辑文件后让 AI 继续
+      - [INJECT {context}] — 补充额外上下文约束
+      - [SKIP] — 跳过当前可选步骤
+      - [EXPLAIN {TraceID}] — 展开解释某个决策/错误的推理链
+      ```
+    - If user inputs natural language feedback (e.g., "这里需要修改"), treat as modification request — do NOT treat as invalid command; analyze the feedback, apply changes, and re-present the gate with updated output
+    - Do NOT mark complete without [APPROVE] or explicit continue command
 
 <HARD-GATE>
-Do NOT mark the DevForge workflow as complete until the user replies [APPROVE].
+Do NOT mark the DevForge workflow as complete until the user replies [APPROVE] or explicitly asks to continue.
 </HARD-GATE>
 
 ## Output Specification

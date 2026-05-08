@@ -168,8 +168,21 @@ Before starting, read `skill/artifacts/STATE.md` (or `docs/architecture/system/S
       - Number of new requirements
       - Impact matrix (modules affected, severity)
       - Execution order and estimated skill flow
-    - Say exactly: "迭代计划已生成。本次迭代涉及 [N] 个模块，其中 [X] 个新增、[Y] 个修改。请确认当前阶段输出。回复 [APPROVE] 按迭代计划逐个模块实施。**如果本次迭代包含 breaking changes，实施后将自动触发重新验证。** 回复 [MODIFY] 调整迭代范围，回复 [REJECT] 放弃本次迭代。"
-    - Do NOT proceed until [APPROVE]
+    - Say exactly: "迭代计划已生成。本次迭代涉及 [N] 个模块，其中 [X] 个新增、[Y] 个修改。**如果本次迭代包含 breaking changes，实施后将自动触发重新验证。**"
+    - Then list all available commands:
+      ```
+      可用命令：
+      - [APPROVE] — 按迭代计划逐个模块实施
+      - [MODIFY] — 调整迭代范围
+      - [REJECT] — 放弃本次迭代
+      - [PAUSE] — 暂停当前阶段，保留上下文
+      - [ROLLBACK {step_id}] — 回滚到指定步骤重新执行
+      - [EDIT {file_path}] — 手动编辑文件后让 AI 继续
+      - [INJECT {context}] — 补充额外上下文约束
+      - [EXPLAIN {TraceID}] — 展开解释某个决策/错误的推理链
+      ```
+    - If user inputs natural language feedback (e.g., "这里需要修改"), treat as modification request — do NOT treat as invalid command; analyze the feedback, apply changes, and re-present the gate with updated output
+    - Do NOT proceed until [APPROVE], [MODIFY], [REJECT], or explicit continue command
 
 ## Output Specification
 

@@ -255,7 +255,7 @@ v1.2 新增能力：数据库Schema生成（DDL/SQL）、OpenAPI 3.0接口规范
 6. **组件级 XML 模板**：为每个组件生成 `component-spec.xml` 模板（Metadata、Functions、Dependencies 占位）。
 7. **测试代码生成**：为每个组件生成对应的单元测试文件，写入 `PROJECT_SCAFFOLD/tests/mock/{module_id}/`
 
-**人类门控**："模块 `{module_id}` 的详细设计已生成。回复 [APPROVE] 标记该模块设计完成，回复 [NEXT MODULE] 设计下一个模块，回复 [MODULE_BATCH {ids}] 批量设计多个模块，或提出修改意见。"
+**人类门控**："模块 `{module_id}` 的详细设计已生成，包含模块级 PRD、组件分解、接口契约和 XML 模型。请确认当前阶段输出。可用命令：[APPROVE] 批准并继续 / [NEXT MODULE] 设计下一个模块 / [PAUSE] 暂停 / [ROLLBACK {step_id}] 回滚 / [EDIT {file_path}] 手动编辑 / [INJECT {context}] 补充约束 / [MODULE_BATCH {ids}] 批量设计多个模块，或提出修改意见。"
 
 ---
 

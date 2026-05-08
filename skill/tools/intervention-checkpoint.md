@@ -534,8 +534,17 @@ AI: 检测到文件变更：
 
 {步骤产物的简要摘要}
 
-请审批：[APPROVE] / [PAUSE] / [ROLLBACK {step_id}] / [EXPLAIN {TraceID}] / [EDIT {file_path}] / [SKIP] / [INJECT {context}]
+可用命令：
+- [APPROVE] — 批准并继续（{下一阶段说明}）
+- [PAUSE] — 暂停当前阶段，保留上下文
+- [ROLLBACK {step_id}] — 回滚到指定步骤重新执行（如 [ROLLBACK step3]）
+- [EDIT {file_path}] — 手动编辑文件后让 AI 继续
+- [INJECT {context}] — 补充额外上下文约束
+- [SKIP] — 跳过当前可选步骤
+- [EXPLAIN {TraceID}] — 展开解释某个决策/错误的推理链
 ```
+
+**命令列表必须完整列出**：门控提示不能只写"回复 [APPROVE] 或提出修改意见"，必须显式列出该阶段所有可用命令及其作用说明。
 
 ### 6.2 命令响应时间要求
 
@@ -571,6 +580,64 @@ AI: 检测到文件变更：
 请重新输入命令。
 ```
 
+### 6.4 自然语言反馈处理（关键）
+
+**问题**：用户不输入方括号命令，而是直接写自然语言（如"这里需要修改"、"我觉得数据库选型不对"、"能不能加上缓存"），怎么办？
+
+**处理规则**：
+
+1. **优先识别意图，不要机械报错**
+   - 如果用户的自然语言包含明确的修改意图（如"改一下"、"不对"、"换成"、"删掉"），**不要**输出"无法识别命令"
+   - 而是将其视为**修改请求**，分析反馈内容，定位需要修改的产物
+
+2. **分析 → 修改 → 重新呈现门控**
+   - 分析用户反馈：识别涉及哪个产物、哪个步骤、什么类型的修改
+   - 应用修改：直接修改对应产物文件（遵循 `artifact-manager.md` 的 CRUD-Append 规则）
+   - 记录干预：向 `STATE.md` 的 `InterventionLog` 追加一条类型为 `NATURAL_LANGUAGE` 的记录
+   - **重新呈现门控**：修改完成后，再次输出完整的门控提示（含更新后的产物摘要 + 完整命令列表），等待用户确认
+
+3. **修改范围控制**
+   - 如果用户的反馈涉及当前步骤的产物 → 直接修改
+   - 如果涉及已完成的步骤的产物 → 提示用户是否回滚到对应步骤（`[ROLLBACK {step_id}]`）
+   - 如果涉及后续步骤的内容 → 提示用户当前阶段无法处理，建议 `[INJECT]` 注入约束，在后续步骤中应用
+
+4. **与 `[INJECT]` 的区别**
+   - `[INJECT]`：用户**主动**补充约束，影响**后续步骤**
+   - 自然语言反馈：用户对**当前产物**有意见，要求**立即修改**
+
+**示例对话**：
+
+```
+AI: [GATE] devforge-architecture-design → step5 完成 — 生成 architecture.xml
+    
+    已生成：3 个模块，12 个接口定义，2 个共享契约
+    
+    可用命令：
+    - [APPROVE] — 批准并继续（进入架构验证阶段）
+    - [PAUSE] — 暂停当前阶段，保留上下文
+    - [ROLLBACK {step_id}] — 回滚到指定步骤重新执行
+    ...
+
+用户: 我觉得订单模块和库存模块的耦合太高了，应该引入消息队列解耦
+
+AI: 收到反馈。分析：用户认为 OrderService 和 InventoryService 之间的直接调用耦合过高，建议引入消息队列异步通信。
+
+    正在修改 architecture.xml：
+    - OrderService/Interface/Output：新增 "order-created-event" 异步输出
+    - InventoryService/Interface/Input：新增 "order-created-event" 异步输入订阅
+    - 两模块的 Coupling 从 synchronous 改为 asynchronous (message-queue)
+    
+    修改已记录到 InterventionLog。
+
+    [GATE] devforge-architecture-design → step5（已更新）— 生成 architecture.xml
+    
+    已更新：3 个模块，12 个接口定义（含 2 个异步事件接口），2 个共享契约
+    
+    可用命令：
+    - [APPROVE] — 批准并继续（进入架构验证阶段）
+    ...
+```
+
 ---
 
 ## 7. 与 STATE.md 集成
@@ -588,6 +655,7 @@ AI: 检测到文件变更：
 | 2026-04-29 15:30:00 | [ROLLBACK] | DesignSkill → phase2-step3 | XML 验证失败回滚 | 回滚成功，重新执行 phase2-step3 |
 | 2026-04-29 16:00:00 | [EDIT] | CodeSkill → phase3-step5 | 手动编辑 UserService.java | 补充异常处理和日志记录 |
 | 2026-04-29 16:15:00 | [SKIP] | DeploySkill → phase5-step2 | 跳过可视化配置 | 标记为 SKIPPED |
+| 2026-04-29 16:20:00 | NATURAL_LANGUAGE | DesignSkill → phase2-step5 | 用户反馈耦合过高，引入消息队列 | architecture.xml 已更新，OrderService 和 InventoryService 改为异步通信 |
 ```
 
 ### 7.2 集成规则

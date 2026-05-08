@@ -333,14 +333,14 @@ Current module-design Step 7 only generates "test case design" (documentation). 
 
 **Execution Logic**:
 1. Main agent reads system-level architecture, analyzes inter-module coupling relationships
-2. If no circular dependencies between modules, use `superpowers:dispatching-parallel-agents` to launch multiple subagents in parallel
-3. Each subagent independently executes module-design's 11 steps (one module each)
-4. After all subagents complete, main agent performs consistency checks:
+2. If no circular dependencies between modules, construct an independent subagent prompt per module (parent context + scoped 11-step workflow) and dispatch all subagents in parallel using the native `Agent` tool
+3. Each subagent independently executes module-design's 11 steps (one module each) and writes outputs to `PROJECT_SCAFFOLD/modules/{id}/`
+4. After all subagents complete, main agent collects results and performs consistency checks:
    - Cross-module interface consistency
    - Shared StateModel definition conflicts
 5. If conflicts exist, enter coordination mode (fix sequentially)
 
-**Fallback**: If subagent support is unavailable, fall back to serial `[MODULE {id}]` → `[NEXT MODULE]`.
+**Fallback**: If parallel `Agent` dispatch is unavailable (platform limitation or single-agent mode), fall back to serial `[MODULE {id}]` → `[NEXT MODULE]`.
 
 ### 5.4 Iteration Planning Verification Loop (Issue 7c)
 

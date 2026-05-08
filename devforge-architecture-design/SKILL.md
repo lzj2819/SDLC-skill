@@ -196,11 +196,23 @@ Before recommending any third-party library, framework, or tool, you MUST perfor
 
 11. **Human gate**
     - Present architecture summary and XML outline
-    - Say exactly: "架构设计、接口契约和 XML 模型已生成。请确认当前阶段输出。回复 [APPROVE] 进入架构验证阶段，或提出修改意见。"
-    - Do NOT proceed until [APPROVE]
+    - Say exactly: "架构设计、接口契约和 XML 模型已生成。请确认当前阶段输出。"
+    - Then list all available commands:
+      ```
+      可用命令：
+      - [APPROVE] — 批准并继续（进入架构验证阶段）
+      - [PAUSE] — 暂停当前阶段，保留上下文
+      - [ROLLBACK {step_id}] — 回滚到指定步骤重新执行
+      - [EDIT {file_path}] — 手动编辑文件后让 AI 继续
+      - [INJECT {context}] — 补充额外上下文约束
+      - [SKIP] — 跳过当前可选步骤
+      - [EXPLAIN {TraceID}] — 展开解释某个决策/错误的推理链
+      ```
+    - If user inputs natural language feedback (e.g., "这里需要修改"), treat as modification request — do NOT treat as invalid command; analyze the feedback, apply changes, and re-present the gate with updated output
+    - Do NOT proceed until [APPROVE] or explicit continue command
 
 <HARD-GATE>
-Do NOT proceed to architecture-validation or scaffolding until the user replies [APPROVE].
+Do NOT proceed to architecture-validation or scaffolding until the user replies [APPROVE] or explicitly asks to continue.
 </HARD-GATE>
 
 ## Output Specification

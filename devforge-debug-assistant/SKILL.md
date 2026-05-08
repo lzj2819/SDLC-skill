@@ -121,7 +121,21 @@ If no code exists, stop and instruct the user to complete scaffolding first.
      - Suggested execution order (low risk first)
 
 5. **Human gate**
-   - Present summary: "调试/重构报告已生成。回复 [APPROVE FIX] 应用修复，回复 [APPROVE REFACTOR] 应用重构，回复 [SPECIFIC {issue_id}] 只处理特定问题，或提出修改意见。"
+   - Present summary: "调试/重构报告已生成。"
+   - Then list all available commands:
+     ```
+     可用命令：
+     - [APPROVE FIX] — 应用修复方案
+     - [APPROVE REFACTOR] — 应用重构方案
+     - [SPECIFIC {issue_id}] — 只处理特定问题
+     - [PAUSE] — 暂停当前阶段，保留上下文
+     - [ROLLBACK {step_id}] — 回滚到指定步骤重新执行
+     - [EDIT {file_path}] — 手动编辑文件后让 AI 继续
+     - [INJECT {context}] — 补充额外上下文约束
+     - [EXPLAIN {TraceID}] — 展开解释某个决策/错误的推理链
+     ```
+   - If user inputs natural language feedback (e.g., "这里需要修改"), treat as modification request — do NOT treat as invalid command; analyze the feedback, apply changes, and re-present the gate with updated output
+   - Do NOT proceed until [APPROVE FIX], [APPROVE REFACTOR], [SPECIFIC], or explicit continue command
 
 ## Output Specification
 

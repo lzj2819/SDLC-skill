@@ -176,20 +176,68 @@ Before starting, read `skill/artifacts/STATE.md` (or `docs/architecture/system/S
 
 12. **Human gate**
     - Present module design summary (component list, interface count, test case count)
-    - Say exactly: "模块 `{module_id}` 的详细设计已生成，包含模块级 PRD、组件分解、接口契约、XML 模型和精确代码骨架。请确认当前阶段输出。回复 [APPROVE] 进入该模块的脚手架阶段，回复 [NEXT MODULE] 设计下一个模块，或提出修改意见。"
-    - Do NOT proceed until [APPROVE] or [NEXT MODULE]
+    - Say exactly: "模块 `{module_id}` 的详细设计已生成，包含模块级 PRD、组件分解、接口契约、XML 模型和精确代码骨架。请确认当前阶段输出。"
+    - Then list all available commands:
+      ```
+      可用命令：
+      - [APPROVE] — 批准并继续（进入该模块的测试执行阶段）
+      - [NEXT MODULE] — 设计下一个模块
+      - [PAUSE] — 暂停当前阶段，保留上下文，稍后输入任意内容继续
+      - [ROLLBACK {step_id}] — 回滚到指定步骤重新执行（如 [ROLLBACK step3]）
+      - [EDIT {file_path}] — 手动编辑文件后让 AI 继续（如 [EDIT module-prd.md]）
+      - [INJECT {context}] — 补充额外上下文约束（如 [INJECT 改用 Redis 缓存]）
+      - [SKIP] — 跳过当前可选步骤
+      - [EXPLAIN {TraceID}] — 展开解释某个决策/错误的推理链
+      ```
+    - Do NOT proceed until user explicitly inputs a valid command or modification feedback
 
-## Parallel Batch Mode
+## Parallel Batch Mode (Native Agent-Based)
 
 When triggered by `[MODULE_BATCH {id1},{id2},...]`:
 
 1. **Coupling analysis**: Read `architecture.xml`, analyze inter-module `Coupling` relationships. If circular dependencies exist between requested modules, fall back to serial mode and warn user.
-2. **Parallel dispatch**: If no circular dependencies, dispatch one subagent per module using `superpowers:dispatching-parallel-agents`. Each subagent executes the 12-step workflow for one module independently.
-3. **Consistency check** (after all subagents complete):
+2. **Parallel dispatch** (if no circular dependencies):
+   - For each module `{id}`, construct an independent subagent prompt containing:
+     - The module's system-level definition from `architecture.xml`
+     - Full parent context (`PRD.md`, `INTERFACE_CONTRACT.md`, `DECISION_LOG.md`, `STATE.md`)
+     - The exact 12-step workflow from this skill scoped to that single module
+     - Boundary constraint: honor system-level interfaces, no new requirements outside scope
+   - Dispatch all subagents **in parallel** using the native `Agent` tool (one call per module in a single message)
+   - Each subagent independently executes the full 12-step workflow and writes its outputs to `PROJECT_SCAFFOLD/modules/{id}/`
+   - Subagents do NOT have human gates; they run to completion and return results
+
+3. **Result collection** (after all subagents complete):
+   - Read all generated `module-architecture.xml` files
+   - Read all generated `module-interface-contract.md` files
+   - Read all generated `component-spec.xml` files
+   - Verify each module's output files exist and are non-empty
+
+4. **Consistency check**:
    - Cross-module interface compatibility: Verify each module's system-level output matches downstream module's system-level input schema
    - Shared StateModel conflicts: Flag any state entries with same `id` but different definitions across modules
-4. **Conflict resolution**: If conflicts found, enter coordination mode — present conflicts to user and fix sequentially.
-5. **Fallback**: If subagent dispatch is unavailable, fall back to serial `[MODULE {id}]` -> `[NEXT MODULE]`.
+   - Inter-module dependency completeness: Verify every `DependsOn` target has a corresponding module design completed
+
+5. **Conflict resolution**:
+   - If no conflicts: update `STATE.md` for all modules at once, append to Module Registry, then present batch summary
+   - If conflicts found: present conflict list to user and enter **coordination mode** — fix conflicts sequentially before updating state
+
+6. **Human gate (batch)**:
+   - Present summary: "已并行完成 {N} 个模块的详细设计。"
+   - List each module with component count and status
+   - If conflicts were found and resolved, note: "已解决 {M} 处跨模块冲突"
+   - List available commands:
+     ```
+     可用命令：
+     - [APPROVE] — 批准全部模块，继续下一阶段
+     - [NEXT MODULE] — 继续设计剩余模块（如有）
+     - [PAUSE] — 暂停审查
+     - [ROLLBACK {step_id}] — 回滚到某一步重新执行
+     - [EDIT {file_path}] — 手动编辑后让 AI 继续
+     - [INJECT {context}] — 补充上下文约束
+     - [MODULE {id}] — 单独重新设计某个模块
+     ```
+
+7. **Fallback**: If parallel `Agent` dispatch is unavailable (platform limitation or single-agent mode), fall back to serial `[MODULE {id}]` -> `[NEXT MODULE]`.
 
 ## Output Specification
 

@@ -104,12 +104,25 @@ Read `skill/artifacts/STATE.md`. Acceptable phases: `architecture_design_complet
     - Set DIVE `Verify: completed`
 
 12. **Human gate**
-    - Present validation summary
-    - Say exactly: "架构验证报告和健康检查脚本已生成。请确认当前阶段输出。回复 [APPROVE] 进入设计审查阶段（推荐），回复 [SKIP_REVIEW] 跳过审查直接进入项目脚手架阶段，或提出修改意见。"
-    - Do NOT proceed until [APPROVE]
+    - Present validation summary (pass/fail count, blocking vs non-blocking breakdown)
+    - Say exactly: "架构验证报告和健康检查脚本已生成。请确认当前阶段输出。"
+    - Then list all available commands:
+      ```
+      可用命令：
+      - [APPROVE] — 批准并继续（进入设计审查阶段，推荐）
+      - [SKIP_REVIEW] — 跳过设计审查，直接进入项目脚手架阶段
+      - [FORCE_APPROVE] — 跳过非阻塞性警告（仅在所有失败均为 warning 级别时可用）
+      - [PAUSE] — 暂停当前阶段，保留上下文
+      - [ROLLBACK {step_id}] — 回滚到指定步骤重新执行
+      - [EDIT {file_path}] — 手动编辑文件后让 AI 继续
+      - [INJECT {context}] — 补充额外上下文约束
+      - [EXPLAIN {TraceID}] — 展开解释某个决策/错误的推理链
+      ```
+    - If user inputs natural language feedback (e.g., "这里需要修改"), treat as modification request — do NOT treat as invalid command; analyze the feedback, apply changes, and re-present the gate with updated output
+    - Do NOT proceed until [APPROVE], [SKIP_REVIEW], [FORCE_APPROVE], or explicit continue command
 
 <HARD-GATE>
-Do NOT proceed to project-scaffolding if validation failed. If validation passed, do NOT proceed until the user replies [APPROVE].
+Do NOT proceed to project-scaffolding if validation failed. If validation passed, do NOT proceed until the user replies [APPROVE], [SKIP_REVIEW], or [FORCE_APPROVE].
 </HARD-GATE>
 
 ## Output Specification

@@ -80,8 +80,23 @@ Read `STATE.md`. Acceptable phases: `module_design_completed`, `scaffolding_comp
    - Update `RTM.md` Test Case ID and Status columns
 
 8. **Gate**
-   - "测试报告已生成。单元测试通过率 X%，集成测试通过率 Y%，端到端测试通过率 Z%。回复 `[APPROVE]` 标记测试阶段完成，回复 `[DEBUG]` 进入调试模式修复失败，回复 `[RETEST]` 重新运行。"
+   - Present test report summary: pass rates, coverage, failure count
+   - Say exactly: "测试报告已生成。单元测试通过率 X%，集成测试通过率 Y%，端到端测试通过率 Z%。"
+   - Then list all available commands:
+     ```
+     可用命令：
+     - [APPROVE] — 标记测试阶段完成
+     - [DEBUG] — 进入调试模式修复失败（仅在有失败测试时可用）
+     - [RETEST] — 重新运行所有测试
+     - [PAUSE] — 暂停当前阶段，保留上下文
+     - [ROLLBACK {step_id}] — 回滚到指定步骤重新执行
+     - [EDIT {file_path}] — 手动编辑文件后让 AI 继续
+     - [INJECT {context}] — 补充额外上下文约束
+     - [EXPLAIN {TraceID}] — 展开解释某个决策/错误的推理链
+     ```
+   - If user inputs natural language feedback (e.g., "这里需要修改"), treat as modification request — do NOT treat as invalid command; analyze the feedback, apply changes, and re-present the gate with updated output
    - If failures exist, offer `[DEBUG]` to enter `devforge-debug-assistant`
+   - Do NOT proceed until [APPROVE] or explicit continue command
 
 ## Output Specification
 
