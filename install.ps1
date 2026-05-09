@@ -10,13 +10,13 @@
     3. Updates are done via "git pull" in the clone directory — no re-download needed
 
 .USAGE
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/lzj2819/DevForge/main/install.ps1" -OutFile "install.ps1"; .\install.ps1
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/lzj2819/DevForge-skill/main/install.ps1" -OutFile "install.ps1"; .\install.ps1
     Or locally: .\install.ps1
 #>
 
 [CmdletBinding()]
 param(
-    [string]$RepoUrl = "https://github.com/lzj2819/DevForge.git"
+    [string]$RepoUrl = "https://github.com/lzj2819/DevForge-skill.git"
 )
 
 $ErrorActionPreference = "Stop"
@@ -71,8 +71,22 @@ function Clone-Or-UpdateRepo {
         Write-OK "Updated to latest version"
     } else {
         Write-Info "Cloning DevForge repository..."
-        git clone $RepoUrl $InstallDir
-        Write-OK "Repository cloned to $InstallDir"
+        try {
+            git clone $RepoUrl $InstallDir
+            Write-OK "Repository cloned to $InstallDir"
+        } catch {
+            Write-Warn "Remote clone failed. Falling back to local copy..."
+            $scriptDir = $PSScriptRoot
+            if ([string]::IsNullOrEmpty($scriptDir)) { $scriptDir = (Get-Location).Path }
+            $localSrc = $scriptDir
+            if (Test-Path (Join-Path $localSrc "devforge-requirement-analysis")) {
+                robocopy $localSrc $InstallDir /MIR /XD .git .claude | Out-Null
+                Write-OK "Mirrored local repo to $InstallDir"
+            } else {
+                Write-Error "Cannot find DevForge source. Please run this script from the project root or ensure remote repo is accessible."
+                exit 1
+            }
+        }
     }
 }
 
@@ -206,7 +220,7 @@ function Print-NextSteps {
     Write-Host "🗑️  To uninstall:"
     Write-Host "   .\uninstall.ps1"
     Write-Host ""
-    Write-Host "📖 Documentation: https://github.com/lzj2819/DevForge"
+    Write-Host "📖 Documentation: https://github.com/lzj2819/DevForge-skill"
     Write-Host ""
 }
 
