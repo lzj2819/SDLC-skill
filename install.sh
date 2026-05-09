@@ -219,15 +219,25 @@ print_next_steps() {
     echo "   2. Verify with: /skill list"
     echo "   3. Start your first project: \"我想做一个 [产品想法]\""
     echo ""
-    echo "🔄 To update DevForge in the future:"
+    echo "🔄 To update:"
     echo "   cd ${INSTALL_DIR} && git pull"
-    echo "   (No re-installation needed — symlinks auto-point to new code)"
+    echo "   Or run: ${INSTALL_DIR}/update.sh"
     echo ""
     echo "🗑️  To uninstall:"
     echo "   ${INSTALL_DIR}/uninstall.sh"
     echo ""
     echo "📖 Documentation: https://github.com/lzj2819/DevForge-skill"
     echo ""
+}
+
+remove_temp_installer() {
+    # Auto-remove the downloaded install.sh if it's outside the install directory
+    local script_path
+    script_path="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"
+    local installed_script="${INSTALL_DIR}/install.sh"
+    if [[ "${script_path}" != "${installed_script}" && -f "$0" ]]; then
+        rm -f "$0" 2>/dev/null || true
+    fi
 }
 
 main() {
@@ -239,6 +249,7 @@ main() {
     create_symlinks
     validate_installation
     print_next_steps
+    remove_temp_installer
 }
 
 main "$@"

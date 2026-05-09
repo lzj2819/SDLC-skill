@@ -213,15 +213,25 @@ function Print-NextSteps {
     Write-Host "   2. Verify with: /skill list"
     Write-Host "   3. Start your first project: \"我想做一个 [产品想法]\""
     Write-Host ""
-    Write-Host "🔄 To update DevForge in the future:"
+    Write-Host "🔄 To update:"
     Write-Host "   cd $InstallDir; git pull"
-    Write-Host "   (No re-installation needed — junctions auto-point to new code)"
+    Write-Host "   Or run: $InstallDir\update.ps1"
     Write-Host ""
     Write-Host "🗑️  To uninstall:"
-    Write-Host "   .\uninstall.ps1"
+    Write-Host "   $InstallDir\uninstall.ps1"
     Write-Host ""
     Write-Host "📖 Documentation: https://github.com/lzj2819/DevForge-skill"
     Write-Host ""
+}
+
+function Remove-TempInstaller {
+    # Auto-remove the downloaded install.ps1 if it's outside the install directory
+    if ($PSCommandPath -and (Test-Path $PSCommandPath)) {
+        $installedScript = Join-Path $InstallDir "install.ps1"
+        if ($PSCommandPath -ne $installedScript) {
+            Remove-Item $PSCommandPath -Force -ErrorAction SilentlyContinue
+        }
+    }
 }
 
 # Main
@@ -233,3 +243,4 @@ Remove-OldLinks
 New-SkillLinks
 Test-Installation
 Print-NextSteps
+Remove-TempInstaller
