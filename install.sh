@@ -80,8 +80,21 @@ clone_or_update_repo() {
         ok "Updated to latest version"
     else
         info "Cloning DevForge repository..."
-        git clone "${REPO_URL}" "${INSTALL_DIR}"
-        ok "Repository cloned to ${INSTALL_DIR}"
+        if git clone "${REPO_URL}" "${INSTALL_DIR}" 2>/dev/null; then
+            ok "Repository cloned to ${INSTALL_DIR}"
+        else
+            warn "Remote clone failed. Falling back to local copy..."
+            local script_dir
+            script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+            if [[ -d "${script_dir}/devforge-requirement-analysis" ]]; then
+                mkdir -p "${INSTALL_DIR}"
+                tar -C "${script_dir}" --exclude='.git' --exclude='.claude' -cf - . | tar -C "${INSTALL_DIR}" -xf -
+                ok "Copied local repo to ${INSTALL_DIR}"
+            else
+                err "Cannot find DevForge source. Please run this script from the project root or ensure remote repo is accessible."
+                exit 1
+            fi
+        fi
     fi
 }
 

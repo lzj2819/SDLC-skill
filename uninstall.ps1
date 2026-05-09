@@ -42,12 +42,12 @@ $skills = @(
 Write-Info "Removing skill junctions..."
 foreach ($skill in $skills) {
     $linkPath = Join-Path $SkillsDir $skill
-    if (Test-Path $linkPath) {
-        $item = Get-Item $linkPath
-        if ($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint) {
-            Remove-Item $linkPath -Force
-            Write-Info "Removed junction: $skill"
-        }
+    # Use Get-Item with -ErrorAction SilentlyContinue to handle broken junctions
+    # (junction targets that no longer exist, e.g. after moving to a different PC)
+    $item = Get-Item -LiteralPath $linkPath -ErrorAction SilentlyContinue
+    if ($item -and ($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint)) {
+        Remove-Item -LiteralPath $linkPath -Force
+        Write-Info "Removed junction: $skill"
     }
 }
 
