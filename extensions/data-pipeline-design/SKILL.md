@@ -1,9 +1,11 @@
 ---
 name: data-pipeline-design
-description: Domain extension for data pipeline and ETL system architecture. Use when the project involves data ingestion, transformation, streaming, batch processing, or schema evolution. Dynamically loaded by devforge-architecture-design when PRD contains data-pipeline characteristic tags.
+description: Reference-only extension providing data pipeline evaluation dimensions, anti-patterns, and architecture guidance. Loaded by devforge-architecture-design when PRD contains data-pipeline tags. Generation logic is handled by devforge-data-pipeline core skill.
 ---
 
 # Data Pipeline Design Extension
+
+> **Note**: This extension is reference-only as of v1.4. It provides evaluation dimensions and patterns for architecture-design but does not generate artifacts. Use `devforge-data-pipeline` core skill for dataflow.xml, ETL DAG, and schema generation.
 
 ## Overview
 
@@ -33,14 +35,6 @@ This extension augments the generic `devforge-architecture-design` skill with da
 - `QualityChecker`: Validation rules, anomaly detection, quarantine
 - `SinkRouter`: Destination adapters, batching, retry logic
 - `Orchestrator`: Job scheduling, dependency management, failure recovery
-
-### Interface Additions
-
-| Interface | Input | Output | Error Codes |
-|-----------|-------|--------|-------------|
-| `ingest_record` | `RawRecord` | `ValidatedRecord` | 400 (invalid format), 409 (duplicate), 429 (source rate limit) |
-| `transform_batch` | `RecordBatch` | `TransformedBatch` | 422 (schema mismatch), 500 (transformation error) |
-| `check_quality` | `Record` | `QualityReport` | 400 (rule violation), 422 (unsupported rule) |
 
 ## References
 
