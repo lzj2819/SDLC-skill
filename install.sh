@@ -142,6 +142,8 @@ create_symlinks() {
         devforge-ops-ready
         devforge-debug-assistant
         devforge-security-audit
+        devforge-threat-modeling
+        devforge-data-pipeline
     )
 
     local count=0

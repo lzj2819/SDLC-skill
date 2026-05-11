@@ -1,7 +1,7 @@
 {
   "name": "DevForge-chain",
-  "description": "DevForge Chain for Claude Code: 7 skills covering the full software development lifecycle from requirements to incremental iteration, built on the VCMF framework and DIVE cycle",
-  "version": "1.3.0",
+  "description": "DevForge Chain for Claude Code: 12 skills covering the full software development lifecycle from requirements to production deployment, built on the VCMF framework and DIVE cycle. v1.4 adds threat modeling, data pipeline design, microservices infrastructure, and 3 domain extensions.",
+  "version": "1.4.0",
   "author": { "name": "lzj", "email": "lzj2819@gmail.com" },
   "homepage": "https://github.com/lzj2819/DevForge-skill",
   "repository": "https://github.com/lzj2819/DevForge-skill",

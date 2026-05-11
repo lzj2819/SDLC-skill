@@ -39,6 +39,8 @@ skills=(
     devforge-ops-ready
     devforge-debug-assistant
     devforge-security-audit
+    devforge-threat-modeling
+    devforge-data-pipeline
     ai-agent-design
     data-pipeline-design
     mobile-app-design

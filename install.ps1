@@ -136,6 +136,8 @@ function New-SkillLinks {
         "devforge-ops-ready"
         "devforge-debug-assistant"
         "devforge-security-audit"
+        "devforge-threat-modeling"
+        "devforge-data-pipeline"
     )
 
     $count = 0
