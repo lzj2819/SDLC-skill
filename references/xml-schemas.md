@@ -205,6 +205,26 @@ Module-scoped state definitions.
 - `State` (1+): Same attributes as system-level `State`
   - `id`, `location`, `owner`, `consumer`, `lifecycle`
 
+### `FrontendProfile`
+Frontend-specific configuration (only for modules with `type="frontend"`).
+
+**FrontendProfile children**:
+- `Framework` (1): Attributes:
+  - `type` (required): One of {react, vue, angular, svelte}
+  - `rendering` (required): One of {csr, ssr, ssg}
+- `StateManagement` (1): Attributes:
+  - `type` (required): One of {redux, zustand, pinia, vuex, context-api}
+- `ComponentLibrary` (1): Attributes:
+  - `tiered` (boolean, default "false"): Whether components are organized in base/general/business tiers
+- `PerformanceTargets` (1): Attributes:
+  - `fcp` (optional): First Contentful Paint target (e.g., "1.8s")
+  - `lcp` (optional): Largest Contentful Paint target (e.g., "2.5s")
+  - `cls` (optional): Cumulative Layout Shift target (e.g., "0.1")
+  - `fid` (optional): First Input Delay target (e.g., "100ms")
+- `I18n` (1): Attributes:
+  - `strategy` (required): One of {static-bundle, dynamic-load}
+  - `locales` (required): Comma-separated locale codes
+
 ---
 
 ## Layer 3: Component Specification (`component-spec.xml`)
