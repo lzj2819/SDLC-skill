@@ -57,7 +57,11 @@
       "Bash(git -C \"E:\\\\pythonproject\\\\vclaw\\\\SDLC-skill\" diff)",
       "Bash(git -C \"E:\\\\pythonproject\\\\vclaw\\\\SDLC-skill\" log --oneline -5)",
       "Bash(git -C \"E:\\\\pythonproject\\\\vclaw\\\\SDLC-skill\" add \"devforge-threat-modeling/SKILL.md\")",
-      "Bash(git -C \"E:\\\\pythonproject\\\\vclaw\\\\SDLC-skill\" commit -m \"feat: add devforge-threat-modeling core skill\")"
+      "Bash(git -C \"E:\\\\pythonproject\\\\vclaw\\\\SDLC-skill\" commit -m \"feat: add devforge-threat-modeling core skill\")",
+      "Read(//c/Users/Lenovo/.claude/skills/pptx/**)",
+      "Bash(node \"E:\\\\pythonproject\\\\vclaw\\\\SDLC-skill\\\\建议\\\\generate-ppt.js\")",
+      "Bash(node generate-ppt.js)",
+      "Bash(python -m markitdown \"E:\\\\pythonproject\\\\vclaw\\\\SDLC-skill\\\\建议\\\\DevForge-SDLC-Skill-Chain-v1.4.pptx\")"
     ]
   }
 }

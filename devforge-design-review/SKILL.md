@@ -49,8 +49,10 @@ See `skill/tools/language-adaptation.md`.
    - Are there race conditions in state transitions?
    - What happens if an external dependency (DB, API) fails? Is there a degradation path?
    - Are there single points of failure?
-   - Is data encrypted in transit and at rest?
-   - Are authentication and authorization enforced at every boundary?
+   - **Is the chosen encryption strategy adequate for the threat model?** (⚠️ Note: `sdlc-security-audit` Stage I performs algorithm blacklist checks; this lens focuses on *strategic adequacy* — e.g., "TLS1.2 is insufficient for financial data under compliance X")
+   - **Is the authentication/authorization architecture sound?** (⚠️ Note: `sdlc-security-audit` Stage I checks whether auth attributes exist in XML; this lens focuses on *design soundness* — e.g., "Order service bypasses auth to access user DB directly")
+   - Are there missing threat scenarios (insider threats, supply chain attacks, etc.)?
+   - Is the security strategy consistent with NFRs (e.g., end-to-end encryption vs. performance)?
 
 3. **Operator Lens (Operability & Debuggability)**
    - If a module fails, can the root cause be located quickly?
